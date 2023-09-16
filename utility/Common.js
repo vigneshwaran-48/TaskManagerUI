@@ -129,5 +129,13 @@ export const Common = {
     POST_ERROR: 500,
     POST_SUCCESS: 200,
     IGNORE_ACTION: 1,
-    defaultNothingImage: "/nothing-here.png"
+    defaultNothingImage: "/nothing-here.png",
+    handleNotifyRespone: response => {
+        if(response.status !== 200) {
+            Common.showErrorPopup(response.error, 2);
+            return false;
+        }
+        Common.showSuccessPopup(response.message, 2);
+        return true;
+    }
 }

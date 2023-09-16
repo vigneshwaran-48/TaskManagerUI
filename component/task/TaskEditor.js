@@ -1,43 +1,22 @@
-import React, { Suspense, useState } from "react";
-import { 
-    Await, defer, redirect,
-    useLoaderData, useNavigate, useOutletContext
-} from "react-router";
+import React, { useEffect, useState } from "react";
 import ListDropdown from "./ListDropdown";
 import Loading from "../common/Loading";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
-import { Common } from "../../utility/Common";
-import { TaskAPI } from "../../api/TaskAPI";
 import { useFetcher } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Common } from "../../utility/Common";
 
-export const taskEditorLoader = ({ params }) => {
-    return defer({ singleTaskResponse : TaskAPI.getSingleTaskDetails(params.id, 2) });
-}
+const TaskEditor = props => {
 
-export const taskEditorAction = async ({ params, request }) => {
-    const formData = await request.formData();
-    const data = Object.fromEntries(formData);
-
-    if(data.mode === "delete") {
-        const response = await TaskAPI.deleteTask(data.taskId);
-        if(response.status === 200) {
-            Common.showSuccessPopup(response.message, 2);
-            return redirect("../?reload=false");
-        }
-        else {
-            Common.showErrorPopup(response.error, 2);
-        }
-    }
-}
-const TaskEditor = () => {
-
-    const navigate = useNavigate();
-    const { updateTask, taskId, closeEditorStatus } = useOutletContext();
-    const [ taskDetails, setTaskDetails ] = useState(null);
-    const taskLoaderData = useLoaderData();
+    const { updateTask, taskId, closeEditorStatus, isOpen, task, deleteTask } = props;
+    const [ taskDetails, setTaskDetails ] = useState(task);
 
     const fetcher = useFetcher();
+
+    useEffect(() => {
+        setTaskDetails(task);
+    }, [task]);
 
     const handleChange = event => {
         const { name, value } = event.target;
@@ -46,8 +25,9 @@ const TaskEditor = () => {
                 ...prevTaskDetails,
                 [ name ] : value
             }
-        })
+        });
     }
+
     const handleListChange = list => {
         setTaskDetails(prevTask => {
             prevTask.list = list;
@@ -55,7 +35,9 @@ const TaskEditor = () => {
         })
     }
     const handleDateChange = newValue => {
-        const dateStr = newValue.$D + "/" + newValue.$M + "/" + newValue.$y
+        const dateStr = Common.checkAndGiveDoubleDigit(newValue.$y + "") + "-" + 
+                        Common.checkAndGiveDoubleDigit(newValue.$M + "") + "-" +
+                        Common.checkAndGiveDoubleDigit(newValue.$D + "");
         setTaskDetails(prevTaskDetails => {
             return {
                 ...prevTaskDetails,
@@ -63,43 +45,49 @@ const TaskEditor = () => {
             }
         })
     }
-    const saveChanges = () => {
-        updateTask(taskDetails);
-        closeEditor();
-        closeEditorStatus();
+    const saveChanges = async () => {
+        if(await updateTask(taskDetails)) {
+            closeEditor();
+        }
     }
-    const handleDeleteTask = () => {
-        const data = {
-            mode: "delete",
-            taskId
-        };
-        fetcher.submit(data, {method: "delete"});
+    const handleDeleteTask = async () => {
+        if(deleteTask(taskDetails.taskId)) {
+            closeEditor();
+        }
     }
     const closeEditor = () => {
         closeEditorStatus();
-        navigate("../?reload=false");
     }
 
-    const renderEditor = taskResponse => {
-        if(taskResponse.status !== 200) {
-            Common.showErrorPopup("Error while opening editor!");
-            return;
-        }
-        const taskDetails = taskResponse.task;
-        const filterdLists = taskDetails.lists;
-
-        return (
-            <div className="editing-section y-axis-flex">
+    const filterdLists = taskDetails?.lists;
+   
+    return (
+        <motion.div 
+            className={`task-editor y-axis-flex ${isOpen && "show-task-editor"}`}
+        >
+            <span 
+                style={{
+                    display: `${isOpen ? "block" : "none"}`
+                }}
+                className="task-editor-close-button"
+                onClick={ closeEditor }>
+                <i  
+                    className="bi bi-x"
+                ></i>
+            </span>
+            {
+                taskDetails ? (
+                <div className="editing-section y-axis-flex">
                 <h2>Task</h2>
                 <input 
-                    name="title"
+                    name="taskName"
                     value={ taskDetails.taskName }
                     onChange={ handleChange }
                     placeholder="Title"
                 />
                 <textarea
                     name="description"
-                    value={ taskDetails.description }
+                    value={ taskDetails.description || "" }
                     onChange={ handleChange }
                     placeholder="Description"
                 ></textarea>
@@ -134,30 +122,14 @@ const TaskEditor = () => {
                         className="common-button save-task-changes-button"
                         onClick={ saveChanges }
                     >
-                        Save changes
+                        Save Changes
                     </button>
                 </div>
-            </div>
-        );
-    }
-   
-    return (
-        <div 
-            className="task-editor y-axis-flex"
-        >
-            <span 
-                className="task-editor-close-button"
-                onClick={ closeEditor }>
-                <i  
-                    className="bi bi-x"
-                ></i>
-            </span>
-            <Suspense fallback={<Loading />}>
-                <Await resolve={taskLoaderData.singleTaskResponse}>
-                    {renderEditor}
-                </Await>
-            </Suspense>
-        </div>
+                </div>
+                ) 
+                : <Loading />
+            } 
+        </motion.div>
     )
 }
 

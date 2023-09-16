@@ -5,6 +5,7 @@ import "../css/app-body.css";
 import { Outlet, useLocation } from "react-router";  
 import 'font-awesome/css/font-awesome.min.css';
 import { Common } from "../utility/Common";
+import { AnimatePresence } from "framer-motion";
 
 const capitalize = str => {
     return str.charAt(0).toUpperCase() + str.slice(1);

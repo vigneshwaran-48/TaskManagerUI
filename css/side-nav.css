@@ -212,7 +212,6 @@
 }
 @media screen and (max-width: 415px) {
     .side-navbar {
-        /* max-width: 400px; */
         width: 100%;
     }
     .side-nav-bottom {

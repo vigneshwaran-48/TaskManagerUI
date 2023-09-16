@@ -1,12 +1,17 @@
-import React, { Suspense, useContext, useEffect, useRef, useState } from "react";
+import React, { Suspense, useContext, useEffect, 
+    useMemo, useRef, useState } from "react";
 import TaskBox from "./TaskBox";
 import { TaskAPI } from "../../api/TaskAPI";
-import { Await, Outlet, defer, useLoaderData, useLocation, useNavigate, useParams } from "react-router";
+import { Await, defer, 
+        useLoaderData, useLocation,
+         useParams } from "react-router";
 import 'font-awesome/css/font-awesome.min.css';
 import Loading from "../common/Loading";
 import { motion } from "framer-motion";
 import { Common } from "../../utility/Common";
 import { UserContext } from "../../App";
+import TaskEditor from "./TaskEditor";
+import Tasks from "./Tasks";
 
 
 export const todayCompLoader = ({ params }) => {
@@ -14,15 +19,34 @@ export const todayCompLoader = ({ params }) => {
     return defer({tasksResponse: TaskAPI.getAllTasks()});
 }
 
+export const todayCompShouldRevalidate = ({ currentUrl }) => {
+
+    console.log(currentUrl);
+    return false;
+}
+
+export const  TaskEventConstants = {
+    TASK_UPDATE: "update",
+    TASK_ADD: "add",
+    TASK_DELETE: "delete"
+}
+
 const TodayComp = () => {
 
-    const navigate = useNavigate();
-
-    const editorRef = useRef(false);
+    //Event for notifying task change
+    const TaskChangeEventListeners = useRef([{
+        listenerId: "",
+        callback: () => {}
+    }]);
 
     const urlParams = useParams();
 
     const [ taskName, setTaskName ] = useState("");
+    const [ editorState, setEditorState ] = useState({
+        isOpen: false,
+        taskId: -1,
+        taskDetails: null
+    });
 
     const location = useLocation();
     
@@ -30,12 +54,26 @@ const TodayComp = () => {
     
     const userContext = useContext(UserContext);
 
-    const openEditor = id => {
-        editorRef.current = true;
-        navigate(`${id}/edit`);
+    const openEditor = async id => {
+        const taskResponse = await TaskAPI.getSingleTaskDetails(id);
+
+        if(taskResponse.status !== 200) {
+            Common.showErrorPopup(taskResponse.error, 2);
+            return;
+        }
+        setEditorState({
+            isOpen: true,
+            taskId: id,
+            taskDetails: taskResponse.task
+        });
     }
     const closeEditor = () => {
-        editorRef.current = false;
+        setEditorState(prev => {
+            return {
+                ...prev,
+                isOpen: false
+            }
+        });
     }
     
     useEffect(() => {
@@ -45,27 +83,6 @@ const TodayComp = () => {
         }
     }, []);
 
-    const onTaskComplete = async (id, event) => {
-        const { checked } = event.target;
-        await TaskAPI.updateTaskCompleteStatus(id, checked);
-    }
-    const updateTask = async task => {
-        const response = await TaskAPI.updateTask(task);
-        if(response === 401) {
-            navigate("/login", {replace: true});
-        }
-        // setTasks(prevTasks => {
-        //     if(prevTasks) {
-        //         return prevTasks.map(prevTask => {
-        //                     if(prevTask.id === task.id) {
-        //                         prevTask = task;
-        //                     }
-        //                     return prevTask;
-        //                 });
-        //     }
-        //     return null;
-        // })
-    }
     const addTask = async task => {
         task.userId = userContext.userDetails.userId;
         const response = await TaskAPI.addTask(task);
@@ -74,6 +91,7 @@ const TodayComp = () => {
         }
         else {
             Common.showSuccessPopup(response.message, 2);
+            notifyTaskChange(response.taskId, TaskEventConstants.TASK_ADD, true);
         }
     }
     const handleTaskAddChange = event => {
@@ -88,6 +106,64 @@ const TodayComp = () => {
             event.target.value = "";
         }
     }
+    const getTask = async taskId => {
+        const taskResponse = await TaskAPI.getSingleTaskDetails(taskId, 
+            userContext.userDetails.userId);
+
+        if(taskResponse.status !== 200) {
+            Common.showErrorPopup(taskResponse.error, 2);
+            return null;
+        }
+        return taskResponse.task;
+    }
+
+    const notifyTaskChange = async (data, mode, shouldFetch) => {
+        if(shouldFetch) {
+            data = await getTask(data);
+        }
+        if(!data) return;
+
+        TaskChangeEventListeners.current.forEach(listener => {
+            listener.callback(data, mode);
+        });
+    }
+
+    const subscribeToTaskChange = listener => {
+        const foundListener = TaskChangeEventListeners.current
+                              .find(l => l.listenerId === listener.listenerId);
+        if(!foundListener) {
+            console.log(TaskChangeEventListeners.current);
+            TaskChangeEventListeners.current.push(listener);
+            console.log(TaskChangeEventListeners.current);
+        }
+    }
+    const unSubscribeToTaskChange = listenerId => {
+        const listeners = TaskChangeEventListeners.current;
+        listeners.splice(listeners
+                 .findIndex(listener => listener.listenerId === listenerId), 1);
+    }
+
+    const updateTask = async taskToUdpate => {
+        const response = await TaskAPI.updateTask(taskToUdpate);
+        const isSuccess = Common.handleNotifyRespone(response);
+
+        if(!isSuccess) return false;
+
+        notifyTaskChange(response.task.taskId, TaskEventConstants.TASK_UPDATE, true);
+        return true;
+    }
+
+    const deleteTask = async taskId => {
+        const response = await TaskAPI.deleteTask(taskId);
+
+        const isSuccess = Common.handleNotifyRespone(response);
+
+        if(!isSuccess) return false;
+
+        notifyTaskChange(response.deletedTasks[0], TaskEventConstants.TASK_DELETE, false);
+        return true;
+    }
+
     const renderTasks = taskResponse => {
 
         if(taskResponse.status !== 200) {
@@ -96,25 +172,12 @@ const TodayComp = () => {
         }
 
         const tasks = taskResponse.tasks;
-
-        const taskElements = tasks != null ? tasks.map(task => {
-            return (
-                <TaskBox 
-                    key={task.taskId} 
-                    taskDetails={task}
-                    onTaskComplete={event => {
-                        onTaskComplete(task.taskId, event)
-                    }} 
-                    openEditor={ openEditor }
-                />
-            );
-        }): tasks;
-
-        return (
-            <div className="task-box-wrapper y-axis-flex">
-                { taskElements }
-            </div>
-        );
+        return <Tasks 
+                    openEditor={openEditor} 
+                    tasks={tasks} 
+                    subscribeTaskEvent={subscribeToTaskChange}
+                    unSubscribeTaskEvent={unSubscribeToTaskChange}
+                />;   
     }
 
     return (
@@ -122,7 +185,6 @@ const TodayComp = () => {
             initial={Common.mainElementsFramerVariants.slideFromRight}
             animate={Common.mainElementsFramerVariants.stay}
             exit={Common.mainElementsFramerVariants.exit}
-            transition={ Common.mainElementsFramerVariants.elemTransition }
             className="app-body-middle today-comp x-axis-flex"
         > 
             <div className="today-comp-left y-axis-flex">
@@ -143,14 +205,16 @@ const TodayComp = () => {
                     </Await>
                 </Suspense>
             </div>
-            <Outlet 
-                key={location.pathname} 
-                context={{
-                updateTask,
-                closeEditorStatus: closeEditor,
-                isEditorOpened: editorRef.current,
-                taskId: urlParams.id
-            }} />
+            
+            <TaskEditor 
+                closeEditorStatus={closeEditor} 
+                taskId={editorState.taskId}
+                isOpen={editorState.isOpen}
+                task={editorState.taskDetails}
+                updateTask={updateTask}
+                deleteTask={deleteTask}
+            />
+            
         </motion.div>
     )
 }

@@ -2,7 +2,7 @@
 let appRoutes = {
     task: {
         all: "/api/v1/task",
-        base: "/api/v1/task"
+        base: "/api/v1/task",
     }
 };
 
@@ -17,5 +17,5 @@ export const ServerAPIManager = {
         // }
         return appRoutes;
     },
-    ServerURL: "http://localhost:8383"
+    ServerURL: "http://192.168.6.188:8383"
 }

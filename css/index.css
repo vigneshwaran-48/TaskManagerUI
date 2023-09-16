@@ -159,7 +159,11 @@ body, html {
 }
 
 
-
+@media screen and (max-width: 1020px) { 
+    .popup {
+        left: 35%;
+    }
+}
 
 @media screen and (max-width: 650px) {
     .welcome-box {
@@ -170,4 +174,21 @@ body, html {
         max-width: 300px;
         width: 90%;
     }
+}
+@media screen and (max-width: 500px) {
+    .popup {
+        left: 23%;
+    }
+}
+@media screen and (max-width: 345px) {
+    .popup {
+        left: 17%;
+    }
+}
+@media screen and (max-width: 320px) {
+
+    .save-task-changes-button, .delete-task-button {
+        font-size: 16px;
+    }
+
 }

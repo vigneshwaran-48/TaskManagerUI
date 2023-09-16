@@ -1,14 +1,14 @@
 import React, { createContext, useState } from "react";
-import { Navigate, Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from "react-router-dom";
+import { Navigate, Route, RouterProvider, createBrowserRouter, createRoutesFromElements, useLocation } from "react-router-dom";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import WelcomeComp from "./component/public-comp/WelcomeComp";
 import WelcomeSharedLayout from "./page/WelomeSharedLayout";
 import SharedLayout from "./page/SharedLayout";
-import TodayComp, { todayCompLoader } from "./component/task/TodayComp";
-import TaskEditor, { taskEditorAction, taskEditorLoader } from "./component/task/TaskEditor";
+import TodayComp, { todayCompAction, todayCompLoader, todayCompShouldRevalidate } from "./component/task/TodayComp";
 import ListBody from "./component/ListBody";
 import "./css/index.css";
+
 
 
 export const UserContext = createContext();
@@ -28,14 +28,8 @@ const routes = createBrowserRouter(createRoutesFromElements(
                 path="task/today" 
                 element={<TodayComp />}
                 loader={todayCompLoader}
-            >
-                <Route 
-                    path=":id/edit" 
-                    element={<TaskEditor />} 
-                    loader={taskEditorLoader}
-                    action={taskEditorAction}
-                />
-            </Route>
+                shouldRevalidate={todayCompShouldRevalidate}
+            />
             <Route path="task/calendar" element={<h1>Calendar</h1>} />
             <Route path="task/sticky-wall" element={<h1>Sticky wall</h1>} />
             <Route path="list/:id" element={<ListBody />} />
@@ -73,7 +67,8 @@ const App = () => {
                     changeUserDetails: handleUserDetailsChange
                 }}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <RouterProvider router={routes} />
+            
+            <RouterProvider router={routes} />                
             </LocalizationProvider>
         </UserContext.Provider>
     )
