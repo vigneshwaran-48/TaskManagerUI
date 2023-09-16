@@ -2,7 +2,11 @@
 let appRoutes = {
     task: {
         all: "/api/v1/task",
+        today: "/api/v1/task/today",
         base: "/api/v1/task",
+    },
+    utility: {
+        sideNav: "/api/v1/utility/side-nav"
     }
 };
 

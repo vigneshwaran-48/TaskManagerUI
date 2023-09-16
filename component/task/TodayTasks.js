@@ -2,10 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import { TaskAPI } from "../../api/TaskAPI";
 import TaskBox from "./TaskBox";
 import { Common } from "../../utility/Common";
-import { TaskEventConstants } from "./TodayComp";
 
 
-const Tasks = props => {
+const TodayTasks = props => {
 
     const { openEditor, subscribeTaskEvent, unSubscribeTaskEvent } = props;
     const [ tasks, setTasks ] = useState(props.tasks);
@@ -26,12 +25,17 @@ const Tasks = props => {
     }, []);
 
     const taskChangeHandler = (taskDetails, mode) => {
-        
-        console.log(taskDetails);
-        console.log(mode);
+
+        const date = taskDetails.dueDate;
+        const todayDate = new Date().toJSON().slice(0, 10);
+        const comparison = Common.isDateLesserThan(todayDate, date);
 
         switch(mode) {
-            case TaskEventConstants.TASK_UPDATE: 
+            case Common.TaskEventConstants.TASK_UPDATE: 
+                if(comparison === true) {
+                    deleteTask(taskDetails.taskId);
+                    break;
+                } 
                 setTasks(prevTasks => {
                     return prevTasks.map(task => {
                         if(task.taskId === taskDetails.taskId) {
@@ -41,7 +45,11 @@ const Tasks = props => {
                     });
                 });
                 break;
-            case TaskEventConstants.TASK_ADD:
+            case Common.TaskEventConstants.TASK_ADD:
+                
+                if(comparison === true) {
+                    break;
+                }
                 setTasks(prevTasks => {
                     return [
                         ...prevTasks,
@@ -49,16 +57,19 @@ const Tasks = props => {
                     ]
                 });
                 break;
-            case TaskEventConstants.TASK_DELETE:
-                setTasks(prevTasks => {
-                    const filtered =  prevTasks.filter(task => task.taskId !== taskDetails);
-                    console.log(filtered);
-                    return filtered;
-                });
+            case Common.TaskEventConstants.TASK_DELETE:
+                deleteTask(taskDetails);
                 break;
             default: 
                 throw new Error("Unknown task event");
         }
+    }
+
+    const deleteTask = id => {
+        setTasks(prevTasks => {
+            const filtered =  prevTasks.filter(task => task.taskId !== id);
+            return filtered;
+        });
     }
 
     const onTaskComplete = async (id, checked) => {
@@ -100,4 +111,4 @@ const Tasks = props => {
     );
 };
 
-export default Tasks;
+export default TodayTasks;

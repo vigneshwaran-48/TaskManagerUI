@@ -26,6 +26,15 @@ export const TaskAPI = {
                                 });
         return await response.json();
     },
+    getAllTodayTasks: async () => {
+        const url = ServerAPIManager.ServerURL + ServerAPIManager.getAppRoutes().task.today;
+        const response = await fetch(url, {
+                                    headers: {
+                                        "Content-Type": "application/json"
+                                    }
+                                });
+        return await response.json();
+    },
     updateTaskCompleteStatus: async (taskId) => {
 
         const url = ServerAPIManager.ServerURL 

@@ -1,6 +1,4 @@
-import React, { Suspense, useContext, useEffect, 
-    useMemo, useRef, useState } from "react";
-import TaskBox from "./TaskBox";
+import React, { Suspense, useContext, useEffect, useRef, useState } from "react";
 import { TaskAPI } from "../../api/TaskAPI";
 import { Await, defer, 
         useLoaderData, useLocation,
@@ -11,24 +9,18 @@ import { motion } from "framer-motion";
 import { Common } from "../../utility/Common";
 import { UserContext } from "../../App";
 import TaskEditor from "./TaskEditor";
-import Tasks from "./Tasks";
+import TodayTasks from "./TodayTasks";
 
 
 export const todayCompLoader = ({ params }) => {
 
-    return defer({tasksResponse: TaskAPI.getAllTasks()});
+    return defer({tasksResponse: TaskAPI.getAllTodayTasks()});
 }
 
 export const todayCompShouldRevalidate = ({ currentUrl }) => {
 
     console.log(currentUrl);
     return false;
-}
-
-export const  TaskEventConstants = {
-    TASK_UPDATE: "update",
-    TASK_ADD: "add",
-    TASK_DELETE: "delete"
 }
 
 const TodayComp = () => {
@@ -91,7 +83,7 @@ const TodayComp = () => {
         }
         else {
             Common.showSuccessPopup(response.message, 2);
-            notifyTaskChange(response.taskId, TaskEventConstants.TASK_ADD, true);
+            notifyTaskChange(response.taskId, Common.TaskEventConstants.TASK_ADD, true);
         }
     }
     const handleTaskAddChange = event => {
@@ -149,7 +141,7 @@ const TodayComp = () => {
 
         if(!isSuccess) return false;
 
-        notifyTaskChange(response.task.taskId, TaskEventConstants.TASK_UPDATE, true);
+        notifyTaskChange(response.task.taskId, Common.TaskEventConstants.TASK_UPDATE, true);
         return true;
     }
 
@@ -160,7 +152,7 @@ const TodayComp = () => {
 
         if(!isSuccess) return false;
 
-        notifyTaskChange(response.deletedTasks[0], TaskEventConstants.TASK_DELETE, false);
+        notifyTaskChange(response.deletedTasks[0], Common.TaskEventConstants.TASK_DELETE, false);
         return true;
     }
 
@@ -172,7 +164,7 @@ const TodayComp = () => {
         }
 
         const tasks = taskResponse.tasks;
-        return <Tasks 
+        return <TodayTasks 
                     openEditor={openEditor} 
                     tasks={tasks} 
                     subscribeTaskEvent={subscribeToTaskChange}
