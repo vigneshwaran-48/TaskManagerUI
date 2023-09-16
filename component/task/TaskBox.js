@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 
 const getListElem = list => {
     if(list == null || list.length < 1) {
@@ -20,7 +20,7 @@ const getListElem = list => {
 }
 const TaskBox = props => {
     const [ expanded, setExpanded ] = useState(false);
-    const { taskDetails } = props;
+    let { taskDetails } = props;
     const taxBoxStyle = {
         height: expanded ? "40px" : "0px"
     }
@@ -31,7 +31,13 @@ const TaskBox = props => {
         event.stopPropagation();
         props.openEditor( taskDetails.taskId );
     }
+    const onTaskComplete = event => {
+        const { checked } = event;
+        props.onTaskComplete(taskDetails.taskId, checked);
+    }
     const listElems = getListElem(taskDetails.lists);
+
+    console.log("Rendered TaskBox component ...");
 
     return (
         <div 
@@ -41,11 +47,11 @@ const TaskBox = props => {
             <div className="task-box-top x-axis-flex">
                 <input 
                     type="checkbox" 
-                    checked={taskDetails.isCompleted} 
+                    defaultChecked={taskDetails.completed} 
                     onClick={event => event.stopPropagation()}
-                    onChange={ props.onTaskComplete }
+                    onChange={ onTaskComplete }
                 />
-                <p className="task-box-title">{taskDetails?.taskName?.slice(0, 25)}</p>
+                <p className="task-box-title x-axis-flex">{taskDetails?.taskName?.slice(0, 50)}</p>
                 <span 
                     className="task-editor-open-button"
                     onClick={ openEditor }
@@ -77,4 +83,35 @@ const TaskBox = props => {
     )
 }
 
-export default TaskBox;
+const isEqual = (prevTask, currTask) => {
+    const prevTaskDetails = prevTask.taskDetails;
+    const currTaskDetails = currTask.taskDetails;
+
+    if(prevTaskDetails.taskId !== currTaskDetails.taskId) {
+        return false;
+    }
+    else if(prevTaskDetails.parentTaskId !== currTaskDetails.parentTaskId) {
+        return false;
+    }
+    else if(prevTaskDetails.taskName !== currTaskDetails.taskName) {
+        return false;
+    }
+    else if(prevTaskDetails.dueDate !== currTaskDetails.dueDate) {
+        return false;
+    }
+    else if(prevTaskDetails.completed !== currTaskDetails.completed) {
+        return false;
+    }
+    else if(prevTaskDetails.description !== currTaskDetails.description) {
+        return false;
+    }
+    else {
+        /**
+        * Need to check for lists also
+        */
+       console.log("Equal");
+        return true;
+    }
+}
+
+export default memo(TaskBox, isEqual);

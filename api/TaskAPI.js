@@ -1,32 +1,5 @@
 import { ServerAPIManager } from "../utility/ServerAPIManager";
 
-let tasks = [
-    {
-        id: 10004,
-        title: "Task 1",
-        description: "First Task",
-        list: {
-            id: 8980,
-            name: "Personal",
-            color: "red"
-        },
-        dueDate: "12/09/2022",
-        tags: [],
-        subTasks: [],
-        isCompleted: false
-    },
-    {
-        id: 10005,
-        title: "Task 2",
-        description: "Second task",
-        lists: [],
-        dueDate: "28/09/2024",
-        tags: [],
-        subTasks: [],
-        isCompleted: true
-    }
-];
-
 let lists = [
 
     {
@@ -53,14 +26,18 @@ export const TaskAPI = {
                                 });
         return await response.json();
     },
-    updateTaskCompleteStatus: async (taskId, status) => {
+    updateTaskCompleteStatus: async (taskId) => {
 
-        tasks = tasks.map(task => {
-            if(task.id === taskId) {
-                task.isCompleted = status;
-            }
-            return task;
-        })
+        const url = ServerAPIManager.ServerURL 
+                    + ServerAPIManager.getAppRoutes().task.base 
+                    + "/" + taskId + "/toggle";
+        const response = await fetch(url, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json"
+            }                        
+        });
+        return await response.json();
     },
     getSingleTaskDetails: async (id, userId) => {
         const url = ServerAPIManager.ServerURL 
@@ -77,13 +54,17 @@ export const TaskAPI = {
         return lists;
     },
     updateTask: async (task, userId) => {
-        tasks = tasks.map(prevTask => {
-            if(prevTask.id === task.id) {
-                prevTask = task;
-            }
-            return prevTask;
-        });
-        return 200;
+        console.log(task)
+        const url = ServerAPIManager.ServerURL 
+                    + ServerAPIManager.getAppRoutes().task.base + "/" + task.taskId;
+        const response = await fetch(url, {
+                                    method: "PATCH",
+                                    headers: {
+                                        "Content-Type": "application/json"
+                                    },
+                                    body: JSON.stringify(task)
+                                });
+        return await response.json();
     },
     deleteTask: async id => {
         const url = ServerAPIManager.ServerURL 
