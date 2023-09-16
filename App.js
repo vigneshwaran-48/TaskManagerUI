@@ -1,17 +1,18 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useRef, useState } from "react";
 import { Navigate, Route, RouterProvider, createBrowserRouter, createRoutesFromElements, useLocation } from "react-router-dom";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import WelcomeComp from "./component/public-comp/WelcomeComp";
 import WelcomeSharedLayout from "./page/WelomeSharedLayout";
 import SharedLayout from "./page/SharedLayout";
-import TodayComp, { todayCompAction, todayCompLoader, todayCompShouldRevalidate } from "./component/task/TodayComp";
+import TodayComp, { todayCompLoader, todayCompShouldRevalidate } from "./page/TodayComp";
 import ListBody from "./component/ListBody";
 import "./css/index.css";
 
 
 
 export const UserContext = createContext();
+export const AppContext = createContext();
 
 const routes = createBrowserRouter(createRoutesFromElements(
     <Route path="/">
@@ -38,6 +39,12 @@ const routes = createBrowserRouter(createRoutesFromElements(
 ))
 const App = () => {
 
+    //Event for notifying task change
+    const TaskChangeEvent = useRef([{
+        listenerId: "",
+        callback: () => {}
+    }]);
+
     const [ userDetails, setUserDetails ] = useState({
         isLoggedIn: true,
         name: "",
@@ -55,6 +62,19 @@ const App = () => {
             }
         })
     }
+    
+    const subscribeToTaskChange = listener => {
+        const foundListener = TaskChangeEvent.current
+                              .find(l => l.listenerId === listener.listenerId);
+        if(!foundListener) {
+            TaskChangeEvent.current.push(listener);
+        }
+    }
+    const unSubscribeToTaskChange = listenerId => {
+        const listeners = TaskChangeEvent.current;
+        listeners.splice(listeners
+                 .findIndex(listener => listener.listenerId === listenerId), 1);
+    }
 
     window.logout = () => {
         handleUserDetailsChange({isLoggedIn: false});
@@ -66,10 +86,15 @@ const App = () => {
                     userDetails,
                     changeUserDetails: handleUserDetailsChange
                 }}>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-            
-            <RouterProvider router={routes} />                
-            </LocalizationProvider>
+            <AppContext.Provider value={{
+                    TaskChangeEvent,
+                    subscribeToTaskChange,
+                    unSubscribeToTaskChange
+                }}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <RouterProvider router={routes} />                
+                </LocalizationProvider>
+            </AppContext.Provider>
         </UserContext.Provider>
     )
 }

@@ -1,34 +1,41 @@
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { TaskAPI } from "../../api/TaskAPI";
 import TaskBox from "./TaskBox";
 import { Common } from "../../utility/Common";
+import NothingToShow from "../../utility/NothingToShow";
+import { AppContext } from "../../App";
 
 
-const TodayTasks = props => {
+const Tasks = props => {
 
-    const { openEditor, subscribeTaskEvent, unSubscribeTaskEvent } = props;
+    const { openEditor, predicateDate, id, fallback } = props;
     const [ tasks, setTasks ] = useState(props.tasks);
+    const { subscribeToTaskChange, unSubscribeToTaskChange } = useContext(AppContext);
 
     useEffect(() => {
 
         //Subscribing to the task change event
         const listener = {
-                            listenerId: "Tasks",
+                            listenerId: id,
                             callback: taskChangeHandler
                          }
-        subscribeTaskEvent(listener);
+        subscribeToTaskChange(listener);
 
         return (() => {
                     //Unsubscribing to the task change event
-                    unSubscribeTaskEvent("Tasks");
+                    unSubscribeToTaskChange(id);
                 })
     }, []);
 
     const taskChangeHandler = (taskDetails, mode) => {
 
         const date = taskDetails.dueDate;
-        const todayDate = new Date().toJSON().slice(0, 10);
-        const comparison = Common.isDateLesserThan(todayDate, date);
+        let comparison = 1;
+        if(date) {
+            comparison = Common.isDateLesserThan(predicateDate, date);
+            console.log(predicateDate)
+            console.log(comparison)
+        }
 
         switch(mode) {
             case Common.TaskEventConstants.TASK_UPDATE: 
@@ -48,6 +55,7 @@ const TodayTasks = props => {
             case Common.TaskEventConstants.TASK_ADD:
                 
                 if(comparison === true) {
+                    console.log("Breaking ...")
                     break;
                 }
                 setTasks(prevTasks => {
@@ -91,7 +99,7 @@ const TodayTasks = props => {
     //in input this all componenets starts re render. But now it wont re-render until 
     //the tasks changes.
     const taskElements = useMemo(() => {
-        return tasks != null ? tasks.map(task => {
+        return tasks != null && tasks.length > 0 ? tasks.map(task => {
                 return (
                     <TaskBox 
                         key={task.taskId} 
@@ -100,7 +108,7 @@ const TodayTasks = props => {
                         openEditor={ openEditor }
                     />
                 );
-            }): tasks;
+            }): fallback
     }, [tasks]);
 
 
@@ -111,4 +119,4 @@ const TodayTasks = props => {
     );
 };
 
-export default TodayTasks;
+export default Tasks;

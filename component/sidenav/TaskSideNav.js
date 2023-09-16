@@ -5,16 +5,41 @@ import 'font-awesome/css/font-awesome.min.css';
 import { AppAPI } from "../../api/AppAPI";
 import { Common } from "../../utility/Common";
 import Loading from "../common/Loading";
+import { AppContext } from "../../App";
 
-const TaskSideNav = () => {
+const TaskSideNav = props => {
+
     const unActiveNav = "side-nav-child x-axis-flex";
     const activeNav = "side-nav-child active-side-nav x-axis-flex";
 
     const [taskSideNavSections, setTaskSideNavSections] = useState(null);
+    const { subscribeToTaskChange, unSubscribeToTaskChange } = useContext(AppContext);
+    const { id } = props;
+
+    useEffect(() => {
+        //Subscribing to the task change event
+        const listener = {
+           listenerId: id,
+           callback: taskChangeHandler
+        }
+        subscribeToTaskChange(listener);
+
+        return (() => {
+            //Unsubscribing to the task change event
+            unSubscribeToTaskChange(id);
+        })
+    });
 
     useEffect(() => {
         fetchSideNavs();
     }, []);
+
+    const taskChangeHandler = (taskDetails, mode) => {
+        if(mode === Common.TaskEventConstants.TASK_UPDATE) {
+            return;
+        }
+        fetchSideNavs();
+    }
 
     const fetchSideNavs = async () => {
         const response = await AppAPI.getSideNavbars();
@@ -25,41 +50,12 @@ const TaskSideNav = () => {
         setTaskSideNavSections(sideNavs);
     }
 
-    const defaultTaskSections = [
-        {
-            id: 104,
-            name: "Upcoming",
-            taskCount: 3,
-            iconClassNames: "fa fa-solid fa-forward"
-        },
-        {
-            id: 105,
-            name: "Today",
-            taskCount: 7,
-            iconClassNames: "bi bi-list-task"
-        },
-        {
-            id: 107,
-            name: "Calendar",
-            iconClassNames: "fa fa-solid fa-calendar"
-        },
-        {
-            id: 109,
-            name: "Sticky Wall",
-            iconClassNames: "bi bi-sticky"
-        }
-    ];
-
     const { setSection } = useContext(SectionContext);
 
     const maintainSection = event => {
         setSection(event.currentTarget.getAttribute("data-section-name"));
     }
     
-    // if(!taskSideNavSections || taskSideNavSections.length < 1) {
-    //     setTaskSideNavSections(defaultTaskSections);
-    // }
-
     if(!taskSideNavSections) {
         return <Loading />
     }
