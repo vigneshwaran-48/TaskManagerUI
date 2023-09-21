@@ -97,5 +97,14 @@ export const TaskAPI = {
                                     body: JSON.stringify(task)
                                 });
         return await response.json();
+    },
+    getUpcomingTasks: async () => {
+        const url = ServerAPIManager.ServerURL + ServerAPIManager.getAppRoutes().task.upcoming;
+        const response = await fetch(url, {
+                                    headers: {
+                                        "Content-Type": "application/json"
+                                    }
+                                });
+        return await response.json();
     }
 }

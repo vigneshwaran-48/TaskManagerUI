@@ -35,13 +35,6 @@ const TodayComp = () => {
         taskDetails: null
     });
 
-    useEffect(() => {
-        const splittedUrl = location.pathname.split("/");
-        if(splittedUrl.includes("edit")) {
-            openEditor(urlParams.id);
-        }
-    }, []);
-
     const openEditor = async id => {
         const taskResponse = await TaskAPI.getSingleTaskDetails(id);
 

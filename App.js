@@ -8,6 +8,7 @@ import SharedLayout from "./page/SharedLayout";
 import TodayComp, { todayCompLoader, todayCompShouldRevalidate } from "./page/TodayComp";
 import ListBody from "./component/ListBody";
 import "./css/index.css";
+import UpcomingComp, { upcomingTasksLoader } from "./page/UpcomingComp";
 
 
 
@@ -24,7 +25,11 @@ const routes = createBrowserRouter(createRoutesFromElements(
             <Route index element={(
                     () => <Navigate to="task/upcoming" />)()}
             />
-            <Route path="task/upcoming" element={<h1>upcoming</h1>} />
+            <Route 
+                path="task/upcoming" 
+                element={<UpcomingComp />}
+                loader={upcomingTasksLoader}
+            />
             <Route 
                 path="task/today" 
                 element={<TodayComp />}

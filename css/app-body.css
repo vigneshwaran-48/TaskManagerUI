@@ -92,8 +92,12 @@
     background-color: rgb(235,234,234);
 }
 
-.today-comp {
+.today-comp, .upcoming-tasks-comp {
     position: relative;
+}
+.upcoming-tasks-container {
+    margin-bottom: 20px;
+    width: 100%;
 }
 .today-comp-left {
     width: 100%;
