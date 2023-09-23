@@ -3,7 +3,9 @@ import { TaskAPI } from "../api/TaskAPI";
 import { Common } from "../utility/Common";
 import { motion } from "framer-motion";
 import TaskComp from "../component/task/TaskComp";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import TaskEditor from "../component/task/TaskEditor";
+import { AppContext } from "../App";
 
 
 export const upcomingTasksLoader = () => {
@@ -19,6 +21,8 @@ const UpcomingComp = () => {
         taskId: -1,
         taskDetails: null
     });
+
+    const app = useContext(AppContext);
 
     const openEditor = async id => {
         const taskResponse = await TaskAPI.getSingleTaskDetails(id);
@@ -43,39 +47,72 @@ const UpcomingComp = () => {
     }
 
     const notifyTaskChange = async (data, mode, shouldFetch) => {
-        console.log("Task changed in upcomgin tasks componenet ...");
+        if(shouldFetch) {
+            data = await app.getTask(data);
+        }
+        if(!data) return;
+
+        app.TaskChangeEvent.current.forEach(listener => {
+            listener.callback(data, mode);
+        });
     }
 
     const upcomingTasksLoaderData = useLoaderData();
+
+    const todayTaskpredicate = dueDate => {
+        const result = Common.isDateLesserThan(new Date().toJSON().slice(0, 10), dueDate);
+        return result !== 1;
+    }
+
+    const tomorrowTaskPredicate = dueDate => {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        console.log(tomorrow.toJSON().slice(0, 10));
+        const result = Common.isDateLesserThan(tomorrow.toJSON().slice(0, 10), dueDate);
+
+        return result !== 1;
+    }
 
     return (
         <motion.div 
             initial={Common.mainElementsFramerVariants.slideFromRight}
             animate={Common.mainElementsFramerVariants.stay}
             exit={Common.mainElementsFramerVariants.exit}
-            className="app-body-middle upcoming-tasks-comp y-axis-flex"
+            className="app-body-middle upcoming-tasks-comp x-axis-flex"
         >
-            <div className="upcoming-tasks-container">
-                <h2>Today</h2>
-                <TaskComp 
-                    predicateDate={new Date().toJSON().slice(0, 10)} 
-                    shouldAwait={true}
-                    taskData={upcomingTasksLoaderData.todayTasksResponse}
-                    openEditor={openEditor}
-                    notifyTaskChange={notifyTaskChange}
-                />
-            </div>
+            <div className="upcoming-tasks-container-wrapper y-axis-flex">
+                <div className="upcoming-tasks-container">
+                    <h2>Today</h2>
+                    <TaskComp 
+                        predicate={todayTaskpredicate} 
+                        shouldAwait={true}
+                        taskData={upcomingTasksLoaderData.todayTasksResponse}
+                        openEditor={openEditor}
+                        notifyTaskChange={notifyTaskChange}
+                        id="upcoming-tasks-today-key"
+                    />
+                </div>
 
-            <div className="upcoming-tasks-container">
-                <h2>Tomorrow</h2>
-                <TaskComp 
-                    predicateDate={new Date().toJSON().slice(0, 10)} 
-                    shouldAwait={true}
-                    taskData={upcomingTasksLoaderData.upcomingTasksResponse}
-                    openEditor={openEditor}
-                    notifyTaskChange={notifyTaskChange}
-                />
+                <div className="upcoming-tasks-container">
+                    <h2>Tomorrow</h2>
+                    <TaskComp 
+                        predicate={tomorrowTaskPredicate} 
+                        shouldAwait={true}
+                        taskData={upcomingTasksLoaderData.upcomingTasksResponse}
+                        openEditor={openEditor}
+                        notifyTaskChange={notifyTaskChange}
+                        id="upcoming-tasks-tomorrow-key"
+                    />
+                </div>
             </div>
+            <TaskEditor 
+                closeEditorStatus={closeEditor} 
+                taskId={editorState.taskId}
+                isOpen={editorState.isOpen}
+                task={editorState.taskDetails}
+                updateTask={taskToUdpate =>app.updateTask(taskToUdpate, notifyTaskChange)}
+                deleteTask={taskId => app.deleteTask(taskId, notifyTaskChange)}
+            />
         </motion.div>
     )
 

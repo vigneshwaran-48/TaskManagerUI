@@ -61,7 +61,7 @@
     width: calc(100% - 35px);
     overflow: scroll;
 }
-.task-box-bottom::-webkit-scrollbar, .drop-down::-webkit-scrollbar {
+.task-box-bottom::-webkit-scrollbar, .drop-down::-webkit-scrollbar, .upcoming-tasks-container-wrapper::-webkit-scrollbar {
     display: none;
 }
 .task-box-bottom > div {
@@ -219,6 +219,13 @@
 .save-task-changes-button {
     background-color: rgb(67, 194, 67);
     color: white;
+}
+
+
+.upcoming-tasks-container-wrapper {
+    width: 100%;
+    height: 100%;
+    overflow: scroll;
 }
 @media screen and (max-width: 895px) {
     .app-body {

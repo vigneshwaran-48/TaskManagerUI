@@ -20,14 +20,9 @@ export const todayCompShouldRevalidate = ({ currentUrl }) => {
 
 const TodayComp = () => {
 
-    const { TaskChangeEvent } = useContext(AppContext);
-    const userContext = useContext(UserContext);
+    const { TaskChangeEvent, updateTask, deleteTask, getTask } = useContext(AppContext);
     const tasksLoaderData = useLoaderData();
     const predicateDate = new Date().toJSON().slice(0, 10);
-
-    const location = useLocation();
-
-    const urlParams = useParams();
 
     const [ editorState, setEditorState ] = useState({
         isOpen: false,
@@ -57,28 +52,6 @@ const TodayComp = () => {
         });
     }
 
-    const updateTask = async taskToUdpate => {
-        const response = await TaskAPI.updateTask(taskToUdpate);
-        const isSuccess = Common.handleNotifyRespone(response);
-
-        if(!isSuccess) return false;
-
-        notifyTaskChange(response.task.taskId, Common.TaskEventConstants.TASK_UPDATE, true);
-        return true;
-    }
-
-    const deleteTask = async taskId => {
-        const response = await TaskAPI.deleteTask(taskId);
-
-        const isSuccess = Common.handleNotifyRespone(response);
-
-        if(!isSuccess) return false;
-
-        notifyTaskChange(response.deletedTasks[0], 
-                        Common.TaskEventConstants.TASK_DELETE, false);
-        return true;
-    }
-
     const notifyTaskChange = async (data, mode, shouldFetch) => {
         if(shouldFetch) {
             data = await getTask(data);
@@ -90,15 +63,13 @@ const TodayComp = () => {
         });
     }
 
-    const getTask = async taskId => {
-        const taskResponse = await TaskAPI.getSingleTaskDetails(taskId, 
-            userContext.userDetails.userId);
-
-        if(taskResponse.status !== 200) {
-            Common.showErrorPopup(taskResponse.error, 2);
-            return null;
+    const todayTaskpredicate = dueDate => {
+        const result = Common.isDateLesserThan(new Date().toJSON().slice(0, 10), dueDate);
+        if(result === 1) {
+            //  Tasks's dueDate is today so no need to remove it from list.
+            return false;
         }
-        return taskResponse.task;
+        return true;
     }
 
     return (
@@ -109,19 +80,20 @@ const TodayComp = () => {
             className="app-body-middle today-comp x-axis-flex"
         >
             <TaskComp 
-                predicateDate={predicateDate} 
+                predicate={todayTaskpredicate}
                 shouldAwait={true}
                 taskData={tasksLoaderData.tasksResponse}
                 openEditor={openEditor}
                 notifyTaskChange={notifyTaskChange}
+                id="today-tasks-key"
             />
             <TaskEditor 
                 closeEditorStatus={closeEditor} 
                 taskId={editorState.taskId}
                 isOpen={editorState.isOpen}
                 task={editorState.taskDetails}
-                updateTask={updateTask}
-                deleteTask={deleteTask}
+                updateTask={taskToUdpate =>  updateTask(taskToUdpate, notifyTaskChange)}
+                deleteTask={taskId =>  deleteTask(taskId, notifyTaskChange)}
             />
         </motion.div>
     )

@@ -11,7 +11,7 @@ const TaskComp = props => {
 
     const todayNoTaskImage = "/images/today-no-tasks.png";
 
-    const { predicateDate, shouldAwait, taskData, openEditor, notifyTaskChange } = props;
+    const { predicate, shouldAwait, taskData, openEditor, notifyTaskChange, id } = props;
 
     const [ taskName, setTaskName ] = useState("");
     
@@ -52,8 +52,8 @@ const TaskComp = props => {
         return <Tasks
                     openEditor={openEditor} 
                     tasks={tasks} 
-                    predicateDate={predicateDate}
-                    id="separate-route-today-task-key"
+                    predicate={predicate}
+                    id={id}
                     fallback={<NothingToShow 
                                 img={todayNoTaskImage}
                                 message="You don't have any tasks today"

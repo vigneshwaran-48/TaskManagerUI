@@ -150,14 +150,11 @@ export const Common = {
         else if(first > second) {
             return 1;
         }
-        else 
         return 0;
     },
     isDateLesserThan: function(first, second) {
         const splittedFirst = first.split("-");
         const splittedSecond  = second.split("-");
-
-        console.log(this);
 
         const yearComparison = this.isLesserThan(splittedFirst[2], splittedSecond[2]);
         if(yearComparison === -1) {

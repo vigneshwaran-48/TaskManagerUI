@@ -8,7 +8,7 @@ import { AppContext } from "../../App";
 
 const Tasks = props => {
 
-    const { openEditor, predicateDate, id, fallback } = props;
+    const { openEditor, predicate, id, fallback } = props;
     const [ tasks, setTasks ] = useState(props.tasks);
     const { subscribeToTaskChange, unSubscribeToTaskChange } = useContext(AppContext);
 
@@ -30,32 +30,38 @@ const Tasks = props => {
     const taskChangeHandler = (taskDetails, mode) => {
 
         const date = taskDetails.dueDate;
-        let comparison = 1;
+        let removeFromList = false;
         if(date) {
-            comparison = Common.isDateLesserThan(predicateDate, date);
-            console.log(predicateDate)
-            console.log(comparison)
+            removeFromList = predicate(date);
         }
 
         switch(mode) {
             case Common.TaskEventConstants.TASK_UPDATE: 
-                if(comparison === true) {
+                if(removeFromList) {
                     deleteTask(taskDetails.taskId);
                     break;
                 } 
                 setTasks(prevTasks => {
-                    return prevTasks.map(task => {
-                        if(task.taskId === taskDetails.taskId) {
-                            return taskDetails;
-                        }
-                        return task;
-                    });
+                    const index = prevTasks.findIndex(task => task.taskId === taskDetails.taskId);
+                    if(index >= 0) {
+                        // Updating the existing task
+                        return prevTasks.map(task => {
+                            if(task.taskId === taskDetails.taskId) {
+                                return taskDetails;
+                            }
+                            return task;
+                        });
+                    }
+                    /**
+                     *  Adding the new task, This might happen in Upcoming Task page
+                     *  Where if we update today task date to tommorrow or vice versa
+                     * */ 
+                    return [...prevTasks, taskDetails];
                 });
                 break;
             case Common.TaskEventConstants.TASK_ADD:
                 
-                if(comparison === true) {
-                    console.log("Breaking ...")
+                if(removeFromList) {
                     break;
                 }
                 setTasks(prevTasks => {

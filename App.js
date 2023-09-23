@@ -9,6 +9,8 @@ import TodayComp, { todayCompLoader, todayCompShouldRevalidate } from "./page/To
 import ListBody from "./component/ListBody";
 import "./css/index.css";
 import UpcomingComp, { upcomingTasksLoader } from "./page/UpcomingComp";
+import { TaskAPI } from "./api/TaskAPI";
+import { Common } from "./utility/Common";
 
 
 
@@ -85,6 +87,39 @@ const App = () => {
         handleUserDetailsChange({isLoggedIn: false});
     }
 
+    const updateTask = async (taskToUdpate, notifyTaskChange) => {
+        const response = await TaskAPI.updateTask(taskToUdpate);
+        const isSuccess = Common.handleNotifyRespone(response);
+
+        if(!isSuccess) return false;
+
+        notifyTaskChange(response.task.taskId, Common.TaskEventConstants.TASK_UPDATE, true);
+        return true;
+    }
+
+    const deleteTask = async (taskId, notifyTaskChange) => {
+        const response = await TaskAPI.deleteTask(taskId);
+
+        const isSuccess = Common.handleNotifyRespone(response);
+
+        if(!isSuccess) return false;
+
+        notifyTaskChange(response.deletedTasks[0], 
+                        Common.TaskEventConstants.TASK_DELETE, false);
+        return true;
+    }
+
+    const getTask = async taskId => {
+        const taskResponse = await TaskAPI.getSingleTaskDetails(taskId, 
+            userDetails.userId);
+
+        if(taskResponse.status !== 200) {
+            Common.showErrorPopup(taskResponse.error, 2);
+            return null;
+        }
+        return taskResponse.task;
+    }
+
     
     return (
         <UserContext.Provider value={{
@@ -94,7 +129,10 @@ const App = () => {
             <AppContext.Provider value={{
                     TaskChangeEvent,
                     subscribeToTaskChange,
-                    unSubscribeToTaskChange
+                    unSubscribeToTaskChange,
+                    deleteTask,
+                    updateTask,
+                    getTask
                 }}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <RouterProvider router={routes} />                
