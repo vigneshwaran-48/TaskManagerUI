@@ -29,6 +29,7 @@
 .side-nav-top i {
     font-size: 30px;
     transition: 0.5s;
+    cursor: pointer;
     display: none;
 }
 .side-nav-top i:active {

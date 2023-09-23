@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 import { SectionContext } from "../../page/SharedLayout";
 import ListTagAddComp from "./ListTagAddComp";
 
-const ListSideNav = () => {
+const ListSideNav = props => {
 
     const activeSideNav = "side-nav-child active-side-nav x-axis-flex";
     const unActiveSideNav = "side-nav-child x-axis-flex"
@@ -12,8 +12,11 @@ const ListSideNav = () => {
 
     const [ openListBox, setOpenBox ] = useState(false);
 
+    const { closeSideNavbar } = props;
+
     const maintainSection = event => {
         setSection(event.target.innerText);
+        closeSideNavbar();
     }
 
     const defaultList = [

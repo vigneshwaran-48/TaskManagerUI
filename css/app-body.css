@@ -11,6 +11,7 @@
 .app-body-header i {
     font-size: 22px;
     padding-right: 10px;
+    cursor: pointer;
     display: none;
 }
 .app-body-middle {
@@ -100,6 +101,9 @@
     width: 100%;
     height: 31%;
     min-height: 300px;
+}
+.upcoming-tasks-container > h2 {
+    margin-bottom: 10px;
 }
 .today-comp-left {
     width: 100%;

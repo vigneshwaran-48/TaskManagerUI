@@ -16,7 +16,7 @@ const TaskSideNav = props => {
     const [taskSideNavSections, setTaskSideNavSections] = useState(null);
     const [ isLoading, setIsLoading ] = useState(false);
     const { subscribeToTaskChange, unSubscribeToTaskChange } = useContext(AppContext);
-    const { id } = props;
+    const { id, closeSideNavbar } = props;
 
     useEffect(() => {
         //Subscribing to the task change event
@@ -55,6 +55,7 @@ const TaskSideNav = props => {
 
     const maintainSection = event => {
         setSection(event.currentTarget.getAttribute("data-section-name"));
+        closeSideNavbar();
     }
     
     if(!taskSideNavSections) {

@@ -35,6 +35,11 @@ const SharedLayout = () => {
                 .classList.add("open-side-nav");
     }
 
+    const closeSideNav = () => {
+        document.querySelector(".side-navbar")
+                .classList.remove("open-side-nav");
+    }
+
     const location = useLocation();
     
     useEffect(() => {
@@ -76,7 +81,7 @@ const SharedLayout = () => {
                         onClick={ () => Common.closeSuccessPopupForce() }
                     ></i>
                 </div>
-                <SideNavbar />
+                <SideNavbar closeSideNavbar={closeSideNav} />
                 <div className="app-body y-axis-flex">
                     <div className="app-body-header x-axis-flex">
                         <i 
