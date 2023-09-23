@@ -7,11 +7,11 @@ import { useContext, useState } from "react";
 import TaskEditor from "../component/task/TaskEditor";
 import { AppContext } from "../App";
 
-
 export const upcomingTasksLoader = () => {
     return defer({
         upcomingTasksResponse: TaskAPI.getUpcomingTasks(),
-        todayTasksResponse: TaskAPI.getAllTodayTasks()
+        todayTasksResponse: TaskAPI.getAllTodayTasks(),
+        thisWeekTasksResponse: TaskAPI.getThisWeekTasks()
     });
 }
 const UpcomingComp = () => {
@@ -72,6 +72,14 @@ const UpcomingComp = () => {
 
         return result !== 1;
     }
+    const weekTaskPredicate = dueDate => {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 7);
+        console.log(tomorrow.toJSON().slice(0, 10));
+        const result = Common.isDateLesserThan(tomorrow.toJSON().slice(0, 10), dueDate);
+
+        return result;
+    }
 
     return (
         <motion.div 
@@ -90,6 +98,7 @@ const UpcomingComp = () => {
                         openEditor={openEditor}
                         notifyTaskChange={notifyTaskChange}
                         id="upcoming-tasks-today-key"
+                        className="upcoming-task-comp"
                     />
                 </div>
 
@@ -102,6 +111,20 @@ const UpcomingComp = () => {
                         openEditor={openEditor}
                         notifyTaskChange={notifyTaskChange}
                         id="upcoming-tasks-tomorrow-key"
+                        className="upcoming-task-comp"
+                    />
+                </div>
+
+                <div className="upcoming-tasks-container">
+                    <h2>This Week</h2>
+                    <TaskComp 
+                        predicate={weekTaskPredicate} 
+                        shouldAwait={true}
+                        taskData={upcomingTasksLoaderData.thisWeekTasksResponse}
+                        openEditor={openEditor}
+                        notifyTaskChange={notifyTaskChange}
+                        id="upcoming-tasks-week-key"
+                        className="upcoming-task-comp"
                     />
                 </div>
             </div>

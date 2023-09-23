@@ -4,6 +4,7 @@ let appRoutes = {
         all: "/api/v1/task",
         today: "/api/v1/task/today",
         upcoming: "/api/v1/task/upcoming",
+        thisWeek: "/api/v1/task/this-week",
         base: "/api/v1/task",
     },
     utility: {

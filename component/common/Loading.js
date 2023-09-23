@@ -1,11 +1,16 @@
 import React from "react";
 
-const Loading = () => {
+const Loading = props => {
+
+    const { width } = props;
+
     return (
-        <div className="loading-screen x-axis-flex">
+        <div 
+            className="loading-screen x-axis-flex"
+        >
             <img 
                 src="/gifs/loading.gif" 
-                width="200px"
+                width={width || "200px"}
                 alt="loading" />
         </div>
     );

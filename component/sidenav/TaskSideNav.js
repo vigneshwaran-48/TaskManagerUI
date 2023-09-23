@@ -6,6 +6,7 @@ import { AppAPI } from "../../api/AppAPI";
 import { Common } from "../../utility/Common";
 import Loading from "../common/Loading";
 import { AppContext } from "../../App";
+import Nav from "./Nav";
 
 const TaskSideNav = props => {
 
@@ -13,6 +14,7 @@ const TaskSideNav = props => {
     const activeNav = "side-nav-child active-side-nav x-axis-flex";
 
     const [taskSideNavSections, setTaskSideNavSections] = useState(null);
+    const [ isLoading, setIsLoading ] = useState(false);
     const { subscribeToTaskChange, unSubscribeToTaskChange } = useContext(AppContext);
     const { id } = props;
 
@@ -35,19 +37,18 @@ const TaskSideNav = props => {
     }, []);
 
     const taskChangeHandler = (taskDetails, mode) => {
-        if(mode === Common.TaskEventConstants.TASK_UPDATE) {
-            return;
-        }
         fetchSideNavs();
     }
 
     const fetchSideNavs = async () => {
+        setIsLoading(true);
         const response = await AppAPI.getSideNavbars();
         if(response.status !== 200) {
             throw new Error("Error while fetching side nav data");
         }
         const sideNavs = response.sideNavList;
         setTaskSideNavSections(sideNavs);
+        setIsLoading(false);
     }
 
     const { setSection } = useContext(SectionContext);
@@ -74,11 +75,13 @@ const TaskSideNav = props => {
                 key={elem.id}
                 data-section-name={elem.name}
             >
-                <i className={elem.iconClassNames}></i>
-                <p>{elem.name}</p>
-                { elem.count ? <div className="count-box x-axis-flex">
-                                        <p>{elem.count}</p>
-                                    </div> : ""}
+                <Nav 
+                    name={elem.name} 
+                    count={elem.count} 
+                    iconClassNames={elem.iconClassNames}
+                    id={elem.id}
+                    isLoading={isLoading}
+                />
             </NavLink>
         );
     }) : [];

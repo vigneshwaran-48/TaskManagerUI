@@ -11,7 +11,7 @@ const TaskComp = props => {
 
     const todayNoTaskImage = "/images/today-no-tasks.png";
 
-    const { predicate, shouldAwait, taskData, openEditor, notifyTaskChange, id } = props;
+    const { predicate, shouldAwait, taskData, openEditor, notifyTaskChange, id, className } = props;
 
     const [ taskName, setTaskName ] = useState("");
     
@@ -62,7 +62,7 @@ const TaskComp = props => {
     }
 
     return (
-        <div className="today-comp-left y-axis-flex">
+        <div className={`today-comp-left hide-scrollbar y-axis-flex ${className || ""}`}>
             <div className="add-task-input-wrapper x-axis-flex">
                 <i className="fa fa-solid fa-plus"></i>
                 <input      

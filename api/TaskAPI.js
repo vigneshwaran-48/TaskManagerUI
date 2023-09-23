@@ -106,5 +106,14 @@ export const TaskAPI = {
                                     }
                                 });
         return await response.json();
+    },
+    getThisWeekTasks: async () => {
+        const url = ServerAPIManager.ServerURL + ServerAPIManager.getAppRoutes().task.thisWeek;
+        const response = await fetch(url, {
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+        return await response.json();
     }
 }

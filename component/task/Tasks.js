@@ -119,7 +119,7 @@ const Tasks = props => {
 
 
     return (
-        <div className="task-box-wrapper y-axis-flex">
+        <div className="task-box-wrapper hide-scrollbar y-axis-flex">
             { taskElements }
         </div>
     );
