@@ -4,31 +4,28 @@ import TaskSideNav from "./TaskSideNav";
 import ListSideNav from "./ListSideNav";
 import { UserContext } from "../../App";
 
-const SideNavbar = () => {
+const SideNavbar = props => {
 
+    const { closeSideNavbar } = props;
     const { changeUserDetails } = useContext(UserContext);
 
     const logoutAction = () => {
         changeUserDetails({ isLoggedIn: false });
     }
 
-    const closeSideNav = () => {
-        document.querySelector(".side-navbar")
-                .classList.remove("open-side-nav");
-    }
     return (
         <div className="side-navbar y-axis-flex">
         <div className="side-nav-top x-axis-flex">
             <h2>Menu</h2>
             <i 
-                onClick={closeSideNav}
+                onClick={closeSideNavbar}
                 className="bi bi-x"
             ></i>
         </div>
         <div className="side-nav-top-part">
-            <TaskSideNav />
+            <TaskSideNav id="app-side-navbar-task" closeSideNavbar={closeSideNavbar} />
             <hr />
-            <ListSideNav />
+            <ListSideNav closeSideNavbar={closeSideNavbar} />
             <hr />
         </div>
         <div className="side-nav-bottom y-axis-flex">

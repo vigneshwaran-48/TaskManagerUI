@@ -1,3 +1,4 @@
+import { getTodayDate } from "@mui/x-date-pickers/internals";
 import { easeInOut } from "framer-motion";
 
 let closeOnFocusOutElems = [{
@@ -137,5 +138,71 @@ export const Common = {
         }
         Common.showSuccessPopup(response.message, 2);
         return true;
+    },
+    TaskEventConstants: {
+        TASK_UPDATE: "update",
+        TASK_ADD: "add",
+        TASK_DELETE: "delete"
+    },
+    isLesserThan: (first, second) => {
+        if(first < second) {
+            return -1;
+        }
+        else if(first > second) {
+            return 1;
+        }
+        return 0;
+    },
+    isDateLesserThan: function(first, second) {
+        const splittedFirst = first.split("-");
+        const splittedSecond  = second.split("-");
+
+        const yearComparison = this.isLesserThan(splittedFirst[2], splittedSecond[2]);
+        if(yearComparison === -1) {
+            return true;
+        }
+        else if(yearComparison === 1) {
+            return false;
+        }
+        else {
+            //Then the years are equal
+            const monthComparison = this.isLesserThan(splittedFirst[1], splittedSecond[1]);
+            if(monthComparison === -1) {
+                return true;
+            }
+            else if(monthComparison === 1) {
+                return false;
+            }
+            else {
+                //Then the months are equal
+                const dateComparison = this.isLesserThan(splittedFirst[0], splittedSecond[0]);
+                if(dateComparison === -1) {
+                    return true;
+                }
+                else if(dateComparison === 1) {
+                    return false;
+                }
+                else {
+                    //Both dates are equal
+                    return 1;
+                }
+            }
+        }
+    },
+    getTodayDate: () => {
+        return new Date().toJSON().slice(0, 10);
+    },
+    getTomorrowDate: () => {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        return tomorrow.toJSON().slice(0, 10);
+    },
+    nextDay: x => {
+        const now = new Date();    
+        now.setDate(now.getDate() + (x+(7-now.getDay())) % 7);
+        return now;
+    },
+    getThisSaturdayDate: function () {
+        return this.nextDay(6).toJSON().slice(0, 10);
     }
 }

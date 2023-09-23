@@ -2,7 +2,13 @@
 let appRoutes = {
     task: {
         all: "/api/v1/task",
+        today: "/api/v1/task/today",
+        upcoming: "/api/v1/task/upcoming",
+        thisWeek: "/api/v1/task/this-week",
         base: "/api/v1/task",
+    },
+    utility: {
+        sideNav: "/api/v1/utility/side-nav"
     }
 };
 
@@ -17,5 +23,5 @@ export const ServerAPIManager = {
         // }
         return appRoutes;
     },
-    ServerURL: "http://192.168.6.188:8383"
+    ServerURL: "http://192.168.43.247:8383"
 }

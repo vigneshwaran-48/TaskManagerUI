@@ -26,6 +26,15 @@ export const TaskAPI = {
                                 });
         return await response.json();
     },
+    getAllTodayTasks: async () => {
+        const url = ServerAPIManager.ServerURL + ServerAPIManager.getAppRoutes().task.today;
+        const response = await fetch(url, {
+                                    headers: {
+                                        "Content-Type": "application/json"
+                                    }
+                                });
+        return await response.json();
+    },
     updateTaskCompleteStatus: async (taskId) => {
 
         const url = ServerAPIManager.ServerURL 
@@ -87,6 +96,24 @@ export const TaskAPI = {
                                     },
                                     body: JSON.stringify(task)
                                 });
+        return await response.json();
+    },
+    getUpcomingTasks: async () => {
+        const url = ServerAPIManager.ServerURL + ServerAPIManager.getAppRoutes().task.upcoming;
+        const response = await fetch(url, {
+                                    headers: {
+                                        "Content-Type": "application/json"
+                                    }
+                                });
+        return await response.json();
+    },
+    getThisWeekTasks: async () => {
+        const url = ServerAPIManager.ServerURL + ServerAPIManager.getAppRoutes().task.thisWeek;
+        const response = await fetch(url, {
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
         return await response.json();
     }
 }

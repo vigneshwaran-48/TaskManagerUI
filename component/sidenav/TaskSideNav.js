@@ -1,47 +1,65 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { SectionContext } from "../../page/SharedLayout";
 import 'font-awesome/css/font-awesome.min.css';
+import { AppAPI } from "../../api/AppAPI";
+import { Common } from "../../utility/Common";
+import Loading from "../common/Loading";
+import { AppContext } from "../../App";
+import Nav from "./Nav";
 
-const TaskSideNav = () => {
+const TaskSideNav = props => {
+
     const unActiveNav = "side-nav-child x-axis-flex";
     const activeNav = "side-nav-child active-side-nav x-axis-flex";
 
     const [taskSideNavSections, setTaskSideNavSections] = useState(null);
+    const [ isLoading, setIsLoading ] = useState(false);
+    const { subscribeToTaskChange, unSubscribeToTaskChange } = useContext(AppContext);
+    const { id, closeSideNavbar } = props;
 
-    const defaultTaskSections = [
-        {
-            id: 104,
-            name: "Upcoming",
-            taskCount: 3,
-            iconClassNames: "fa fa-solid fa-forward"
-        },
-        {
-            id: 105,
-            name: "Today",
-            taskCount: 7,
-            iconClassNames: "bi bi-list-task"
-        },
-        {
-            id: 107,
-            name: "Calendar",
-            iconClassNames: "fa fa-solid fa-calendar"
-        },
-        {
-            id: 109,
-            name: "Sticky Wall",
-            iconClassNames: "bi bi-sticky"
+    useEffect(() => {
+        //Subscribing to the task change event
+        const listener = {
+           listenerId: id,
+           callback: taskChangeHandler
         }
-    ];
+        subscribeToTaskChange(listener);
+
+        return (() => {
+            //Unsubscribing to the task change event
+            unSubscribeToTaskChange(id);
+        })
+    });
+
+    useEffect(() => {
+        fetchSideNavs();
+    }, []);
+
+    const taskChangeHandler = (taskDetails, mode) => {
+        fetchSideNavs();
+    }
+
+    const fetchSideNavs = async () => {
+        setIsLoading(true);
+        const response = await AppAPI.getSideNavbars();
+        if(response.status !== 200) {
+            throw new Error("Error while fetching side nav data");
+        }
+        const sideNavs = response.sideNavList;
+        setTaskSideNavSections(sideNavs);
+        setIsLoading(false);
+    }
 
     const { setSection } = useContext(SectionContext);
 
     const maintainSection = event => {
         setSection(event.currentTarget.getAttribute("data-section-name"));
+        closeSideNavbar();
     }
     
-    if(!taskSideNavSections || taskSideNavSections.length < 1) {
-        setTaskSideNavSections(defaultTaskSections);
+    if(!taskSideNavSections) {
+        return <Loading />
     }
 
     const taskSideNavElements = taskSideNavSections ? taskSideNavSections.map(elem => {
@@ -58,11 +76,13 @@ const TaskSideNav = () => {
                 key={elem.id}
                 data-section-name={elem.name}
             >
-                <i className={elem.iconClassNames}></i>
-                <p>{elem.name}</p>
-                { elem.taskCount ? <div className="count-box x-axis-flex">
-                                        <p>{elem.taskCount}</p>
-                                    </div> : ""}
+                <Nav 
+                    name={elem.name} 
+                    count={elem.count} 
+                    iconClassNames={elem.iconClassNames}
+                    id={elem.id}
+                    isLoading={isLoading}
+                />
             </NavLink>
         );
     }) : [];

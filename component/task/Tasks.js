@@ -1,47 +1,69 @@
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { TaskAPI } from "../../api/TaskAPI";
 import TaskBox from "./TaskBox";
 import { Common } from "../../utility/Common";
-import { TaskEventConstants } from "./TodayComp";
+import NothingToShow from "../../utility/NothingToShow";
+import { AppContext } from "../../App";
 
 
 const Tasks = props => {
 
-    const { openEditor, subscribeTaskEvent, unSubscribeTaskEvent } = props;
+    const { openEditor, predicate, id, fallback } = props;
     const [ tasks, setTasks ] = useState(props.tasks);
+    const { subscribeToTaskChange, unSubscribeToTaskChange } = useContext(AppContext);
 
     useEffect(() => {
 
         //Subscribing to the task change event
         const listener = {
-                            listenerId: "Tasks",
+                            listenerId: id,
                             callback: taskChangeHandler
                          }
-        subscribeTaskEvent(listener);
+        subscribeToTaskChange(listener);
 
         return (() => {
                     //Unsubscribing to the task change event
-                    unSubscribeTaskEvent("Tasks");
+                    unSubscribeToTaskChange(id);
                 })
     }, []);
 
     const taskChangeHandler = (taskDetails, mode) => {
-        
-        console.log(taskDetails);
-        console.log(mode);
+
+        const date = taskDetails.dueDate;
+        let removeFromList = false;
+        if(date) {
+            removeFromList = predicate(date);
+        }
 
         switch(mode) {
-            case TaskEventConstants.TASK_UPDATE: 
+            case Common.TaskEventConstants.TASK_UPDATE: 
+                if(removeFromList) {
+                    deleteTask(taskDetails.taskId);
+                    break;
+                } 
                 setTasks(prevTasks => {
-                    return prevTasks.map(task => {
-                        if(task.taskId === taskDetails.taskId) {
-                            return taskDetails;
-                        }
-                        return task;
-                    });
+                    const index = prevTasks.findIndex(task => task.taskId === taskDetails.taskId);
+                    if(index >= 0) {
+                        // Updating the existing task
+                        return prevTasks.map(task => {
+                            if(task.taskId === taskDetails.taskId) {
+                                return taskDetails;
+                            }
+                            return task;
+                        });
+                    }
+                    /**
+                     *  Adding the new task, This might happen in Upcoming Task page
+                     *  Where if we update today task date to tommorrow or vice versa
+                     * */ 
+                    return [...prevTasks, taskDetails];
                 });
                 break;
-            case TaskEventConstants.TASK_ADD:
+            case Common.TaskEventConstants.TASK_ADD:
+                
+                if(removeFromList) {
+                    break;
+                }
                 setTasks(prevTasks => {
                     return [
                         ...prevTasks,
@@ -49,16 +71,19 @@ const Tasks = props => {
                     ]
                 });
                 break;
-            case TaskEventConstants.TASK_DELETE:
-                setTasks(prevTasks => {
-                    const filtered =  prevTasks.filter(task => task.taskId !== taskDetails);
-                    console.log(filtered);
-                    return filtered;
-                });
+            case Common.TaskEventConstants.TASK_DELETE:
+                deleteTask(taskDetails);
                 break;
             default: 
                 throw new Error("Unknown task event");
         }
+    }
+
+    const deleteTask = id => {
+        setTasks(prevTasks => {
+            const filtered =  prevTasks.filter(task => task.taskId !== id);
+            return filtered;
+        });
     }
 
     const onTaskComplete = async (id, checked) => {
@@ -80,7 +105,7 @@ const Tasks = props => {
     //in input this all componenets starts re render. But now it wont re-render until 
     //the tasks changes.
     const taskElements = useMemo(() => {
-        return tasks != null ? tasks.map(task => {
+        return tasks != null && tasks.length > 0 ? tasks.map(task => {
                 return (
                     <TaskBox 
                         key={task.taskId} 
@@ -89,12 +114,12 @@ const Tasks = props => {
                         openEditor={ openEditor }
                     />
                 );
-            }): tasks;
+            }): fallback
     }, [tasks]);
 
 
     return (
-        <div className="task-box-wrapper y-axis-flex">
+        <div className="task-box-wrapper hide-scrollbar y-axis-flex">
             { taskElements }
         </div>
     );
