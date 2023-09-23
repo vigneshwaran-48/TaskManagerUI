@@ -11,7 +11,9 @@ const TaskComp = props => {
 
     const todayNoTaskImage = "/images/today-no-tasks.png";
 
-    const { predicate, shouldAwait, taskData, openEditor, notifyTaskChange, id, className } = props;
+    const { predicate, shouldAwait, taskData, 
+            openEditor, notifyTaskChange, id, 
+            className, taskCreationDate } = props;
 
     const [ taskName, setTaskName ] = useState("");
     
@@ -19,6 +21,7 @@ const TaskComp = props => {
 
     const addTask = async task => {
         task.userId = userContext.userDetails.userId;
+        task.dueDate = taskCreationDate;
         const response = await TaskAPI.addTask(task);
         if(response.status !== 201) {
             Common.showErrorPopup(response.error, 2);

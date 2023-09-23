@@ -1,3 +1,4 @@
+import { getTodayDate } from "@mui/x-date-pickers/internals";
 import { easeInOut } from "framer-motion";
 
 let closeOnFocusOutElems = [{
@@ -187,5 +188,21 @@ export const Common = {
                 }
             }
         }
+    },
+    getTodayDate: () => {
+        return new Date().toJSON().slice(0, 10);
+    },
+    getTomorrowDate: () => {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        return tomorrow.toJSON().slice(0, 10);
+    },
+    nextDay: x => {
+        const now = new Date();    
+        now.setDate(now.getDate() + (x+(7-now.getDay())) % 7);
+        return now;
+    },
+    getThisSaturdayDate: function () {
+        return this.nextDay(6).toJSON().slice(0, 10);
     }
 }

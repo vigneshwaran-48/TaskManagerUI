@@ -60,25 +60,21 @@ const UpcomingComp = () => {
     const upcomingTasksLoaderData = useLoaderData();
 
     const todayTaskpredicate = dueDate => {
-        const result = Common.isDateLesserThan(new Date().toJSON().slice(0, 10), dueDate);
+        const result = Common.isDateLesserThan(Common.getTodayDate(), dueDate);
         return result !== 1;
     }
 
     const tomorrowTaskPredicate = dueDate => {
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        console.log(tomorrow.toJSON().slice(0, 10));
-        const result = Common.isDateLesserThan(tomorrow.toJSON().slice(0, 10), dueDate);
-
+        const result = Common.isDateLesserThan(Common.getTomorrowDate(), dueDate);
         return result !== 1;
     }
     const weekTaskPredicate = dueDate => {
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 7);
-        console.log(tomorrow.toJSON().slice(0, 10));
-        const result = Common.isDateLesserThan(tomorrow.toJSON().slice(0, 10), dueDate);
+        const weekComparison = Common.isDateLesserThan(dueDate, Common.getThisSaturdayDate());
+        const todayComparison = Common.isDateLesserThan(Common.getTodayDate(), dueDate);
 
-        return result;
+        console.log(weekComparison, todayComparison);
+        console.log(!weekComparison && !todayComparison);
+        return !weekComparison || !todayComparison;
     }
 
     return (
@@ -99,6 +95,7 @@ const UpcomingComp = () => {
                         notifyTaskChange={notifyTaskChange}
                         id="upcoming-tasks-today-key"
                         className="upcoming-task-comp"
+                        taskCreationDate={Common.getTodayDate()}
                     />
                 </div>
 
@@ -112,6 +109,7 @@ const UpcomingComp = () => {
                         notifyTaskChange={notifyTaskChange}
                         id="upcoming-tasks-tomorrow-key"
                         className="upcoming-task-comp"
+                        taskCreationDate={Common.getTomorrowDate()}
                     />
                 </div>
 
@@ -125,6 +123,7 @@ const UpcomingComp = () => {
                         notifyTaskChange={notifyTaskChange}
                         id="upcoming-tasks-week-key"
                         className="upcoming-task-comp"
+                        taskCreationDate={Common.getThisSaturdayDate()}
                     />
                 </div>
             </div>
