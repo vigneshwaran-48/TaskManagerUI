@@ -8,7 +8,11 @@ let appRoutes = {
         base: "/api/v1/task",
     },
     utility: {
-        sideNav: "/api/v1/utility/side-nav"
+        sideNav: "/api/v1/utility/side-nav",
+        listSideNav: "/api/v1/utility/list-side-nav"
+    },
+    list: {
+        base: "/api/v1/list"
     }
 };
 
@@ -23,5 +27,5 @@ export const ServerAPIManager = {
         // }
         return appRoutes;
     },
-    ServerURL: "http://192.168.43.247:8383"
+    ServerURL: "http://localhost:8383"
 }

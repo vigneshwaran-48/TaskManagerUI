@@ -1,7 +1,12 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { SectionContext } from "../../page/SharedLayout";
 import ListTagAddComp from "./ListTagAddComp";
+import { AppAPI } from "../../api/AppAPI";
+import { Common } from "../../utility/Common";
+import Loading from "../common/Loading";
+import Nav from "./Nav";
+import { ListAPI } from "../../api/ListAPI";
 
 const ListSideNav = props => {
 
@@ -14,29 +19,45 @@ const ListSideNav = props => {
 
     const { closeSideNavbar } = props;
 
+    const [ list, setList ] = useState([]);
+
+    const [ isLoading, setIsLoading ] = useState(false);
+
+    useEffect(() => {
+        fetchListSideNav();
+    }, []);
+
+    const fetchListSideNav = async () => {
+        setIsLoading(true);
+        const response = await AppAPI.getListSideNav();
+        if(response.status === 200) {
+            setList(response.sideNavList);
+        }
+        else {
+            Common.showErrorPopup("Error while fetching lists");
+        }
+        setIsLoading(false);
+    }
+
     const maintainSection = event => {
         setSection(event.target.innerText);
         closeSideNavbar();
     }
 
-    const defaultList = [
-        {
-            id: 10001,
-            name: "Personal",
-            taskCount: 0,
-            color: "#8ce99a"
-        },
-        {
-            id: 10002,
-            name: "Work",
-            taskCount: 10,
-            color: "#fe6a6b"
+    const addList = async listDetails => {
+        
+        const response = await ListAPI.addList(listDetails);
+        if(response.status === 201) {
+            Common.showSuccessPopup(response.message, 2);
+            setOpenBox(false);
         }
-    ]
-    const [ list, setList ] = useState([]);
+        else {
+            Common.showErrorPopup(response.error, 2);
+        }
+    }
 
-    if(!list || list.length < 1) {
-        setList(defaultList);
+    if(!list) {
+        return <Loading />
     }
 
     const listElements = list.map(elem => {
@@ -50,16 +71,20 @@ const ListSideNav = props => {
                 to={`./list/${elem.id}`}
                 onClick={maintainSection}
             >
-                <div 
-                    style={{
-                        backgroundColor: elem.color
-                    }}
-                    className="tag-list-color-box"
-                ></div>
-                <p>{ elem.name }</p>
-                { elem.taskCount ? <div className="count-box x-axis-flex">
-                                        <p>{elem.taskCount}</p>
-                                    </div> : ""}
+                <Nav 
+                    name={elem.name}
+                    count={elem.taskCount}
+                    leftElem={
+                        <div 
+                            style={{
+                                backgroundColor: elem.color
+                            }}
+                            className="tag-list-color-box"
+                        ></div>
+                    }
+                    isLoading={isLoading}
+                    listColor={elem.color}
+                />
             </NavLink>
         );
     });
@@ -80,6 +105,7 @@ const ListSideNav = props => {
             { openListBox && <ListTagAddComp 
                                 setOpenBox={setOpenBox} 
                                 isTag={false}
+                                addList={addList}
                              />}
         </nav>
     )

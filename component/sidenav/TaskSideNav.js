@@ -79,7 +79,7 @@ const TaskSideNav = props => {
                 <Nav 
                     name={elem.name} 
                     count={elem.count} 
-                    iconClassNames={elem.iconClassNames}
+                    leftElem={<i className={elem.iconClassNames}></i>}
                     id={elem.id}
                     isLoading={isLoading}
                 />

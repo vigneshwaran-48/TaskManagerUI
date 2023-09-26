@@ -115,5 +115,18 @@ export const TaskAPI = {
             }
         });
         return await response.json();
+    },
+    getTasksByDate: async dueDate => {
+        const urlParams = new URLSearchParams();
+        urlParams.set("dueDate", dueDate);
+
+        const url = ServerAPIManager.ServerURL + ServerAPIManager.getAppRoutes().task.base + "?" + urlParams.toString();
+        
+        const response = await fetch(url, {
+                                    headers: {
+                                        "Content-Type": "application/json"
+                                    }
+                                });
+        return await response.json();
     }
 }
