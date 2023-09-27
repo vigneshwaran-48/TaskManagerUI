@@ -29,9 +29,9 @@ const ListSideNav = props => {
 
     const fetchListSideNav = async () => {
         setIsLoading(true);
-        const response = await AppAPI.getListSideNav();
+        const response = await ListAPI.getAllListsOfUser();
         if(response.status === 200) {
-            setList(response.sideNavList);
+            setList(response.lists);
         }
         else {
             Common.showErrorPopup("Error while fetching lists");
@@ -44,12 +44,28 @@ const ListSideNav = props => {
         closeSideNavbar();
     }
 
-    const addList = async listDetails => {
+    const fetchAndAddList = async listId => {
+        const response = await ListAPI.getListById(listId);
+        if(response.status === 200) {
+            const list = response.list;
+            setList(prevList => {
+                return [
+                    ...prevList,
+                    list
+                ]
+            });
+        }
+    }
+
+    const addList = async (listDetails, callback) => {
         
         const response = await ListAPI.addList(listDetails);
         if(response.status === 201) {
             Common.showSuccessPopup(response.message, 2);
             setOpenBox(false);
+            callback();
+            
+            fetchAndAddList(response.listId);
         }
         else {
             Common.showErrorPopup(response.error, 2);
@@ -63,27 +79,27 @@ const ListSideNav = props => {
     const listElements = list.map(elem => {
         return (
             <NavLink 
-                key={`list-${elem.id}`}
+                key={`list-${elem.listId}`}
                 className={ ( { isActive } ) => {
                     return isActive ? activeSideNav
                                     : unActiveSideNav
                 } }
-                to={`./list/${elem.id}`}
+                to={`./list/${elem.listId}`}
                 onClick={maintainSection}
             >
                 <Nav 
-                    name={elem.name}
+                    name={elem.listName}
                     count={elem.taskCount}
                     leftElem={
                         <div 
                             style={{
-                                backgroundColor: elem.color
+                                backgroundColor: elem.listColor
                             }}
                             className="tag-list-color-box"
                         ></div>
                     }
                     isLoading={isLoading}
-                    listColor={elem.color}
+                    listColor={elem.listColor}
                 />
             </NavLink>
         );
@@ -103,6 +119,7 @@ const ListSideNav = props => {
                 <p>{ openListBox ? "Close" : "Add New List"}</p>
             </button>
             { openListBox && <ListTagAddComp 
+                                key="list-tag-add-comp"
                                 setOpenBox={setOpenBox} 
                                 isTag={false}
                                 addList={addList}

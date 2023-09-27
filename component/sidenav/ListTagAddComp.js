@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import { ListAPI } from "../../api/ListAPI";
 import { Common } from "../../utility/Common";
 
-const ListTagAddComp = ( { setOpenBox, isTag, addList } ) => {
+const ListTagAddComp = props => {
+
+    const { setOpenBox, isTag, addList }  = props;
 
     const defaultColors = [
         "#fe6a6b", "#db77f3", "#9675fb", "#5d7dfa",
@@ -29,9 +31,8 @@ const ListTagAddComp = ( { setOpenBox, isTag, addList } ) => {
 
         setIsSubmiting(true);
 
-        addList(formDetails);
+        addList(formDetails, () => setIsSubmiting(false));
 
-        setIsSubmiting(false);
     }
 
     const colorInputs = defaultColors.map(elem => {

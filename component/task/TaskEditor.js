@@ -6,17 +6,31 @@ import dayjs from "dayjs";
 import { useFetcher } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Common } from "../../utility/Common";
+import { ListAPI } from "../../api/ListAPI";
 
 const TaskEditor = props => {
 
     const { updateTask, taskId, closeEditorStatus, isOpen, task, deleteTask } = props;
     const [ taskDetails, setTaskDetails ] = useState(task);
-
-    const fetcher = useFetcher();
+    const [ lists, setLists ] = useState([]);
 
     useEffect(() => {
         setTaskDetails(task);
     }, [task]);
+
+    useEffect(() => {
+        fetchLists();
+    }, [task]);
+
+    const fetchLists = async () => {
+        const response = await ListAPI.getAllListsOfUser();
+        if(response.status === 200) {
+            setLists(response.lists);
+        }
+        else {
+            Common.showErrorPopup("Error while fetching lists of user");
+        }
+    }
 
     const handleChange = event => {
         const { name, value } = event.target;
@@ -30,7 +44,7 @@ const TaskEditor = props => {
 
     const handleListChange = list => {
         setTaskDetails(prevTask => {
-            prevTask.list = list;
+            prevTask.lists = list;
             return { ...prevTask };
         })
     }
@@ -59,7 +73,12 @@ const TaskEditor = props => {
         closeEditorStatus();
     }
 
-    const filterdLists = taskDetails?.lists;
+    const filterdLists = lists ? lists.map(list => {
+        return {
+            id: list.listId,
+            name: list.listName
+        }
+    }) : lists;
    
     return (
         <motion.div 
@@ -98,7 +117,7 @@ const TaskEditor = props => {
                         onChange={handleListChange}    
                     />
                     <p className="task-edit-list-prev-name">
-                        { taskDetails.list?.name }
+                        { taskDetails.list?.listName }
                     </p>
                 </div>
                 <div className="task-edit-date-wrapper x-axis-flex">
