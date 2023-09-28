@@ -42,11 +42,28 @@ const TaskEditor = props => {
         });
     }
 
-    const handleListChange = list => {
-        setTaskDetails(prevTask => {
-            prevTask.lists = list;
-            return { ...prevTask };
-        })
+    const handleListChange = listDetails => {
+        const listToAdd = {
+            listName : listDetails.name,
+            listId : listDetails.id
+        }
+        if(taskDetails?.lists) {
+            if(!taskDetails.lists.findIndex(list => list.listId === listToAdd.listId)) {
+                setTaskDetails(prevTask => {
+                    prevTask.lists = [ ...prevTask.lists, listToAdd];
+                    return prevTask
+                });
+            }
+            else {
+                console.log("Not adding list");
+            }
+        }
+        else {
+            setTaskDetails(prevTask => {
+                prevTask.lists = [listToAdd]
+                return prevTask;
+            });
+        }
     }
     const handleDateChange = newValue => {
         const dateStr = Common.checkAndGiveDoubleDigit(newValue.$y + "") + "-" + 
@@ -79,6 +96,12 @@ const TaskEditor = props => {
             name: list.listName
         }
     }) : lists;
+
+    const currentLists = taskDetails?.lists ? taskDetails.lists.map(list => {
+        return <p key={`current-tasks-lists-${list.listId}`}>{list.listName}</p>
+    }) : null;
+
+    console.log(taskDetails);
    
     return (
         <motion.div 
@@ -116,9 +139,9 @@ const TaskEditor = props => {
                         options={ filterdLists } 
                         onChange={handleListChange}    
                     />
-                    <p className="task-edit-list-prev-name">
-                        { taskDetails.list?.listName }
-                    </p>
+                    <div className="task-edit-list-prev-name">
+                        { currentLists }
+                    </div>
                 </div>
                 <div className="task-edit-date-wrapper x-axis-flex">
                     <p>Due Date</p>

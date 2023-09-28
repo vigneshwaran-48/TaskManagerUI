@@ -6,19 +6,22 @@ const ListDropdown = props => {
     
     const handleOptionClick = event => {
         const { optionId } = event.currentTarget.dataset;
+        console.log(optionId);
         onChange(options.find(option => option.id === parseInt(optionId)));
     }
+    console.log("drop down rendered ....");
+    console.log(options);
     const optionElems = options.map(option => {
         return (
-            <div 
-                onClick={handleOptionClick}
-                data-option-id={option.id}
-                key={option.id}
-            >
-                <p>{ option.name }</p>
-            </div>
+            <Option 
+                key={`list-drop-down-elem-${option.id}`}
+                name={option.name} 
+                id={option.id} 
+                handleOptionClick={handleOptionClick}
+            />
         )
     })
+    console.log(optionElems)
     return (
         <div 
             className="drop-down-wrapper"
@@ -29,6 +32,20 @@ const ListDropdown = props => {
             <div className="drop-down">
                 { optionElems }
             </div>
+        </div>
+    )
+}
+
+const Option = props => {
+
+    const { handleOptionClick, id, name } = props;
+
+    return (
+        <div 
+            onClick={() => console.log("Hi")}
+            data-option-id={id}
+        >
+            <p>{ name }</p>
         </div>
     )
 }
