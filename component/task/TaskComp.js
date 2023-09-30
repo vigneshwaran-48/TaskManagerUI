@@ -52,6 +52,7 @@ const TaskComp = props => {
         }
 
         const tasks = taskResponse.tasks;
+
         return <Tasks
                     openEditor={openEditor} 
                     tasks={tasks} 

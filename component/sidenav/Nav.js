@@ -9,7 +9,7 @@ const Nav = props => {
         <div className="nav x-axis-flex">
         {leftElem}
         <p>{name}</p>
-        { count > 0 
+        { count > 0 || isLoading
                     ?   <div className="count-box x-axis-flex">
                             {isLoading 
                                 ? <div className="nav-loading-wrapper"> <Loading width="45px" /> </div> 

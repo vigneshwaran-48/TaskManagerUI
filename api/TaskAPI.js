@@ -69,7 +69,7 @@ export const TaskAPI = {
         const url = ServerAPIManager.ServerURL 
                     + ServerAPIManager.getAppRoutes().task.base + "/" + task.taskId
                     + "?" + urlParams.toString();
-                    
+
         const response = await fetch(url, {
                                     method: "PATCH",
                                     headers: {
@@ -131,6 +131,15 @@ export const TaskAPI = {
                                         "Content-Type": "application/json"
                                     }
                                 });
+        return await response.json();
+    },
+    getTasksOfList: async listId => {
+        const url = ServerAPIManager.ServerURL + ServerAPIManager.getAppRoutes().task.base + "/list/" + listId;
+        const response = await fetch(url, {
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
         return await response.json();
     }
 }

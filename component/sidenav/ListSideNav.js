@@ -7,6 +7,7 @@ import { Common } from "../../utility/Common";
 import Loading from "../common/Loading";
 import Nav from "./Nav";
 import { ListAPI } from "../../api/ListAPI";
+import { AppContext } from "../../App";
 
 const ListSideNav = props => {
 
@@ -17,11 +18,31 @@ const ListSideNav = props => {
 
     const [ openListBox, setOpenBox ] = useState(false);
 
-    const { closeSideNavbar } = props;
+    const { closeSideNavbar, id } = props;
 
     const [ list, setList ] = useState([]);
 
     const [ isLoading, setIsLoading ] = useState(false);
+
+    const { subscribeToTaskChange, unSubscribeToTaskChange } = useContext(AppContext);
+
+    useEffect(() => {
+        //Subscribing to the task change event
+        const listener = {
+           listenerId: id,
+           callback: taskChangeHandler
+        }
+        subscribeToTaskChange(listener);
+
+        return (() => {
+            //Unsubscribing to the task change event
+            unSubscribeToTaskChange(id);
+        })
+    });
+
+    const taskChangeHandler = (taskDetails, mode) => {
+        fetchListSideNav();
+    }
 
     useEffect(() => {
         fetchListSideNav();
@@ -39,8 +60,8 @@ const ListSideNav = props => {
         setIsLoading(false);
     }
 
-    const maintainSection = event => {
-        setSection(event.target.innerText);
+    const maintainSection = sectionName => {
+        setSection(sectionName);
         closeSideNavbar();
     }
 
@@ -85,7 +106,7 @@ const ListSideNav = props => {
                                     : unActiveSideNav
                 } }
                 to={`./list/${elem.listId}`}
-                onClick={maintainSection}
+                onClick={() => maintainSection(elem.listName)}
             >
                 <Nav 
                     name={elem.listName}

@@ -263,6 +263,18 @@
     cursor: pointer;
 }
 
+.task-box-small-container {
+    align-items: center;
+    padding: 5px;
+    border-radius: 7px;
+    flex-shrink: 0;
+}
+.task-box-list {
+    
+    margin-right: 5px;
+    background-color: rgb(235,234,234);
+}
+
 @media screen and (max-width: 895px) {
     .app-body {
         width: 100%;

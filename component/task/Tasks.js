@@ -9,8 +9,12 @@ import { AppContext } from "../../App";
 const Tasks = props => {
 
     const { openEditor, predicate, id, fallback } = props;
-    const [ tasks, setTasks ] = useState(props.tasks);
+    const [ tasks, setTasks ] = useState(null);
     const { subscribeToTaskChange, unSubscribeToTaskChange } = useContext(AppContext);
+
+    useEffect(() => {
+        setTasks(props.tasks);
+    }, [props.tasks]);
 
     useEffect(() => {
 
@@ -32,7 +36,7 @@ const Tasks = props => {
         const date = taskDetails.dueDate;
         let removeFromList = false;
         if(date) {
-            removeFromList = predicate(date);
+            removeFromList = predicate(date, taskDetails);
         }
 
         switch(mode) {
@@ -80,6 +84,7 @@ const Tasks = props => {
     }
 
     const deleteTask = id => {
+        console.log(tasks);
         setTasks(prevTasks => {
             const filtered =  prevTasks.filter(task => task.taskId !== id);
             return filtered;
