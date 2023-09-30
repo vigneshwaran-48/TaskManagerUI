@@ -6,11 +6,8 @@ const ListDropdown = props => {
     
     const handleOptionClick = event => {
         const { optionId } = event.currentTarget.dataset;
-        console.log(optionId);
         onChange(options.find(option => option.id === parseInt(optionId)));
     }
-    console.log("drop down rendered ....");
-    console.log(options);
     const optionElems = options.map(option => {
         return (
             <Option 
@@ -21,7 +18,6 @@ const ListDropdown = props => {
             />
         )
     })
-    console.log(optionElems)
     return (
         <div 
             className="drop-down-wrapper"
@@ -42,8 +38,9 @@ const Option = props => {
 
     return (
         <div 
-            onClick={() => console.log("Hi")}
+            onFocus={handleOptionClick}
             data-option-id={id}
+            tabIndex={0}
         >
             <p>{ name }</p>
         </div>

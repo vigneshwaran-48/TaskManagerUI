@@ -3,7 +3,6 @@ import ListDropdown from "./ListDropdown";
 import Loading from "../common/Loading";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
-import { useFetcher } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Common } from "../../utility/Common";
 import { ListAPI } from "../../api/ListAPI";
@@ -42,27 +41,35 @@ const TaskEditor = props => {
         });
     }
 
-    const handleListChange = listDetails => {
-        const listToAdd = {
-            listName : listDetails.name,
-            listId : listDetails.id
+    const handleListChange = async listDetails => {
+        const response = await ListAPI.getListById(listDetails.id);
+        if(response.status === 200) {
+            checkAndAddList(response.list);
         }
+        else {
+            Common.showErrorPopup("Error while fetching list");
+        }
+    }
+
+    const checkAndAddList = listToAdd => {
+
+        if(!listToAdd) return;
+
         if(taskDetails?.lists) {
-            if(!taskDetails.lists.findIndex(list => list.listId === listToAdd.listId)) {
-                setTaskDetails(prevTask => {
-                    prevTask.lists = [ ...prevTask.lists, listToAdd];
-                    return prevTask
-                });
-            }
-            else {
-                console.log("Not adding list");
+            if(taskDetails.lists.findIndex(list => list.listId === listToAdd.listId) < 0) {
+                const updatedTask = {
+                    ...taskDetails,
+                    lists: [ ...taskDetails.lists, listToAdd ]
+                }
+                setTaskDetails(updatedTask);
             }
         }
         else {
-            setTaskDetails(prevTask => {
-                prevTask.lists = [listToAdd]
-                return prevTask;
-            });
+            const updatedTask = {
+                ...taskDetails,
+                lists: [ listToAdd ]
+            }
+            setTaskDetails(updatedTask);
         }
     }
     const handleDateChange = newValue => {
@@ -86,6 +93,11 @@ const TaskEditor = props => {
             closeEditor();
         }
     }
+    const handleDeleteList = listId => {
+        const deleteFilteredLists = taskDetails.lists.filter(list => list.listId !== listId);
+        const updatedTask = { ...taskDetails, lists : deleteFilteredLists};
+        setTaskDetails(updatedTask);
+    }
     const closeEditor = () => {
         closeEditorStatus();
     }
@@ -98,10 +110,20 @@ const TaskEditor = props => {
     }) : lists;
 
     const currentLists = taskDetails?.lists ? taskDetails.lists.map(list => {
-        return <p key={`current-tasks-lists-${list.listId}`}>{list.listName}</p>
+        return (
+            <div 
+                key={`current-tasks-lists-${list.listId}`}
+                className="task-editor-list-selected-elem x-axis-flex"
+                style={{
+                    backgroundColor: list.listColor
+                }}
+            >
+                {/* <p>{list.listName.length <= 7 ? list.listName : list.listName.slice(0, 7)}</p> */}
+                <p className="x-axis-flex">{list.listName}</p>
+                <i onClick={() => handleDeleteList(list.listId)} className="bi bi-x"></i>
+            </div>
+        )
     }) : null;
-
-    console.log(taskDetails);
    
     return (
         <motion.div 
@@ -139,7 +161,7 @@ const TaskEditor = props => {
                         options={ filterdLists } 
                         onChange={handleListChange}    
                     />
-                    <div className="task-edit-list-prev-name">
+                    <div className="task-edit-list-selected hide-scrollbar x-axis-flex">
                         { currentLists }
                     </div>
                 </div>
