@@ -6,7 +6,7 @@ import WelcomeComp from "./component/public-comp/WelcomeComp";
 import WelcomeSharedLayout from "./page/WelomeSharedLayout";
 import SharedLayout from "./page/SharedLayout";
 import TodayComp, { todayCompLoader, todayCompShouldRevalidate } from "./page/TodayComp";
-import ListBody from "./component/ListBody";
+import ListBody, { listBodyLoader } from "./page/ListBody";
 import "./css/index.css";
 import UpcomingComp, { upcomingTasksLoader } from "./page/UpcomingComp";
 import { TaskAPI } from "./api/TaskAPI";
@@ -40,7 +40,11 @@ const routes = createBrowserRouter(createRoutesFromElements(
             />
             <Route path="task/calendar" element={<h1>Calendar</h1>} />
             <Route path="task/sticky-wall" element={<h1>Sticky wall</h1>} />
-            <Route path="list/:id" element={<ListBody />} />
+            <Route 
+                path="list/:id" 
+                element={<ListBody />}
+                loader={listBodyLoader}
+            />
         </Route>
     </Route>
 ))

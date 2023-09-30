@@ -1,15 +1,20 @@
 import React, { useState } from "react";
+import { ListAPI } from "../../api/ListAPI";
+import { Common } from "../../utility/Common";
 
-const ListTagAddComp = ( { setOpenBox, isTag } ) => {
+const ListTagAddComp = props => {
+
+    const { setOpenBox, isTag, addList }  = props;
 
     const defaultColors = [
         "#fe6a6b", "#db77f3", "#9675fb", "#5d7dfa",
         "#66d8e9", "#8ce99a", "#ffd43b", "#fe922a"
     ]
     const [ formDetails, setFormDetails ] = useState({
-        name: "",
-        color: defaultColors[0]
+        listName: "",
+        listColor: defaultColors[0]
     });
+    const [ isSubmiting, setIsSubmiting ] = useState(false);
 
     const handleChange = event => {
         const { name, value } = event.target;
@@ -24,8 +29,10 @@ const ListTagAddComp = ( { setOpenBox, isTag } ) => {
     const handleSubmit = event => {
         event.preventDefault();
 
-        console.log(formDetails);
-        setOpenBox(false);
+        setIsSubmiting(true);
+
+        addList(formDetails, () => setIsSubmiting(false));
+
     }
 
     const colorInputs = defaultColors.map(elem => {
@@ -41,7 +48,7 @@ const ListTagAddComp = ( { setOpenBox, isTag } ) => {
                 <input 
                     id={`${isTag ? "tag": "list"}-color-option-${elem}`}
                     type="radio"
-                    name="color"
+                    name="listColor"
                     value={elem}
                     style={{
                         display: "none"
@@ -59,14 +66,14 @@ const ListTagAddComp = ( { setOpenBox, isTag } ) => {
             <div className="tag-list-add-input-wrapper x-axis-flex">
                 <div 
                     style={{
-                        backgroundColor: formDetails.color
+                        backgroundColor: formDetails.listColor
                     }}
                     className="tag-list-color-box"
                 ></div>
                 <input 
                     type="text" 
-                    name="name"
-                    value={formDetails.name}
+                    name="listName"
+                    value={formDetails.listName}
                     placeholder={`${isTag ? "Tag" : "List"} Name`}
                     onChange={handleChange}
                 />
@@ -74,7 +81,12 @@ const ListTagAddComp = ( { setOpenBox, isTag } ) => {
             <div className="color-box-wrapper x-axis-flex">
                 { colorInputs }
             </div>
-            <button className="tag-list-add-button common-button">Add</button>
+            <button 
+                className="tag-list-add-button common-button"
+                type={isSubmiting ? "button" : "submit"}
+            >
+                {isSubmiting ? "Submiting ..." : "Add"}
+            </button>
         </form>
     )
 }

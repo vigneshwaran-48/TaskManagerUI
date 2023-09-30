@@ -25,7 +25,7 @@ const SideNavbar = props => {
         <div className="side-nav-top-part">
             <TaskSideNav id="app-side-navbar-task" closeSideNavbar={closeSideNavbar} />
             <hr />
-            <ListSideNav closeSideNavbar={closeSideNavbar} />
+            <ListSideNav id="app-side-navbar-list" closeSideNavbar={closeSideNavbar} />
             <hr />
         </div>
         <div className="side-nav-bottom y-axis-flex">

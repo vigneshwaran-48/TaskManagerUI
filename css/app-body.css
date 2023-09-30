@@ -190,7 +190,7 @@
     z-index: 7;
 
 }   
-.drop-down-choose-button:focus + .drop-down {
+.drop-down-choose-button:focus-within + .drop-down {
     height: 100px;
     overflow: scroll;
 }
@@ -243,6 +243,41 @@
     height: (100% - 100px);
     overflow: scroll;
 }
+
+.task-edit-list-selected {
+    width: 50%;
+    align-items: center;
+    overflow: scroll;
+}
+.task-editor-list-selected-elem {
+    border-radius: 7px;
+    flex-shrink: 0;
+    margin-right: 5px;
+    padding: 5px;
+    justify-content: space-between;
+}
+.task-editor-list-selected-elem > i {
+    border-radius: 50%;
+    margin-left: 5px;
+    background-color: white;
+    cursor: pointer;
+}
+
+.task-box-small-container {
+    align-items: center;
+    padding: 5px;
+    border-radius: 7px;
+    flex-shrink: 0;
+}
+.task-box-list {
+    justify-content: flex-start;
+    margin-right: 5px;
+    background-color: rgb(235,234,234);
+}
+.task-box-list > div {
+    margin-right: 2px;
+}
+
 @media screen and (max-width: 895px) {
     .app-body {
         width: 100%;

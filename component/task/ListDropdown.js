@@ -10,13 +10,12 @@ const ListDropdown = props => {
     }
     const optionElems = options.map(option => {
         return (
-            <div 
-                onClick={handleOptionClick}
-                data-option-id={option.id}
-                key={option.id}
-            >
-                <p>{ option.name }</p>
-            </div>
+            <Option 
+                key={`list-drop-down-elem-${option.id}`}
+                name={option.name} 
+                id={option.id} 
+                handleOptionClick={handleOptionClick}
+            />
         )
     })
     return (
@@ -29,6 +28,21 @@ const ListDropdown = props => {
             <div className="drop-down">
                 { optionElems }
             </div>
+        </div>
+    )
+}
+
+const Option = props => {
+
+    const { handleOptionClick, id, name } = props;
+
+    return (
+        <div 
+            onFocus={handleOptionClick}
+            data-option-id={id}
+            tabIndex={0}
+        >
+            <p>{ name }</p>
         </div>
     )
 }

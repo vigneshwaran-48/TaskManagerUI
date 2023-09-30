@@ -63,9 +63,13 @@ export const TaskAPI = {
         return lists;
     },
     updateTask: async (task, userId) => {
-        console.log(task)
+        const urlParams = new URLSearchParams();
+        urlParams.set("removeListNotIncluded", true);
+
         const url = ServerAPIManager.ServerURL 
-                    + ServerAPIManager.getAppRoutes().task.base + "/" + task.taskId;
+                    + ServerAPIManager.getAppRoutes().task.base + "/" + task.taskId
+                    + "?" + urlParams.toString();
+
         const response = await fetch(url, {
                                     method: "PATCH",
                                     headers: {
@@ -109,6 +113,28 @@ export const TaskAPI = {
     },
     getThisWeekTasks: async () => {
         const url = ServerAPIManager.ServerURL + ServerAPIManager.getAppRoutes().task.thisWeek;
+        const response = await fetch(url, {
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+        return await response.json();
+    },
+    getTasksByDate: async dueDate => {
+        const urlParams = new URLSearchParams();
+        urlParams.set("dueDate", dueDate);
+
+        const url = ServerAPIManager.ServerURL + ServerAPIManager.getAppRoutes().task.base + "?" + urlParams.toString();
+        
+        const response = await fetch(url, {
+                                    headers: {
+                                        "Content-Type": "application/json"
+                                    }
+                                });
+        return await response.json();
+    },
+    getTasksOfList: async listId => {
+        const url = ServerAPIManager.ServerURL + ServerAPIManager.getAppRoutes().task.base + "/list/" + listId;
         const response = await fetch(url, {
             headers: {
                 "Content-Type": "application/json"

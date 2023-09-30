@@ -3,20 +3,33 @@ import ListDropdown from "./ListDropdown";
 import Loading from "../common/Loading";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
-import { useFetcher } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Common } from "../../utility/Common";
+import { ListAPI } from "../../api/ListAPI";
 
 const TaskEditor = props => {
 
     const { updateTask, taskId, closeEditorStatus, isOpen, task, deleteTask } = props;
     const [ taskDetails, setTaskDetails ] = useState(task);
-
-    const fetcher = useFetcher();
+    const [ lists, setLists ] = useState([]);
 
     useEffect(() => {
         setTaskDetails(task);
     }, [task]);
+
+    useEffect(() => {
+        fetchLists();
+    }, [task]);
+
+    const fetchLists = async () => {
+        const response = await ListAPI.getAllListsOfUser();
+        if(response.status === 200) {
+            setLists(response.lists);
+        }
+        else {
+            Common.showErrorPopup("Error while fetching lists of user");
+        }
+    }
 
     const handleChange = event => {
         const { name, value } = event.target;
@@ -28,11 +41,36 @@ const TaskEditor = props => {
         });
     }
 
-    const handleListChange = list => {
-        setTaskDetails(prevTask => {
-            prevTask.list = list;
-            return { ...prevTask };
-        })
+    const handleListChange = async listDetails => {
+        const response = await ListAPI.getListById(listDetails.id);
+        if(response.status === 200) {
+            checkAndAddList(response.list);
+        }
+        else {
+            Common.showErrorPopup("Error while fetching list");
+        }
+    }
+
+    const checkAndAddList = listToAdd => {
+
+        if(!listToAdd) return;
+
+        if(taskDetails?.lists) {
+            if(taskDetails.lists.findIndex(list => list.listId === listToAdd.listId) < 0) {
+                const updatedTask = {
+                    ...taskDetails,
+                    lists: [ ...taskDetails.lists, listToAdd ]
+                }
+                setTaskDetails(updatedTask);
+            }
+        }
+        else {
+            const updatedTask = {
+                ...taskDetails,
+                lists: [ listToAdd ]
+            }
+            setTaskDetails(updatedTask);
+        }
     }
     const handleDateChange = newValue => {
         const dateStr = Common.checkAndGiveDoubleDigit(newValue.$y + "") + "-" + 
@@ -55,11 +93,37 @@ const TaskEditor = props => {
             closeEditor();
         }
     }
+    const handleDeleteList = listId => {
+        const deleteFilteredLists = taskDetails.lists.filter(list => list.listId !== listId);
+        const updatedTask = { ...taskDetails, lists : deleteFilteredLists};
+        setTaskDetails(updatedTask);
+    }
     const closeEditor = () => {
         closeEditorStatus();
     }
 
-    const filterdLists = taskDetails?.lists;
+    const filterdLists = lists ? lists.map(list => {
+        return {
+            id: list.listId,
+            name: list.listName
+        }
+    }) : lists;
+
+    const currentLists = taskDetails?.lists ? taskDetails.lists.map(list => {
+        return (
+            <div 
+                key={`current-tasks-lists-${list.listId}`}
+                className="task-editor-list-selected-elem x-axis-flex"
+                style={{
+                    backgroundColor: list.listColor
+                }}
+            >
+                {/* <p>{list.listName.length <= 7 ? list.listName : list.listName.slice(0, 7)}</p> */}
+                <p className="x-axis-flex">{list.listName}</p>
+                <i onClick={() => handleDeleteList(list.listId)} className="bi bi-x"></i>
+            </div>
+        )
+    }) : null;
    
     return (
         <motion.div 
@@ -97,9 +161,9 @@ const TaskEditor = props => {
                         options={ filterdLists } 
                         onChange={handleListChange}    
                     />
-                    <p className="task-edit-list-prev-name">
-                        { taskDetails.list?.name }
-                    </p>
+                    <div className="task-edit-list-selected hide-scrollbar x-axis-flex">
+                        { currentLists }
+                    </div>
                 </div>
                 <div className="task-edit-date-wrapper x-axis-flex">
                     <p>Due Date</p>

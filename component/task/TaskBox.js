@@ -1,22 +1,24 @@
 import React, { memo, useState } from "react";
 
-const getListElem = list => {
-    if(list == null || list.length < 1) {
-        return list;
+const getListElem = lists => {
+    if(!lists || lists.length < 1) {
+        return lists;
     }
-    return (
-        <div 
-            key={ list.listId }
-            className="x-axis-flex">
-            <div 
-                style={{
-                    backgroundColor: list.listColor
-                }}
-                className="tag-list-color-box"
-            ></div>
-            <p>{ list.listName }</p>
-        </div>
-    )
+    return lists.map(list => {
+        return (
+                    <div 
+                        key={ list.listId }
+                        className="task-box-small-container task-box-list x-axis-flex">
+                        <div 
+                            style={{
+                                backgroundColor: list.listColor
+                            }}
+                            className="tag-list-color-box"
+                        ></div>
+                        <p>{ list.listName }</p>
+                    </div>
+                )
+        }); 
 }
 const TaskBox = props => {
     const [ expanded, setExpanded ] = useState(false);
@@ -63,11 +65,11 @@ const TaskBox = props => {
                 className="task-box-bottom x-axis-flex"
                 style={taxBoxStyle}
             >
-                <div className="x-axis-flex">
+                <div className="task-box-small-container x-axis-flex">
                     <i className="fa fa-solid fa-calendar"></i>
                     <p>{ taskDetails.dueDate }</p>
                 </div>
-                <div className="x-axis-flex">
+                <div className="task-box-small-container x-axis-flex">
                     <span 
                         className="task-box-sub-count"
                     >
@@ -109,7 +111,6 @@ const isEqual = (prevTask, currTask) => {
         /**
         * Need to check for lists also
         */
-       console.log("Equal");
         return true;
     }
 }

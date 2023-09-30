@@ -9,7 +9,7 @@ import { UserContext } from "../../App";
 
 const TaskComp = props => {
 
-    const todayNoTaskImage = "/images/today-no-tasks.png";
+    const todayNoTaskImage = "/empty.png";
 
     const { predicate, shouldAwait, taskData, 
             openEditor, notifyTaskChange, id, 
@@ -52,6 +52,7 @@ const TaskComp = props => {
         }
 
         const tasks = taskResponse.tasks;
+
         return <Tasks
                     openEditor={openEditor} 
                     tasks={tasks} 

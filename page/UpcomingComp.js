@@ -9,7 +9,7 @@ import { AppContext } from "../App";
 
 export const upcomingTasksLoader = () => {
     return defer({
-        upcomingTasksResponse: TaskAPI.getUpcomingTasks(),
+        upcomingTasksResponse: TaskAPI.getTasksByDate(Common.getTomorrowDate()),
         todayTasksResponse: TaskAPI.getAllTodayTasks(),
         thisWeekTasksResponse: TaskAPI.getThisWeekTasks()
     });
