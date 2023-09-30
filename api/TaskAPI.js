@@ -63,9 +63,13 @@ export const TaskAPI = {
         return lists;
     },
     updateTask: async (task, userId) => {
-        console.log(task)
+        const urlParams = new URLSearchParams();
+        urlParams.set("removeListNotIncluded", true);
+
         const url = ServerAPIManager.ServerURL 
-                    + ServerAPIManager.getAppRoutes().task.base + "/" + task.taskId;
+                    + ServerAPIManager.getAppRoutes().task.base + "/" + task.taskId
+                    + "?" + urlParams.toString();
+                    
         const response = await fetch(url, {
                                     method: "PATCH",
                                     headers: {
