@@ -141,5 +141,14 @@ export const TaskAPI = {
             }
         });
         return await response.json();
+    },
+    getOverdueTasks: async () => {
+        const url = ServerAPIManager.ServerURL + ServerAPIManager.getAppRoutes().task.base + "/overdue";
+        const response = await fetch(url, {
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+        return await response.json(); 
     }
 }

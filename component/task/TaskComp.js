@@ -13,7 +13,7 @@ const TaskComp = props => {
 
     const { predicate, shouldAwait, taskData, 
             openEditor, notifyTaskChange, id, 
-            className, taskCreationDate } = props;
+            className, taskCreationDate, listsToBeAddedOnCreation } = props;
 
     const [ taskName, setTaskName ] = useState("");
     
@@ -22,6 +22,10 @@ const TaskComp = props => {
     const addTask = async task => {
         task.userId = userContext.userDetails.userId;
         task.dueDate = taskCreationDate;
+        
+        if(listsToBeAddedOnCreation) {
+            task.lists = listsToBeAddedOnCreation;
+        }
         const response = await TaskAPI.addTask(task);
         if(response.status !== 201) {
             Common.showErrorPopup(response.error, 2);

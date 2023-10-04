@@ -74,6 +74,7 @@ const ListBody = () => {
             const result = taskDetails.lists.some(list => list.listId === parseInt(getDynamicId()));
             return !result;
         }
+
         return true;
     }
 
@@ -91,6 +92,7 @@ const ListBody = () => {
                 openEditor={openEditor}
                 notifyTaskChange={notifyTaskChange}
                 id={`list-tasks-key-${params.id}`}
+                listsToBeAddedOnCreation={[ parseInt(getDynamicId()) ]}
             />
             <TaskEditor 
                 closeEditorStatus={closeEditor} 
