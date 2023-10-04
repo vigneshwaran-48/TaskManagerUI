@@ -67,6 +67,7 @@ const TaskComp = props => {
                                 img={todayNoTaskImage}
                                 message="You don't have any tasks here"
                             />}
+                    notifyTaskChange={notifyTaskChange}
                 />;   
     }
 

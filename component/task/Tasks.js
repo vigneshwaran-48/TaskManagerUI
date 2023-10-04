@@ -8,7 +8,7 @@ import { AppContext } from "../../App";
 
 const Tasks = props => {
 
-    const { openEditor, predicate, id, fallback } = props;
+    const { openEditor, predicate, id, fallback, notifyTaskChange } = props;
     const [ tasks, setTasks ] = useState(null);
     const { subscribeToTaskChange, unSubscribeToTaskChange } = useContext(AppContext);
 
@@ -84,7 +84,6 @@ const Tasks = props => {
     }
 
     const deleteTask = id => {
-        console.log(tasks);
         setTasks(prevTasks => {
             const filtered =  prevTasks.filter(task => task.taskId !== id);
             return filtered;
@@ -96,14 +95,8 @@ const Tasks = props => {
         
         Common.handleNotifyRespone(response);
 
-        setTasks(prevTasks => {
-            return prevTasks.map(task => {
-                if(task.taskId === id) {
-                    task.completed = checked;
-                }
-                return task;
-            });
-        });
+        notifyTaskChange(id, Common.TaskEventConstants.TASK_UPDATE, true);
+
     }
 
     //Using useMemo here beacuse in the parent componenet whenever a word is changed

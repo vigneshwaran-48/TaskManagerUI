@@ -55,8 +55,8 @@ const Overdue = () => {
         });
     }
 
-    const todayTaskpredicate = dueDate => {
-        return  !Common.isDateLesserThan(dueDate, predicateDate);
+    const todayTaskpredicate = (dueDate, taskDetails) => {
+        return  !Common.isDateLesserThan(dueDate, predicateDate) && taskDetails.completed;
     }
 
     return (
