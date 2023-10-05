@@ -10,3 +10,26 @@
     width: 30%;
     margin-bottom: 20px;
 }
+
+.search-bar {
+    border-radius: 10px;
+    border: 1px solid rgb(235,234,234);
+    justify-content: flex-start;
+    align-items: center;
+    padding: 5px 7px;
+    max-width: 300px;
+    width: 95%;
+    transition: 0.5s;
+}
+.search-bar > input {
+    border: none;
+    outline: none;
+    padding: 10px;
+    font-size: 18px;
+    width: 90%;
+}
+
+.search-bar:focus-within {
+    max-width: 500px;
+    border-color: rgb(255,212,59);
+}

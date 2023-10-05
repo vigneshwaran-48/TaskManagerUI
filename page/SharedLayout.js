@@ -7,6 +7,8 @@ import 'font-awesome/css/font-awesome.min.css';
 import { Common } from "../utility/Common";
 import { AnimatePresence } from "framer-motion";
 import { ListAPI } from "../api/ListAPI";
+import MainBody from "./MainBody";
+import AppHeader from "../component/AppHeader";
 
 const capitalize = str => {
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -105,14 +107,8 @@ const SharedLayout = () => {
                 </div>
                 <SideNavbar closeSideNavbar={closeSideNav} />
                 <div className="app-body y-axis-flex">
-                    <div className="app-body-header x-axis-flex">
-                        <i 
-                            onClick={sideNavOpenAction}
-                            className="fa fa-solid fa-bars"
-                        ></i>
-                        <h1>{ section }</h1>
-                    </div>
-                    <Outlet />
+                    <AppHeader sideNavOpenAction={sideNavOpenAction} />
+                    <MainBody />
                 </div>
             </div>
         </SectionContext.Provider>
