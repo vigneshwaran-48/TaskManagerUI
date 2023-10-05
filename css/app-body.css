@@ -289,7 +289,15 @@
 }
 .search-container {
     position: relative;
+    max-width: 300px;
     width: 100%;
+    transition: 0.5s;
+}
+.search-container:focus-within {
+    max-width: 500px;
+}
+.search-container:focus-within .search-bar {
+    border-color: rgb(255,212,59);
 }
 .search-results-container {
     position: absolute;
@@ -301,7 +309,7 @@
     transition: 0.5s;
     z-index: 10;
 }
-.search-bar:focus-within + .search-results-container {
+.search-container:focus-within > .search-results-container {
     height: 400px;
     box-shadow: 1px 1px 7px rgb(0, 0, 0, 0.14);
 }
