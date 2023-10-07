@@ -8,7 +8,7 @@
     align-items: center;
     height: 40px;
 }
-.app-body-header i {
+.app-header > i {
     font-size: 22px;
     padding-right: 10px;
     cursor: pointer;
@@ -278,11 +278,49 @@
     margin-right: 2px;
 }
 
+.app-main-body {
+    width: 100%;
+    height: calc(100% - 75px);
+}
+.app-header {
+    width: 100%;
+    align-items: center;
+    padding: 10px 0px;
+    position: relative;
+}
+.search-container {
+    max-width: 300px;
+    width: 100%;
+    transition: 0.5s;
+}
+.search-container:focus-within {
+    max-width: 500px;
+}
+.search-container:focus-within .search-bar {
+    border-color: rgb(255,212,59);
+}
+.search-results-and-overview {
+    position: absolute;
+    top: 100%;
+    right: 0%;
+    left: 0%;
+    height: 0px;
+    width: 100%;
+    background-color: white;
+    border-radius: 7px;
+    transition: 0.5s;
+    overflow: hidden;
+    z-index: 10;
+}
+.search-container:focus-within > .search-results-and-overview {
+    height: 400px;
+    box-shadow: 1px 1px 7px rgb(0, 0, 0, 0.14);
+}
 @media screen and (max-width: 895px) {
     .app-body {
         width: 100%;
     }
-    .app-body-header i {
+    .app-header > i {
         display: block;
     }
 }

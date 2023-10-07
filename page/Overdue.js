@@ -1,29 +1,26 @@
-import React, { useContext, useState } from "react";
-import { TaskAPI } from "../api/TaskAPI";
-import { useLoaderData, useParams } from "react-router-dom";
-import { Common } from "../utility/Common";
-import { AppContext } from "../App";
-import TaskEditor from "../component/task/TaskEditor";
-import TaskComp from "../component/task/TaskComp";
-import { motion } from "framer-motion";
+import React, { useContext, useState } from 'react'
+import { defer, useLoaderData } from 'react-router-dom';
+import { TaskAPI } from '../api/TaskAPI';
+import { AppContext } from '../App';
+import { Common } from '../utility/Common';
+import { motion } from 'framer-motion';
+import TaskComp from '../component/task/TaskComp';
+import TaskEditor from '../component/task/TaskEditor';
 
-
-export const listBodyLoader = ({ params, request }) => {
-
-    return {listResponse: TaskAPI.getTasksOfList(params.id)};
+export const overdueLoader = () => {
+    return defer({overdueTasks: TaskAPI.getOverdueTasks()});
 }
-const ListBody = () => {
+const Overdue = () => {
 
     const { TaskChangeEvent, updateTask, deleteTask, getTask } = useContext(AppContext);
+    const tasksLoaderData = useLoaderData();
+    const predicateDate = new Date().toJSON().slice(0, 10);
+
     const [ editorState, setEditorState ] = useState({
         isOpen: false,
         taskId: -1,
         taskDetails: null
     });
-
-    const listLoaderData = useLoaderData();
-
-    const params = useParams();
 
     const openEditor = async id => {
         const taskResponse = await TaskAPI.getSingleTaskDetails(id);
@@ -58,24 +55,8 @@ const ListBody = () => {
         });
     }
 
-    const getDynamicId = () => {
-        /**
-         * Using this method instead of useParams() because useParams
-         * only gives the first rendered component's params only after that it gives 
-         * that value for other param routes.
-         */
-        const splittedPaths = window.location.pathname.split("/");
-        return splittedPaths[splittedPaths.length - 1];
-    }
-
-    const taskPredicate = (date, taskDetails) => {
-
-        if(taskDetails?.lists && taskDetails.lists.length > 0) {
-            const result = taskDetails.lists.some(list => list.listId === parseInt(getDynamicId()));
-            return !result;
-        }
-
-        return true;
+    const todayTaskpredicate = (dueDate, taskDetails) => {
+        return  !Common.isDateLesserThan(dueDate, predicateDate) && taskDetails.completed;
     }
 
     return (
@@ -86,13 +67,13 @@ const ListBody = () => {
             className="app-body-middle today-comp x-axis-flex"
         >
             <TaskComp 
-                predicate={taskPredicate}
+                predicate={todayTaskpredicate}
                 shouldAwait={true}
-                taskData={listLoaderData.listResponse}
+                taskData={tasksLoaderData.overdueTasks}
                 openEditor={openEditor}
                 notifyTaskChange={notifyTaskChange}
-                id={`list-tasks-key-${params.id}`}
-                listsToBeAddedOnCreation={[ parseInt(getDynamicId()) ]}
+                id="overdue-tasks-key"
+                removeTasksAddInput={true}
             />
             <TaskEditor 
                 closeEditorStatus={closeEditor} 
@@ -106,4 +87,4 @@ const ListBody = () => {
     )
 }
 
-export default ListBody;
+export default Overdue;

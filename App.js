@@ -11,6 +11,7 @@ import "./css/index.css";
 import UpcomingComp, { upcomingTasksLoader } from "./page/UpcomingComp";
 import { TaskAPI } from "./api/TaskAPI";
 import { Common } from "./utility/Common";
+import Overdue, { overdueLoader } from "./page/Overdue";
 
 
 
@@ -38,7 +39,11 @@ const routes = createBrowserRouter(createRoutesFromElements(
                 loader={todayCompLoader}
                 shouldRevalidate={todayCompShouldRevalidate}
             />
-            <Route path="task/calendar" element={<h1>Calendar</h1>} />
+            <Route 
+                path="task/overdue" 
+                element={<Overdue />}
+                loader={overdueLoader}
+            />
             <Route path="task/sticky-wall" element={<h1>Sticky wall</h1>} />
             <Route 
                 path="list/:id" 

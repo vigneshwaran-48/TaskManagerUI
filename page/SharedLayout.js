@@ -2,10 +2,12 @@ import React, { createContext, useEffect, useState } from "react";
 import SideNavbar from "../component/sidenav/SideNavbar";
 import "../css/side-nav.css";
 import "../css/app-body.css";
-import { Outlet, useLocation } from "react-router";  
+import { useLocation } from "react-router";  
 import 'font-awesome/css/font-awesome.min.css';
 import { Common } from "../utility/Common";
-import { AnimatePresence } from "framer-motion";
+import { ListAPI } from "../api/ListAPI";
+import MainBody from "./MainBody";
+import AppHeader from "../component/header/AppHeader";
 
 const capitalize = str => {
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -47,11 +49,32 @@ const SharedLayout = () => {
         let currentSection = "Upcoming";
         
         if(splittedUrl.length > 2) {
+            const topSection = splittedUrl[2];
+            if(topSection === "list") {
+                handleListSection(splittedUrl[3]);
+                return;
+            }
             currentSection = splittedUrl[3];
         }
         const formattedCurrentSection = formatHeading(currentSection)
         setSection(formattedCurrentSection);
     }, []);
+    
+    /**
+     * 
+     * In list section the url will have list's id instead of list name, So doing fetch call for getting list
+     * name to set it as Section Name.
+     * 
+     */
+    const handleListSection = async listId => {
+        const response = await ListAPI.getListById(listId);
+        if(response.status === 200) {
+            setSection(response.list.listName);
+        }
+        else {
+            Common.showErrorPopup("Error while fetching list details", 2);
+        }
+    }
 
     return (
         <SectionContext.Provider value={{
@@ -83,14 +106,8 @@ const SharedLayout = () => {
                 </div>
                 <SideNavbar closeSideNavbar={closeSideNav} />
                 <div className="app-body y-axis-flex">
-                    <div className="app-body-header x-axis-flex">
-                        <i 
-                            onClick={sideNavOpenAction}
-                            className="fa fa-solid fa-bars"
-                        ></i>
-                        <h1>{ section }</h1>
-                    </div>
-                    <Outlet />
+                    <AppHeader sideNavOpenAction={sideNavOpenAction} />
+                    <MainBody />
                 </div>
             </div>
         </SectionContext.Provider>

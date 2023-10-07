@@ -6,6 +6,8 @@ let appRoutes = {
         upcoming: "/api/v1/task/upcoming",
         thisWeek: "/api/v1/task/this-week",
         base: "/api/v1/task",
+        search: "/api/v1/task/search",
+        overdue: "/api/v1/task/overdue"
     },
     utility: {
         sideNav: "/api/v1/utility/side-nav",
@@ -27,5 +29,5 @@ export const ServerAPIManager = {
         // }
         return appRoutes;
     },
-    ServerURL: "http://localhost:8383"
+    ServerURL: "http://192.168.43.247:8383"
 }

@@ -13,7 +13,8 @@ const TaskComp = props => {
 
     const { predicate, shouldAwait, taskData, 
             openEditor, notifyTaskChange, id, 
-            className, taskCreationDate } = props;
+            className, taskCreationDate, listsToBeAddedOnCreation,
+            removeTasksAddInput = false } = props;
 
     const [ taskName, setTaskName ] = useState("");
     
@@ -22,6 +23,10 @@ const TaskComp = props => {
     const addTask = async task => {
         task.userId = userContext.userDetails.userId;
         task.dueDate = taskCreationDate;
+
+        if(listsToBeAddedOnCreation) {
+            task.lists = listsToBeAddedOnCreation;
+        }
         const response = await TaskAPI.addTask(task);
         if(response.status !== 201) {
             Common.showErrorPopup(response.error, 2);
@@ -60,24 +65,29 @@ const TaskComp = props => {
                     id={id}
                     fallback={<NothingToShow 
                                 img={todayNoTaskImage}
-                                message="You don't have any tasks today"
+                                message="You don't have any tasks here"
                             />}
+                    notifyTaskChange={notifyTaskChange}
                 />;   
     }
 
     return (
         <div className={`today-comp-left hide-scrollbar y-axis-flex ${className || ""}`}>
-            <div className="add-task-input-wrapper x-axis-flex">
-                <i className="fa fa-solid fa-plus"></i>
-                <input      
-                    type="text" 
-                    name="taskName"
-                    value={taskName}
-                    placeholder="Add New Task"
-                    onChange={handleTaskAddChange} 
-                    onKeyDown={listenForTaskAdd}
-                />  
-            </div>
+            {
+                !removeTasksAddInput && (
+                    <div className="add-task-input-wrapper x-axis-flex">
+                        <i className="fa fa-solid fa-plus"></i>
+                        <input      
+                            type="text" 
+                            name="taskName"
+                            value={taskName}
+                            placeholder="Add New Task"
+                            onChange={handleTaskAddChange} 
+                            onKeyDown={listenForTaskAdd}
+                        />  
+                    </div>
+                )
+            }
             {
                 shouldAwait ? (
                     <Suspense fallback={<Loading />}>

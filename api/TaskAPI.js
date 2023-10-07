@@ -1,19 +1,13 @@
 import { ServerAPIManager } from "../utility/ServerAPIManager";
 
-let lists = [
-
-    {
-        id: 8980,
-        name: "Personal",
-        color: "red"
-    },
-    {
-        id: 9008,
-        name: "Work",
-        color: "teal"
-    }
-]
-
+const sendGetRequest = async url => {
+    const response = await fetch(url, {
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
+    return await response.json();
+}
 export const TaskAPI = {
 
     
@@ -58,9 +52,6 @@ export const TaskAPI = {
                                     }                        
                                 });
         return await response.json();
-    },
-    getLists: async userId => {
-        return lists;
     },
     updateTask: async (task, userId) => {
         const urlParams = new URLSearchParams();
@@ -141,5 +132,22 @@ export const TaskAPI = {
             }
         });
         return await response.json();
+    },
+    getOverdueTasks: async () => {
+        const url = ServerAPIManager.ServerURL + ServerAPIManager.getAppRoutes().task.overdue;
+        const response = await fetch(url, {
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+        return await response.json(); 
+    },
+    getTasksWithName: async taskName => {
+
+        const urlParams = new URLSearchParams();
+        urlParams.set("taskName", taskName);
+
+        const url = `${ServerAPIManager.ServerURL}${ServerAPIManager.getAppRoutes().task.search}?${urlParams.toString()}`;
+        return await sendGetRequest(url);
     }
 }
