@@ -6,6 +6,8 @@ let appRoutes = {
         upcoming: "/api/v1/task/upcoming",
         thisWeek: "/api/v1/task/this-week",
         base: "/api/v1/task",
+        search: "/api/v1/task/search",
+        overdue: "/api/v1/task/overdue"
     },
     utility: {
         sideNav: "/api/v1/utility/side-nav",
