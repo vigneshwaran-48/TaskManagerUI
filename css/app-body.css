@@ -16,7 +16,7 @@
 }
 .app-body-middle {
     width: 100%;
-    height: calc(100% - 90px);
+    height: calc(100% - 40px);
     padding: 10px 0px;
     padding-top: 20px;
     overflow: hidden;

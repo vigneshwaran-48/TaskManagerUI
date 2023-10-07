@@ -2,13 +2,12 @@ import React, { createContext, useEffect, useState } from "react";
 import SideNavbar from "../component/sidenav/SideNavbar";
 import "../css/side-nav.css";
 import "../css/app-body.css";
-import { Outlet, useLocation } from "react-router";  
+import { useLocation } from "react-router";  
 import 'font-awesome/css/font-awesome.min.css';
 import { Common } from "../utility/Common";
-import { AnimatePresence } from "framer-motion";
 import { ListAPI } from "../api/ListAPI";
 import MainBody from "./MainBody";
-import AppHeader from "../component/AppHeader";
+import AppHeader from "../component/header/AppHeader";
 
 const capitalize = str => {
     return str.charAt(0).toUpperCase() + str.slice(1);
