@@ -69,6 +69,7 @@ const Tasks = props => {
                     break;
                 }
                 setTasks(prevTasks => {
+                    if(prevTasks == null) prevTasks = [];
                     return [
                         ...prevTasks,
                         taskDetails

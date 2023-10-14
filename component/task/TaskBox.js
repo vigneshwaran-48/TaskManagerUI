@@ -49,7 +49,7 @@ const TaskBox = props => {
             <div className="task-box-top x-axis-flex">
                 <input 
                     type="checkbox" 
-                    defaultChecked={taskDetails.completed} 
+                    defaultChecked={taskDetails.isCompleted} 
                     onClick={event => event.stopPropagation()}
                     onChange={ onTaskComplete }
                 />
@@ -101,7 +101,7 @@ const isEqual = (prevTask, currTask) => {
     else if(prevTaskDetails.dueDate !== currTaskDetails.dueDate) {
         return false;
     }
-    else if(prevTaskDetails.completed !== currTaskDetails.completed) {
+    else if(prevTaskDetails.isCompleted !== currTaskDetails.isCompleted) {
         return false;
     }
     else if(prevTaskDetails.description !== currTaskDetails.description) {
