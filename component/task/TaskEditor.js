@@ -18,7 +18,10 @@ const TaskEditor = props => {
     }, [task]);
 
     useEffect(() => {
-        fetchLists();
+        // This condition is for reducing the number of fetch calls.
+        if(isOpen || !lists) {
+            fetchLists();
+        }
     }, [task]);
 
     const fetchLists = async () => {
