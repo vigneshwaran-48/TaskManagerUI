@@ -1,3 +1,4 @@
+import Cookies from "js-cookie";
 import { ServerAPIManager } from "../utility/ServerAPIManager";
 
 const sendGetRequest = async url => {
@@ -7,6 +8,30 @@ const sendGetRequest = async url => {
         }
     });
     return await response.json();
+}
+const sendRequestWithCsrf = async (url, method, includeBody, body) => {
+    const csrfToken = Cookies.get("XSRF-TOKEN");
+    if(includeBody) {
+        const response = await fetch(url, {
+            method,
+            headers: {
+                "Content-Type": "application/json",
+                "X-XSRF-TOKEN": csrfToken
+            },
+            body
+        });
+        return await response.json();
+    }
+    else {
+        const response = await fetch(url, {
+            method,
+            headers: {
+                "Content-Type": "application/json",
+                "X-XSRF-TOKEN": csrfToken
+            }
+        });
+        return await response.json();
+    }
 }
 export const TaskAPI = {
 
@@ -34,13 +59,7 @@ export const TaskAPI = {
         const url = ServerAPIManager.ServerURL 
                     + ServerAPIManager.getAppRoutes().task.base 
                     + "/" + taskId + "/toggle";
-        const response = await fetch(url, {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json"
-            }                        
-        });
-        return await response.json();
+        return await sendRequestWithCsrf(url, "PATCH", false);
     },
     getSingleTaskDetails: async (id, userId) => {
         const url = ServerAPIManager.ServerURL 
@@ -61,37 +80,16 @@ export const TaskAPI = {
                     + ServerAPIManager.getAppRoutes().task.base + "/" + task.taskId
                     + "?" + urlParams.toString();
 
-        const response = await fetch(url, {
-                                    method: "PATCH",
-                                    headers: {
-                                        "Content-Type": "application/json"
-                                    },
-                                    body: JSON.stringify(task)
-                                });
-        return await response.json();
+        return await sendRequestWithCsrf(url, "PATCH", true, JSON.stringify(task));
     },
     deleteTask: async id => {
         const url = ServerAPIManager.ServerURL 
                     + ServerAPIManager.getAppRoutes().task.base + "/" + id;
-
-        const response = await fetch(url, {
-                                    method: "DELETE",
-                                    headers: {
-                                        "Content-Type": "application/json"
-                                    }  
-                                });
-        return await response.json();
+        return await sendRequestWithCsrf(url, "DELETE", false);
     },
     addTask: async task => {
         const url = ServerAPIManager.ServerURL + ServerAPIManager.getAppRoutes().task.base;
-        const response = await fetch(url, {
-                                    method: "POST",
-                                    headers: {
-                                        "Content-Type": "application/json"
-                                    },
-                                    body: JSON.stringify(task)
-                                });
-        return await response.json();
+        return await sendRequestWithCsrf(url, "POST", true, JSON.stringify(task));
     },
     getUpcomingTasks: async () => {
         const url = ServerAPIManager.ServerURL + ServerAPIManager.getAppRoutes().task.upcoming;

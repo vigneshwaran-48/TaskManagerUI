@@ -29,5 +29,5 @@ export const ServerAPIManager = {
         // }
         return appRoutes;
     },
-    ServerURL: "http://192.168.43.247:8383"
+    ServerURL: ""
 }
