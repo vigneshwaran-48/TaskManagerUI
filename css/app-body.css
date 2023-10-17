@@ -312,6 +312,10 @@
     overflow: hidden;
     z-index: 10;
 }
+
+.task-completed-text {
+    text-decoration: line-through;
+}
 .search-container:focus-within > .search-results-and-overview {
     height: 400px;
     box-shadow: 1px 1px 7px rgb(0, 0, 0, 0.14);

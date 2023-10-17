@@ -53,7 +53,10 @@ const TaskBox = props => {
                     onClick={event => event.stopPropagation()}
                     onChange={ onTaskComplete }
                 />
-                <p className="task-box-title x-axis-flex">{taskDetails?.taskName?.slice(0, 50)}</p>
+                <p 
+                    className={`task-box-title x-axis-flex ${taskDetails.isCompleted ? "task-completed-text" : ""}`}>
+                        {taskDetails?.taskName?.slice(0, 50)}
+                </p>
                 <span 
                     className="task-editor-open-button"
                     onClick={ openEditor }
