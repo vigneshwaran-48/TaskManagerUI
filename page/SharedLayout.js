@@ -48,13 +48,13 @@ const SharedLayout = () => {
         const splittedUrl = location.pathname.split("/");
         let currentSection = "Upcoming";
         
-        if(splittedUrl.length > 2) {
-            const topSection = splittedUrl[2];
+        if(splittedUrl.length > 1) {
+            const topSection = splittedUrl[1];
             if(topSection === "list") {
-                handleListSection(splittedUrl[3]);
+                handleListSection(splittedUrl[2]);
                 return;
             }
-            currentSection = splittedUrl[3];
+            currentSection = splittedUrl[2];
         }
         const formattedCurrentSection = formatHeading(currentSection)
         setSection(formattedCurrentSection);

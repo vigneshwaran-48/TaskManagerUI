@@ -130,7 +130,7 @@ const TaskEditor = props => {
    
     return (
         <motion.div 
-            className={`task-editor y-axis-flex ${isOpen && "show-task-editor"}`}
+            className={`task-editor hide-scrollbar y-axis-flex ${isOpen && "show-task-editor"}`}
         >
             <span 
                 style={{

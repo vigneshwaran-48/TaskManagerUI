@@ -67,15 +67,20 @@ const AllTasks = () => {
             exit={Common.mainElementsFramerVariants.exit}
             className="app-body-middle today-comp x-axis-flex"
         >
-            <TaskComp 
-                predicate={allTasksPredicate}
-                shouldAwait={true}
-                taskData={allTasksLoader.allTasks}
-                openEditor={openEditor}
-                notifyTaskChange={notifyTaskChange}
-                id="all-tasks-key"
-                removeTasksAddInput={true}
-            />
+            <div className="task-comp-and-filter-wrapper y-axis-flex">
+                <div className="task-listing-filters x-axis-flex">
+                    <i className="fa fa-solid fa-filter"></i>
+                </div>
+                <TaskComp 
+                    predicate={allTasksPredicate}
+                    shouldAwait={true}
+                    taskData={allTasksLoader.allTasks}
+                    openEditor={openEditor}
+                    notifyTaskChange={notifyTaskChange}
+                    id="all-tasks-key"
+                    removeTasksAddInput={true}
+                />
+            </div>
             <TaskEditor 
                 closeEditorStatus={closeEditor} 
                 taskId={editorState.taskId}
