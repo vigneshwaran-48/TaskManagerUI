@@ -86,6 +86,7 @@ const Tasks = props => {
 
     const deleteTask = id => {
         setTasks(prevTasks => {
+            if(prevTasks == null) prevTasks = [];
             const filtered =  prevTasks.filter(task => task.taskId !== id);
             return filtered;
         });

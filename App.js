@@ -26,8 +26,8 @@ const routes = createBrowserRouter(createRoutesFromElements(
         </Route>
         <Route path="task" element={<SharedLayout />}
         >
+            <Route index element={(() => <Navigate to={"upcoming"} />)()} />
             <Route 
-                index
                 path="upcoming" 
                 element={<UpcomingComp />}
                 loader={upcomingTasksLoader}
