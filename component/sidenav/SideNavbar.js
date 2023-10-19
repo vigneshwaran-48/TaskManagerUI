@@ -3,14 +3,19 @@ import 'font-awesome/css/font-awesome.min.css';
 import TaskSideNav from "./TaskSideNav";
 import ListSideNav from "./ListSideNav";
 import { UserContext } from "../../App";
+import { AppAPI } from "../../api/AppAPI";
+import { Common } from "../../utility/Common";
 
 const SideNavbar = props => {
 
     const { closeSideNavbar } = props;
     const { changeUserDetails } = useContext(UserContext);
 
-    const logoutAction = () => {
-        changeUserDetails({ isLoggedIn: false });
+    const logoutAction = async () => {
+        const response = await AppAPI.logout();
+        if(response.ok) {
+            window.location.href = Common.authServerPage;
+        }
     }
 
     return (

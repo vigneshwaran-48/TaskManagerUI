@@ -1,3 +1,4 @@
+import Cookies from "js-cookie";
 import { ServerAPIManager } from "../utility/ServerAPIManager";
 
 export const AppAPI = {
@@ -16,5 +17,15 @@ export const AppAPI = {
         const response = await fetch(url);
 
         return await response.json();
+    },
+    logout: async () => {
+        const csrfToken = Cookies.get("XSRF-TOKEN");
+        const response = await fetch(ServerAPIManager.ServerURL + "/logout", {
+                                    method: "POST",
+                                    headers: {
+                                        "X-XSRF-TOKEN": csrfToken
+                                    } 
+                                });
+        return response;
     }
 }
