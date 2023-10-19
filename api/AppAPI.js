@@ -7,14 +7,14 @@ export const AppAPI = {
         const url = ServerAPIManager.ServerURL + 
                     ServerAPIManager.getAppRoutes().utility.sideNav;
 
-        const response = await fetch(url);
+        const response = await fetch(url, {redirect: "follow"});
 
         return await response.json();
     },
     getListSideNav: async () => {
         const url = ServerAPIManager.ServerURL + ServerAPIManager.getAppRoutes().utility.listSideNav;
 
-        const response = await fetch(url);
+        const response = await fetch(url, {redirect: "follow"});
 
         return await response.json();
     },
@@ -24,7 +24,8 @@ export const AppAPI = {
                                     method: "POST",
                                     headers: {
                                         "X-XSRF-TOKEN": csrfToken
-                                    } 
+                                    },
+                                    redirect: "follow"
                                 });
         return response;
     }

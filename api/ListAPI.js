@@ -10,8 +10,11 @@ const sendRequestWithCsrf = async (url, method, includeBody, body) => {
                 "Content-Type": "application/json",
                 "X-XSRF-TOKEN": csrfToken
             },
-            body
+            body,
         });
+        if(response.redirected) {
+            window.location.href = response.url;
+        }
         return await response.json();
     }
     else {
@@ -20,8 +23,12 @@ const sendRequestWithCsrf = async (url, method, includeBody, body) => {
             headers: {
                 "Content-Type": "application/json",
                 "X-XSRF-TOKEN": csrfToken
-            }
+            },
+            redirect: "follow"
         });
+        if(response.redirected) {
+            window.location.href = response.url;
+        }
         return await response.json();
     }
 }
