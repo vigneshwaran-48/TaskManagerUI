@@ -6,6 +6,8 @@ import TaskComp from '../component/task/TaskComp'
 import TaskEditor from '../component/task/TaskEditor'
 import { AppContext } from '../App'
 import { Common } from '../utility/Common'
+import Dropdown from '../utility/Dropdown'
+import "../css/allcomp.css";
 
 
 export const allTasksLoader = () => {
@@ -22,6 +24,37 @@ const AllTasks = () => {
         taskId: -1,
         taskDetails: null
     });
+
+    const filterMenus = [
+        {
+            id: 1,
+            name: "Completed"
+        },
+        {
+            id: 2,
+            name: "Yet to finish"
+        },
+        {
+            id: 3,
+            name: "List",
+            subItems: [
+                {
+                    id: 1,
+                    name: 'Work'
+                },
+                {
+                    id: 2,
+                    name: "Personal",
+                    subItems: [
+                        {
+                            id: 1,
+                            name: "Testing"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
 
     const openEditor = async id => {
         const taskResponse = await TaskAPI.getSingleTaskDetails(id);
@@ -68,8 +101,11 @@ const AllTasks = () => {
             className="app-body-middle today-comp x-axis-flex"
         >
             <div className="task-comp-and-filter-wrapper y-axis-flex">
-                <div className="task-listing-filters x-axis-flex">
-                    <i className="fa fa-solid fa-filter"></i>
+                <div className="task-listing-filters x-axis-flex" tabIndex={0}>
+                    <div className="task-filter-options-container y-axis-flex">
+                        <i className="fa fa-solid fa-filter"></i>
+                        <Dropdown items={filterMenus} isOpen={true} />
+                    </div>
                 </div>
                 <TaskComp 
                     predicate={allTasksPredicate}

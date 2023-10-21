@@ -1,0 +1,11 @@
+.task-listing-filters {
+    position: relative;
+}
+
+.task-filter-options-container {
+    cursor: pointer;
+}
+.task-filter-options-container > .multi-drop-down {
+    top: 100%;
+    left: 5px;
+}
