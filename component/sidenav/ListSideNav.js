@@ -84,13 +84,13 @@ const ListSideNav = props => {
         if(response.status === 201) {
             Common.showSuccessPopup(response.message, 2);
             setOpenBox(false);
-            callback();
             
             fetchAndAddList(response.listId);
         }
         else {
             Common.showErrorPopup(response.error, 2);
         }
+        callback();
     }
 
     if(!list) {

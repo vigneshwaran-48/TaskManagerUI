@@ -67,7 +67,7 @@ const TaskSideNav = props => {
         urlName = urlName.toLowerCase();
         return (
             <NavLink 
-                to={`./task/${urlName}`} 
+                to={`./${urlName}`} 
                 className={({ isActive }) => {
                     return isActive ? activeNav
                                     : unActiveNav

@@ -12,6 +12,7 @@ import UpcomingComp, { upcomingTasksLoader } from "./page/UpcomingComp";
 import { TaskAPI } from "./api/TaskAPI";
 import { Common } from "./utility/Common";
 import Overdue, { overdueLoader } from "./page/Overdue";
+import AllTasks, { allTasksLoader } from "./page/AllTasks";
 
 
 
@@ -23,28 +24,31 @@ const routes = createBrowserRouter(createRoutesFromElements(
         <Route element={<WelcomeSharedLayout />}>
             <Route index element={<WelcomeComp />}/>
         </Route>
-        <Route path="todo" element={<SharedLayout />}
+        <Route path="task" element={<SharedLayout />}
         >
-            <Route index element={(
-                    () => <Navigate to="task/upcoming" />)()}
-            />
+            <Route index element={(() => <Navigate to={"upcoming"} />)()} />
             <Route 
-                path="task/upcoming" 
+                path="upcoming" 
                 element={<UpcomingComp />}
                 loader={upcomingTasksLoader}
             />
             <Route 
-                path="task/today" 
+                path="today" 
                 element={<TodayComp />}
                 loader={todayCompLoader}
                 shouldRevalidate={todayCompShouldRevalidate}
             />
             <Route 
-                path="task/overdue" 
+                path="all" 
+                element={<AllTasks />}
+                loader={allTasksLoader}
+            />
+            <Route 
+                path="overdue" 
                 element={<Overdue />}
                 loader={overdueLoader}
             />
-            <Route path="task/sticky-wall" element={<h1>Sticky wall</h1>} />
+            <Route path="sticky-wall" element={<h1>Sticky wall</h1>} />
             <Route 
                 path="list/:id" 
                 element={<ListBody />}

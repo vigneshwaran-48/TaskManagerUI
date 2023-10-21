@@ -5,8 +5,11 @@ const sendGetRequest = async url => {
     const response = await fetch(url, {
         headers: {
             "Content-Type": "application/json"
-        }
+        },
     });
+    if(response.redirected) {
+        window.location.href = response.url;
+    }
     return await response.json();
 }
 const sendRequestWithCsrf = async (url, method, includeBody, body) => {
@@ -18,8 +21,12 @@ const sendRequestWithCsrf = async (url, method, includeBody, body) => {
                 "Content-Type": "application/json",
                 "X-XSRF-TOKEN": csrfToken
             },
-            body
+            body,
+            redirect: "follow"
         });
+        if(response.redirected) {
+            window.location.href = response.url;
+        }
         return await response.json();
     }
     else {
@@ -30,6 +37,9 @@ const sendRequestWithCsrf = async (url, method, includeBody, body) => {
                 "X-XSRF-TOKEN": csrfToken
             }
         });
+        if(response.redirected) {
+            window.location.href = response.url;
+        }
         return await response.json();
     }
 }

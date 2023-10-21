@@ -16,6 +16,7 @@ export const Common = {
     appName: "ProApp",
     appDomain: "http://127.0.0.1:9292",
     appIcon: "/app-icon.png",
+    authServerPage: "http://localhost:9090",
 
     accountsSideNav: [
         {

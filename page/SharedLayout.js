@@ -54,7 +54,7 @@ const SharedLayout = () => {
                 handleListSection(splittedUrl[3]);
                 return;
             }
-            currentSection = splittedUrl[3];
+            currentSection = splittedUrl[2];
         }
         const formattedCurrentSection = formatHeading(currentSection)
         setSection(formattedCurrentSection);

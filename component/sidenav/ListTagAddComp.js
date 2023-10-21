@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import { ListAPI } from "../../api/ListAPI";
-import { Common } from "../../utility/Common";
 
 const ListTagAddComp = props => {
 

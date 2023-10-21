@@ -312,9 +312,17 @@
     overflow: hidden;
     z-index: 10;
 }
+
+.task-completed-text {
+    text-decoration: line-through;
+}
 .search-container:focus-within > .search-results-and-overview {
     height: 400px;
     box-shadow: 1px 1px 7px rgb(0, 0, 0, 0.14);
+}
+.task-comp-and-filter-wrapper {
+    width: 100%;
+    height: 100%;
 }
 @media screen and (max-width: 895px) {
     .app-body {
@@ -338,6 +346,8 @@
         width: 100%;
         transform: translateX(100%);
         margin-left: 0px;
+        bottom: 0px;
+        overflow-y: scroll;
     }
 }
 

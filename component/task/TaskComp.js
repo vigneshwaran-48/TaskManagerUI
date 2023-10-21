@@ -45,7 +45,7 @@ const TaskComp = props => {
         const key = event.key;
         if(key === "Enter") {
             addTask({taskName: taskName})
-            event.target.value = "";
+            setTaskName("");
         }
     }
 
