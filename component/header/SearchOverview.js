@@ -5,8 +5,6 @@ const SearchOverview = props => {
 
     const { taskDetails, isOpen, closeOverview } = props;
 
-    console.log(taskDetails);
-
     return (
         <div className={`search-result-overview y-axis-flex ${isOpen ? "open-search-overview" : ""}`}>
             <i 
