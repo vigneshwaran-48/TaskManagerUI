@@ -29,5 +29,5 @@ export const ServerAPIManager = {
         // }
         return appRoutes;
     },
-    ServerURL: "http://localhost:8383"
+    ServerURL: "http://127.0.0.1:8383"
 }
