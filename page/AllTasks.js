@@ -104,7 +104,7 @@ const AllTasks = () => {
                 <div className="task-listing-filters x-axis-flex" tabIndex={0}>
                     <div className="task-filter-options-container y-axis-flex">
                         <i className="fa fa-solid fa-filter"></i>
-                        <Dropdown items={filterMenus} isOpen={true} />
+                        {/* <Dropdown items={filterMenus} isOpen={true} /> */}
                     </div>
                 </div>
                 <TaskComp 

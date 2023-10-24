@@ -93,6 +93,18 @@ const ListSideNav = props => {
         callback();
     }
 
+    const handleDeleteList = async id => {
+        const response = await ListAPI.deleteList(id);
+        if(response.status === 200) {
+            Common.showSuccessPopup(response.message, 2);
+
+            setList(prevList => prevList.filter(l => l.listId !== id));
+        }
+        else {
+            Common.showErrorPopup(response.error, 2);
+        }
+    }
+
     if(!list) {
         return <Loading />
     }
@@ -121,6 +133,15 @@ const ListSideNav = props => {
                     }
                     isLoading={isLoading}
                     listColor={elem.listColor}
+                    deleteIcon={
+                        elem.listName !== "Personal" && elem.listName !== "Work" ?
+                            <div className="list-delete-icon-wrapper">
+                                <i 
+                                    onClick={() => handleDeleteList(elem.listId)} 
+                                    className="fa fa-solid fa-trash"></i>
+                            </div>
+                        : null
+                    }
                 />
             </NavLink>
         );
