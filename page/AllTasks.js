@@ -25,6 +25,17 @@ const AllTasks = () => {
         taskDetails: null
     });
 
+    const [ seletedFilterptions, setSelectedFilterOptions ] = useState([
+        {
+            id: 1,
+            name: "Completed",
+        },
+        {
+            id: 2,
+            name: "Yet to finish"
+        }
+    ]);
+
     const filterMenus = [
         {
             id: 1,
@@ -93,6 +104,21 @@ const AllTasks = () => {
         return false;
     }
 
+    const handleFilterDropDownOption = option => {
+        console.log(option);
+    }
+
+    const seletedFilterptionsElems = seletedFilterptions ? seletedFilterptions.map(option => {
+        return (
+            <div className="selected-filter x-axis-flex" key={option.id}>
+                <div className="filter-name x-axis-flex hide-scrollbar">
+                    <p>{ option.name }</p>
+                </div>
+                <i className="bi bi-x"></i>
+            </div>
+        );
+    }) : seletedFilterptions;
+
     return (
         <motion.div 
             initial={Common.mainElementsFramerVariants.slideFromRight}
@@ -101,10 +127,14 @@ const AllTasks = () => {
             className="app-body-middle today-comp x-axis-flex"
         >
             <div className="task-comp-and-filter-wrapper y-axis-flex">
-                <div className="task-listing-filters x-axis-flex" tabIndex={0}>
-                    <div className="task-filter-options-container y-axis-flex">
-                        <i className="fa fa-solid fa-filter"></i>
-                        {/* <Dropdown items={filterMenus} isOpen={true} /> */}
+                <div className="task-listing-filters x-axis-flex">
+                    <div className="task-filter-options-container y-axis-flex" tabIndex={0}>
+                        <i 
+                            className="fa fa-solid fa-filter"></i>
+                        <Dropdown items={filterMenus} onListClick={handleFilterDropDownOption} />
+                    </div>
+                    <div className="selected-filter-options hide-scrollbar x-axis-flex">
+                        { seletedFilterptionsElems }
                     </div>
                 </div>
                 <TaskComp 

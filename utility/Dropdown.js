@@ -2,64 +2,37 @@ import React, { useEffect, useRef, useState } from 'react'
 
 const Dropdown = props => {
 
-    const { items, isOpen, subItems } = props;
-    const [ isSubDropdownOpen, setIsSubDropdownOpen ] = useState(false);
+    const { items, isOpen, subItems, onListClick } = props;
     const ref = useRef();
-
-    useEffect(() => {
-        const autoCloseOnExit = event => {
-            if(isSubDropdownOpen && ref.current && !ref.current.contains(event.target)) {
-                setIsSubDropdownOpen(false);
-            }
-            else {
-                console.log("Not closing ...")
-            }
-        }
-        document.addEventListener("mousedown", autoCloseOnExit);
-        document.addEventListener("touchstart", autoCloseOnExit);
-
-        return () => {
-            document.removeEventListener("mousedown", autoCloseOnExit);
-            document.removeEventListener("touchstart", autoCloseOnExit);
-        }
-    }, [isSubDropdownOpen]);
-
-    const handleSubDropdownClick = () => {
-        setIsSubDropdownOpen(true);
-    }
-
-    const onMouseLeave = () => {
-        setIsSubDropdownOpen(false);
-    }
-
-    const onMouseEnter = () => {
-        setIsSubDropdownOpen(true);
-    };
 
     const itemsElems = items ? items.map(item => {
         return (
-            <li className={`drop-down-item x-axis-flex`} key={item.id}>
-                <p>{ item.name }</p>
-                <div 
-                    className="sub-drop-down-button x-axis-flex" 
-                    onClick={handleSubDropdownClick}
-                >
-                    <i className="fa fa-solid fa-angle-right"></i>
-                </div>
+            <li 
+                className={`drop-down-item x-axis-flex`} 
+                key={item.id}
+                onClick={event =>{
+                    event.stopPropagation();
+                    onListClick(item);
+                }}
+            >
+                <p className="x-axis-flex">
+                    { item.name } 
+                    {item.subItems ? <i className="fa fa-solid fa-angle-right"></i> : ""}
+                </p>
                 <Dropdown 
-                        items={item.subItems}
-                        subItems={true} />
+                    items={item.subItems}
+                    subItems={true} 
+                    onListClick={onListClick}
+                />
             </li>
         );
     }): null;
 
     return (
         <ul 
-            className={`multi-drop-down hide-scrollbar
-                        ${subItems ? "sub-drop-down" : ""} ${isSubDropdownOpen || isOpen ? "show-drop-down" : ""}`}
+            className={`multi-drop-down hide-scrollbar ${subItems ? "sub-drop-down" : ""} 
+            ${isOpen ? "show-drop-down" : ""}`}
             ref={ref}
-            onMouseLeave={onMouseLeave}
-            onMouseEnter={onMouseEnter}
         >
             { itemsElems }
         </ul>
