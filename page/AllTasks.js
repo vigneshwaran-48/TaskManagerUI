@@ -48,20 +48,22 @@ const AllTasks = () => {
         {
             id: 3,
             name: "List",
+            isCheckboxDropdown: true,
             subItems: [
                 {
-                    id: 1,
-                    name: 'Work'
+                    id: 5,
+                    name: 'Work',
+                    checked: false
                 },
                 {
-                    id: 2,
+                    id: 6,
                     name: "Personal",
-                    subItems: [
-                        {
-                            id: 1,
-                            name: "Testing"
-                        }
-                    ]
+                    checked: false
+                },
+                {
+                    id: 7,
+                    name: "Bug",
+                    checked: false
                 }
             ]
         }
@@ -105,10 +107,22 @@ const AllTasks = () => {
     }
 
     const handleFilterDropDownOption = option => {
-        console.log(option);
+        if(option.length && option.length > 1) {
+            console.log(option);
+            const filtered = option.filter(o =>{
+                console.log(o);
+                return o.checked;
+            });
+            console.log(filtered);
+            setSelectedFilterOptions(filtered);
+        }
+        else {
+            setSelectedFilterOptions([ option ]);
+        }
     }
 
-    const seletedFilterptionsElems = seletedFilterptions ? seletedFilterptions.map(option => {
+    const seletedFilterptionsElems = seletedFilterptions && seletedFilterptions.length > 0 
+                                    ? seletedFilterptions.map(option => {
         return (
             <div className="selected-filter x-axis-flex" key={option.id}>
                 <div className="filter-name x-axis-flex hide-scrollbar">
@@ -117,7 +131,7 @@ const AllTasks = () => {
                 <i className="bi bi-x"></i>
             </div>
         );
-    }) : seletedFilterptions;
+    }) : null;
 
     return (
         <motion.div 

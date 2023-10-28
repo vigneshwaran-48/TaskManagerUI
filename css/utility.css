@@ -48,7 +48,15 @@
 }
 .drop-down-item > p {
     width: 100%;
-    justify-content: space-between;
+    justify-content: flex-start;
+    text-align: left;
+}
+.drop-down-item > p > input[type=checkbox] {
+    margin-right: 5px;
+}
+.drop-down-item > p > i {
+    text-align: right;
+    flex-grow: 1;
 }
 .drop-down-item:first-child {
     border-top-right-radius: 7px;

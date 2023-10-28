@@ -1,12 +1,13 @@
 .task-listing-filters {
     position: relative;
+    align-items: center;
 }
 
 .task-filter-options-container {
     cursor: pointer;
 }
 .task-filter-options-container > .multi-drop-down {
-    top: 100%;
+    top: 110%;
     left: 5px;
 }
 .task-filter-options-container:focus-within > .multi-drop-down {
