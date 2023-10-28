@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { TaskAPI } from "../api/TaskAPI";
 import { useLoaderData, useParams } from "react-router-dom";
 import { Common } from "../utility/Common";
@@ -21,9 +21,15 @@ const ListBody = () => {
         taskDetails: null
     });
 
+    
+
     const listLoaderData = useLoaderData();
 
     const params = useParams();
+
+    useEffect(() => {
+        setEditorState(prevState => ({...prevState, isOpen: false}));
+    }, [params.id]);
 
     const openEditor = async id => {
         const taskResponse = await TaskAPI.getSingleTaskDetails(id);

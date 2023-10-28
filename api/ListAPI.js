@@ -59,5 +59,9 @@ export const ListAPI = {
                                     }
                                 });
         return await response.json();
+    },
+    deleteList: async id => {
+        const url = ServerAPIManager.ServerURL + ServerAPIManager.getAppRoutes().list.base + "/" + id;
+        return await sendRequestWithCsrf(url, "DELETE", false);
     }
 }

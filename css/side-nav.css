@@ -171,6 +171,14 @@
 .nav-loading-wrapper {
     height: 32px;
 }
+.list-delete-icon-wrapper {
+    flex-grow: 1;
+    text-align: right;
+    color: red;
+}
+.list-delete-icon-wrapper + .count-box {
+    flex-grow: 0;
+}
 
 .side-nav-bottom{
     position: absolute;

@@ -2,66 +2,98 @@ import React, { useEffect, useRef, useState } from 'react'
 
 const Dropdown = props => {
 
-    const { items, isOpen, subItems } = props;
-    const [ isSubDropdownOpen, setIsSubDropdownOpen ] = useState(false);
-    const ref = useRef();
+    const { items, isOpen, subItems, onListClick, isCheckboxDropdown } = props;
 
-    useEffect(() => {
-        const autoCloseOnExit = event => {
-            if(isSubDropdownOpen && ref.current && !ref.current.contains(event.target)) {
-                setIsSubDropdownOpen(false);
-            }
-            else {
-                console.log("Not closing ...")
-            }
-        }
-        document.addEventListener("mousedown", autoCloseOnExit);
-        document.addEventListener("touchstart", autoCloseOnExit);
-
-        return () => {
-            document.removeEventListener("mousedown", autoCloseOnExit);
-            document.removeEventListener("touchstart", autoCloseOnExit);
-        }
-    }, [isSubDropdownOpen]);
-
-    const handleSubDropdownClick = () => {
-        setIsSubDropdownOpen(true);
+    if(isCheckboxDropdown) {
+        return <DropdownCheckbox 
+                    items={items} 
+                    isOpen={isOpen}
+                    onListClick={onListClick}
+                    subItems={subItems} />
     }
-
-    const onMouseLeave = () => {
-        setIsSubDropdownOpen(false);
-    }
-
-    const onMouseEnter = () => {
-        setIsSubDropdownOpen(true);
-    };
 
     const itemsElems = items ? items.map(item => {
         return (
-            <li className={`drop-down-item x-axis-flex`} key={item.id}>
-                <p>{ item.name }</p>
-                <div 
-                    className="sub-drop-down-button x-axis-flex" 
-                    onClick={handleSubDropdownClick}
-                >
-                    <i className="fa fa-solid fa-angle-right"></i>
-                </div>
+            <li 
+                className={`drop-down-item x-axis-flex`} 
+                key={item.id}
+                onClick={event =>{
+                    event.stopPropagation();
+                    !item.subItems && onListClick(item);
+                }}
+            >
+                <p className="x-axis-flex">
+                    { item.name } 
+                    {item.subItems ? <i className="fa fa-solid fa-angle-right"></i> : ""}
+                </p>
                 <Dropdown 
-                        items={item.subItems}
-                        subItems={true} />
+                    items={item.subItems}
+                    subItems={true} 
+                    onListClick={onListClick}
+                    isCheckboxDropdown={item.isCheckboxDropdown}
+                />
             </li>
         );
     }): null;
 
     return (
         <ul 
-            className={`multi-drop-down hide-scrollbar
-                        ${subItems ? "sub-drop-down" : ""} ${isSubDropdownOpen || isOpen ? "show-drop-down" : ""}`}
-            ref={ref}
-            onMouseLeave={onMouseLeave}
-            onMouseEnter={onMouseEnter}
+            className={`multi-drop-down hide-scrollbar ${subItems ? "sub-drop-down" : ""} 
+            ${isOpen ? "show-drop-down" : ""}`}
         >
             { itemsElems }
+        </ul>
+    )
+}
+
+const DropdownCheckbox = props => {
+
+    const { items, isOpen, subItems, onListClick } = props;
+
+    const [ checkboxItems, setCheckboxItems ] = useState(items);
+
+    const handleCheckboxChange = event => {
+        const { name, checked } = event.target;
+
+        const mapped = checkboxItems.map(elem => {
+            if(elem.name === name) {
+                elem.checked = checked;
+            }
+            return elem;
+        });
+
+        setCheckboxItems(mapped);
+        onListClick(mapped);
+    }
+
+    const elems = checkboxItems ? checkboxItems.map(item => {
+        return (
+            <li 
+                className={`drop-down-item x-axis-flex`} 
+                key={item.id}
+                onFocus={event =>{
+                    event.stopPropagation();
+                }}
+            >
+                <p className="x-axis-flex">
+                    <input 
+                        type="checkbox" 
+                        name={item.name}
+                        checked={item.checked}
+                        onChange={ handleCheckboxChange }
+                    />
+                    { item.name } 
+                </p>
+            </li>
+        )
+    }) : checkboxItems;
+
+    return (
+        <ul 
+            className={`multi-drop-down hide-scrollbar ${subItems ? "sub-drop-down" : ""}
+             ${isOpen ? "show-drop-down" : ""}`}
+        >
+            { elems }
         </ul>
     )
 }

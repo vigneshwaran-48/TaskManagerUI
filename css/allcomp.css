@@ -1,11 +1,42 @@
 .task-listing-filters {
     position: relative;
+    align-items: center;
 }
 
 .task-filter-options-container {
     cursor: pointer;
 }
 .task-filter-options-container > .multi-drop-down {
-    top: 100%;
+    top: 110%;
     left: 5px;
+}
+.task-filter-options-container:focus-within > .multi-drop-down {
+    display: block;
+}
+
+.selected-filter-options {
+    max-width: 700px;
+    width: 70%;
+    align-items: center;
+    overflow-x: scroll;
+}
+.selected-filter {
+    background-color: red;
+    border-radius: 7px;
+    margin: 0px 5px;
+    padding: 5px;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+}
+.selected-filter > .filter-name {
+    height: 100%;
+    justify-content: flex-start;
+    align-items: center;
+}
+.selected-filter > i {
+    border-radius: 50%;
+    background-color: white;
+    cursor: pointer;
+    margin-left: 5px;
 }
