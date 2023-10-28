@@ -61,12 +61,11 @@ const DropdownCheckbox = props => {
             }
             return elem;
         });
-        
+
         setCheckboxItems(mapped);
         onListClick(mapped);
     }
 
-    console.log("rendered drop down checkbox");
     const elems = checkboxItems ? checkboxItems.map(item => {
         return (
             <li 
@@ -80,7 +79,8 @@ const DropdownCheckbox = props => {
                     <input 
                         type="checkbox" 
                         name={item.name}
-                        onClick={ handleCheckboxChange }
+                        checked={item.checked}
+                        onChange={ handleCheckboxChange }
                     />
                     { item.name } 
                 </p>

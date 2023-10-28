@@ -1,5 +1,5 @@
-import React, { useContext, useState } from 'react'
-import { defer, useLoaderData } from 'react-router-dom'
+import React, { useContext, useEffect, useState } from 'react'
+import { defer, useLoaderData, useSearchParams } from 'react-router-dom'
 import { TaskAPI } from '../api/TaskAPI'
 import { motion } from 'framer-motion'
 import TaskComp from '../component/task/TaskComp'
@@ -8,6 +8,7 @@ import { AppContext } from '../App'
 import { Common } from '../utility/Common'
 import Dropdown from '../utility/Dropdown'
 import "../css/allcomp.css";
+import { ListAPI } from '../api/ListAPI'
 
 
 export const allTasksLoader = () => {
@@ -25,49 +26,100 @@ const AllTasks = () => {
         taskDetails: null
     });
 
-    const [ seletedFilterptions, setSelectedFilterOptions ] = useState([
-        {
-            id: 1,
-            name: "Completed",
-        },
-        {
-            id: 2,
-            name: "Yet to finish"
-        }
-    ]);
+    const [ filterMenus, setFilterMenus ] = useState();
 
-    const filterMenus = [
-        {
-            id: 1,
-            name: "Completed"
-        },
-        {
-            id: 2,
-            name: "Yet to finish"
-        },
-        {
-            id: 3,
-            name: "List",
-            isCheckboxDropdown: true,
-            subItems: [
-                {
-                    id: 5,
-                    name: 'Work',
-                    checked: false
-                },
-                {
-                    id: 6,
-                    name: "Personal",
-                    checked: false
-                },
-                {
-                    id: 7,
-                    name: "Bug",
-                    checked: false
+    const [ seletedFilterptions, setSelectedFilterOptions ] = useState(null);
+
+    const [ searchParams, setSearchParams ] = useSearchParams();
+
+    useEffect(() => {
+        handleSearchParams();
+    }, [searchParams]);
+
+    useEffect(() => {
+        checkSeletedFilters();
+    }, [filterMenus]);
+
+    const handleSearchParams = async () => {
+        if(searchParams.size) {
+            let options = [];
+            let idCounter = 0;
+
+            let lists;
+            let searchedLists = [];
+            
+            if(searchParams.has("list")) {
+                searchedLists = searchParams.get("list").split(",").map(listId => parseInt(listId));
+            }
+            const response = await ListAPI.getAllListsOfUser();
+            if(response.status !== 200) {
+                Common.showErrorPopup(response.error, 2);
+                return;
+            }
+            lists = response.lists;
+
+            populateOptions(options, idCounter, lists);
+            setSelectedFilterOptions(options);
+
+            const listSelectOptions = lists.map(list => {
+                return {
+                    id: list.listId,
+                    name: list.listName,
+                    checked: searchedLists.includes(list.listId)
                 }
-            ]
+            });
+           
+            const isCompleted = searchParams.has("Completed") ? searchParams.get("Completed") === "true" : false;
+            const isYetToFinish = searchParams.has("YetToFinish") ? searchParams.get("YetToFinish") === "true" : false;
+            setFilterMenus(getFilterOptionsWithList(listSelectOptions, isCompleted, isYetToFinish));
+            console.log(getFilterOptionsWithList(listSelectOptions, isCompleted, isYetToFinish))
         }
-    ]
+    }
+
+    const getFilterOptionsWithList = ( lists, isCompleted, isYetToFinish ) => {
+        return [
+            {
+                id: 1,
+                name: "Completed",
+                checked: isCompleted
+            },
+            {
+                id: 2,
+                name: "Yet to finish",
+                checked: isYetToFinish
+            },
+            {
+                id: 3,
+                name: "List",
+                isCheckboxDropdown: true,
+                subItems: lists
+            }
+        ]
+    }
+
+    const populateOptions = async (options, idCounter, lists) => {
+        searchParams.forEach((value, key) =>{
+            if(key === "list") {
+                const listIds = value.split(",");
+                listIds.forEach(listId => {
+                    const list = lists.find(list => list.listId === parseInt(listId));
+                    options.push({
+                        id: idCounter,
+                        name: list.listName,
+                        value: listId
+                    });
+                });
+            }
+            else {
+                options.push({
+                    id: idCounter,
+                    name: key,
+                    value
+                });
+            }
+            idCounter++;
+        });
+    }
 
     const openEditor = async id => {
         const taskResponse = await TaskAPI.getSingleTaskDetails(id);
@@ -106,18 +158,41 @@ const AllTasks = () => {
         return false;
     }
 
+    const checkSeletedFilters = () => {
+        const filtered = [];
+
+        filterMenus && filterMenus.forEach((menu, index) => {
+            if(menu.checked) {
+                // This check will be done for "Completed" and "Yet To Finish"
+                filtered.push({id: menu.id, name: menu.name});
+            }
+            else if (menu.subItems) {
+                // This check will be done for "lists" dropdown
+                menu.subItems.forEach(list => {
+                    if(list.checked) {
+                        filtered.push({id: list.id, name: list.name});
+                    }
+                })
+            }
+        });
+        setSelectedFilterOptions(filtered);
+    }
+
     const handleFilterDropDownOption = option => {
-        if(option.length && option.length > 1) {
-            console.log(option);
-            const filtered = option.filter(o =>{
-                console.log(o);
-                return o.checked;
+        // TODO Need to makes these strings as constants
+        if(option.name === "Yet to finish" || option.name === "Completed") {
+            setFilterMenus(prev => {
+                prev.forEach(p => {
+                    if(p.id === option.id) {
+                        p.checked = !p.checked;
+                    }
+                });
+                console.log(prev);
+                return [...prev];
             });
-            console.log(filtered);
-            setSelectedFilterOptions(filtered);
-        }
+        }   
         else {
-            setSelectedFilterOptions([ option ]);
+            checkSeletedFilters();
         }
     }
 
