@@ -41,24 +41,25 @@ const AllTasks = () => {
     }, [filterMenus]);
 
     const handleSearchParams = async () => {
+
+        const response = await ListAPI.getAllListsOfUser();
+        if(response.status !== 200) {
+            Common.showErrorPopup(response.error, 2);
+            return;
+        }
+        const lists = response.lists;
+
         if(searchParams.size) {
             let options = [];
             let idCounter = 0;
 
-            let lists;
             let searchedLists = [];
             
             if(searchParams.has("list")) {
                 searchedLists = searchParams.get("list").split(",").map(listId => parseInt(listId));
             }
-            const response = await ListAPI.getAllListsOfUser();
-            if(response.status !== 200) {
-                Common.showErrorPopup(response.error, 2);
-                return;
-            }
-            lists = response.lists;
-
-            populateOptions(options, idCounter, lists);
+            
+            populateOptions(options, lists);
             setSelectedFilterOptions(options);
 
             const listSelectOptions = lists.map(list => {
@@ -70,9 +71,18 @@ const AllTasks = () => {
             });
            
             const isCompleted = searchParams.has("Completed") ? searchParams.get("Completed") === "true" : false;
-            const isYetToFinish = searchParams.has("YetToFinish") ? searchParams.get("YetToFinish") === "true" : false;
+            const isYetToFinish = searchParams.has("Yet2finish") ? searchParams.get("Yet2finish") === "true" : false;
             setFilterMenus(getFilterOptionsWithList(listSelectOptions, isCompleted, isYetToFinish));
-            console.log(getFilterOptionsWithList(listSelectOptions, isCompleted, isYetToFinish))
+        }
+        else {
+            const listSelectOptions = lists.map(list => {
+                return {
+                    id: list.listId,
+                    name: list.listName,
+                    checked: false
+                }
+            });
+            setFilterMenus(getFilterOptionsWithList(listSelectOptions, false, false));
         }
     }
 
@@ -85,7 +95,7 @@ const AllTasks = () => {
             },
             {
                 id: 2,
-                name: "Yet to finish",
+                name: "Yet2finish",
                 checked: isYetToFinish
             },
             {
@@ -97,14 +107,15 @@ const AllTasks = () => {
         ]
     }
 
-    const populateOptions = async (options, idCounter, lists) => {
+    const populateOptions = async (options, lists) => {
+        let idCounter = 1;
         searchParams.forEach((value, key) =>{
             if(key === "list") {
                 const listIds = value.split(",");
                 listIds.forEach(listId => {
                     const list = lists.find(list => list.listId === parseInt(listId));
                     options.push({
-                        id: idCounter,
+                        id: idCounter++,
                         name: list.listName,
                         value: listId
                     });
@@ -169,32 +180,58 @@ const AllTasks = () => {
             else if (menu.subItems) {
                 // This check will be done for "lists" dropdown
                 menu.subItems.forEach(list => {
+                    console.log(list);
                     if(list.checked) {
-                        filtered.push({id: list.id, name: list.name});
+                        filtered.push({id: list.id, name: list.name, isList: true});
                     }
                 })
             }
         });
+                
         setSelectedFilterOptions(filtered);
+
+        setSearchParams(prevSearchParams => {
+            prevSearchParams.entries().forEach(([key, value]) => {
+                if(!filtered.some(fil => fil.name === key)) {
+                    prevSearchParams.delete(key);
+                }
+            });
+            filtered && filtered.forEach(fil => {
+                if(!prevSearchParams.has(fil.isList ? "list" : fil.name)) {
+                    prevSearchParams.set(fil.isList ? "list" : fil.name, fil.isList ? fil.id : true);
+                }
+                else if (fil.isList && !prevSearchParams.get("list").includes(fil.id)) {
+                    prevSearchParams.set("list", prevSearchParams.get("list") + "," + fil.id);
+                }
+            });
+            return prevSearchParams;
+        });
     }
 
     const handleFilterDropDownOption = option => {
         // TODO Need to makes these strings as constants
-        if(option.name === "Yet to finish" || option.name === "Completed") {
+        if(option.name === "Yet2finish" || option.name === "Completed") {
             setFilterMenus(prev => {
                 prev.forEach(p => {
                     if(p.id === option.id) {
                         p.checked = !p.checked;
                     }
                 });
-                console.log(prev);
                 return [...prev];
             });
         }   
         else {
-            checkSeletedFilters();
+            setFilterMenus(prev => {
+                const lists = prev.find(fmenu => fmenu.name === "List");
+                if(lists) {
+                    lists.subItems = option;
+                }
+                return [...prev];
+            });
         }
     }
+
+    console.log(seletedFilterptions);
 
     const seletedFilterptionsElems = seletedFilterptions && seletedFilterptions.length > 0 
                                     ? seletedFilterptions.map(option => {
