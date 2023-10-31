@@ -14,6 +14,10 @@ import { ListAPI } from '../api/ListAPI'
 export const allTasksLoader = () => {
     return defer({allTasks: TaskAPI.getAllTasks()});
 }
+
+const COMPLETED = "Completed";
+const YET2FINISH = "Yet2Finish";
+
 const AllTasks = () => {
 
     const allTasksLoader = useLoaderData();
@@ -51,7 +55,6 @@ const AllTasks = () => {
 
         if(searchParams.size) {
             let options = [];
-            let idCounter = 0;
 
             let searchedLists = [];
             
@@ -70,8 +73,8 @@ const AllTasks = () => {
                 }
             });
            
-            const isCompleted = searchParams.has("Completed") ? searchParams.get("Completed") === "true" : false;
-            const isYetToFinish = searchParams.has("Yet2finish") ? searchParams.get("Yet2finish") === "true" : false;
+            const isCompleted = searchParams.has(COMPLETED) ? searchParams.get(COMPLETED) === "true" : false;
+            const isYetToFinish = searchParams.has(YET2FINISH) ? searchParams.get(YET2FINISH) === "true" : false;
             setFilterMenus(getFilterOptionsWithList(listSelectOptions, isCompleted, isYetToFinish));
         }
         else {
@@ -90,12 +93,12 @@ const AllTasks = () => {
         return [
             {
                 id: 1,
-                name: "Completed",
+                name: COMPLETED,
                 checked: isCompleted
             },
             {
                 id: 2,
-                name: "Yet2finish",
+                name: YET2FINISH,
                 checked: isYetToFinish
             },
             {
@@ -210,10 +213,11 @@ const AllTasks = () => {
 
     const handleFilterDropDownOption = option => {
         // TODO Need to makes these strings as constants
-        if(option.name === "Yet2finish" || option.name === "Completed") {
+        if(option.name === YET2FINISH || option.name === COMPLETED) {
             setFilterMenus(prev => {
                 prev.forEach(p => {
-                    if(p.id === option.id) {
+                    // This "|| p.checked" condition is for toggling between Yet2Finish and Completed
+                    if(p.id === option.id || p.checked) {
                         p.checked = !p.checked;
                     }
                 });
@@ -231,7 +235,19 @@ const AllTasks = () => {
         }
     }
 
-    console.log(seletedFilterptions);
+    const handleRemoveFilter = filter => {
+        if(filter.isList) {
+            setFilterMenus(prev => {
+                const lists = prev.find(fmenu => fmenu.name === "List").subItems;
+                lists.forEach(list => list.id === filter.id ? list.checked = false : list.checked);
+                return [...prev];
+            });
+        }
+        else {
+            filter.checked = false;
+            handleFilterDropDownOption(filter);
+        }
+    }
 
     const seletedFilterptionsElems = seletedFilterptions && seletedFilterptions.length > 0 
                                     ? seletedFilterptions.map(option => {
@@ -240,10 +256,37 @@ const AllTasks = () => {
                 <div className="filter-name x-axis-flex hide-scrollbar">
                     <p>{ option.name }</p>
                 </div>
-                <i className="bi bi-x"></i>
+                <i onClick={() => handleRemoveFilter({...option})} className="bi bi-x"></i>
             </div>
         );
     }) : null;
+
+    // Filtering task with selected filters ...
+    const tasksFilter = tasks => {
+
+        let filtered = tasks;
+
+        // First filtering all tasks with "Completed" or "Yet2Finish"
+        if(seletedFilterptions.some(filter => filter.name === COMPLETED)) {
+            filtered = tasks.filter(task => task.isCompleted);
+        }
+        else if(seletedFilterptions.some(filter => filter.name === YET2FINISH)) {
+            filtered = tasks.filter(task => !task.isCompleted);
+        }
+
+        if(seletedFilterptions.some(filter => filter.isList)) {
+            const filterLists = seletedFilterptions.filter(filter => filter.isList);
+            filtered = filtered.filter(task => {
+                // If all filtered list id passes
+                return filterLists.every(filterList => {
+                    // If any list of the task matched the filter list's id
+                    return task.lists ? task.lists.some(list => list.listId === filterList.id) : false;
+                });
+            });
+        }
+        return filtered;
+    }
+
 
     return (
         <motion.div 
@@ -271,6 +314,8 @@ const AllTasks = () => {
                     notifyTaskChange={notifyTaskChange}
                     id="all-tasks-key"
                     removeTasksAddInput={true}
+                    shouldFilterTasks={true}
+                    tasksFilter={tasksFilter}
                 />
             </div>
             <TaskEditor 
