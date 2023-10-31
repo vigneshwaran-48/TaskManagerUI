@@ -1,6 +1,7 @@
 .task-listing-filters {
     position: relative;
     align-items: center;
+    height: 30px;
 }
 
 .task-filter-options-container {

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { defer, useLoaderData, useSearchParams } from 'react-router-dom'
 import { TaskAPI } from '../api/TaskAPI'
 import { motion } from 'framer-motion'
@@ -10,7 +10,6 @@ import Dropdown from '../utility/Dropdown'
 import "../css/allcomp.css";
 import { ListAPI } from '../api/ListAPI'
 
-
 export const allTasksLoader = () => {
     return defer({allTasks: TaskAPI.getAllTasks()});
 }
@@ -19,6 +18,8 @@ const COMPLETED = "Completed";
 const YET2FINISH = "Yet2Finish";
 
 const AllTasks = () => {
+
+    const onloadRef = useRef({isLoadQueryParamCheckFinished: false});
 
     const allTasksLoader = useLoaderData();
 
@@ -30,11 +31,15 @@ const AllTasks = () => {
         taskDetails: null
     });
 
-    const [ filterMenus, setFilterMenus ] = useState();
+    const [ filterMenus, setFilterMenus ] = useState(null);
 
     const [ seletedFilterptions, setSelectedFilterOptions ] = useState(null);
 
     const [ searchParams, setSearchParams ] = useSearchParams();
+
+    useEffect(() => {
+        console.log(searchParams.toString());
+    }, []);
 
     useEffect(() => {
         handleSearchParams();
@@ -54,25 +59,21 @@ const AllTasks = () => {
         const lists = response.lists;
 
         if(searchParams.size) {
-            let options = [];
 
             let searchedLists = [];
             
             if(searchParams.has("list")) {
                 searchedLists = searchParams.get("list").split(",").map(listId => parseInt(listId));
             }
-            
-            populateOptions(options, lists);
-            setSelectedFilterOptions(options);
-
-            const listSelectOptions = lists.map(list => {
+       
+            let listSelectOptions = lists.map(list => {
                 return {
                     id: list.listId,
                     name: list.listName,
                     checked: searchedLists.includes(list.listId)
                 }
             });
-           
+          
             const isCompleted = searchParams.has(COMPLETED) ? searchParams.get(COMPLETED) === "true" : false;
             const isYetToFinish = searchParams.has(YET2FINISH) ? searchParams.get(YET2FINISH) === "true" : false;
             setFilterMenus(getFilterOptionsWithList(listSelectOptions, isCompleted, isYetToFinish));
@@ -87,6 +88,7 @@ const AllTasks = () => {
             });
             setFilterMenus(getFilterOptionsWithList(listSelectOptions, false, false));
         }
+        onloadRef.current.isLoadQueryParamCheckFinished = true;
     }
 
     const getFilterOptionsWithList = ( lists, isCompleted, isYetToFinish ) => {
@@ -108,31 +110,6 @@ const AllTasks = () => {
                 subItems: lists
             }
         ]
-    }
-
-    const populateOptions = async (options, lists) => {
-        let idCounter = 1;
-        searchParams.forEach((value, key) =>{
-            if(key === "list") {
-                const listIds = value.split(",");
-                listIds.forEach(listId => {
-                    const list = lists.find(list => list.listId === parseInt(listId));
-                    options.push({
-                        id: idCounter++,
-                        name: list.listName,
-                        value: listId
-                    });
-                });
-            }
-            else {
-                options.push({
-                    id: idCounter,
-                    name: key,
-                    value
-                });
-            }
-            idCounter++;
-        });
     }
 
     const openEditor = async id => {
@@ -173,6 +150,9 @@ const AllTasks = () => {
     }
 
     const checkSeletedFilters = () => {
+        if(!onloadRef.current.isLoadQueryParamCheckFinished) {
+            return;
+        }
         const filtered = [];
 
         filterMenus && filterMenus.forEach((menu, index) => {
@@ -183,14 +163,13 @@ const AllTasks = () => {
             else if (menu.subItems) {
                 // This check will be done for "lists" dropdown
                 menu.subItems.forEach(list => {
-                    console.log(list);
                     if(list.checked) {
                         filtered.push({id: list.id, name: list.name, isList: true});
                     }
                 })
             }
         });
-                
+           
         setSelectedFilterOptions(filtered);
 
         setSearchParams(prevSearchParams => {
@@ -265,6 +244,10 @@ const AllTasks = () => {
     const tasksFilter = tasks => {
 
         let filtered = tasks;
+
+        if(!seletedFilterptions) {
+            return tasks;
+        }
 
         // First filtering all tasks with "Completed" or "Yet2Finish"
         if(seletedFilterptions.some(filter => filter.name === COMPLETED)) {
