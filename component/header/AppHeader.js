@@ -106,17 +106,17 @@ const AppHeader = props => {
                 break;
             case Common.TaskEventConstants.TASK_ADD:
                 setSearchResults(prevSearchData => {
-                    const prevTasks = prevSearchData.data;
+                    let prevTasks = prevSearchData.data;
                     
-                    if(prevTasks == null) prevTasks = [];
+                    if(prevTasks === null) prevTasks = [];
                     return {...prevSearchData, clickedRow: -1, isLoading: true};
                 });
                 break;
             case Common.TaskEventConstants.TASK_DELETE:
                 // Task Details will be taskId that has been deleted in this case ...
                 setSearchResults(prevSearchData => {
-                    const prevTasks = prevSearchData.data;
-                    if(prevTasks == null) prevTasks = [];
+                    let prevTasks = prevSearchData.data;
+                    if(prevTasks === null) prevTasks = [];
                     const filtered =  prevTasks.filter(task => task.taskId !== taskDetails);
                     prevSearchData.data = filtered;
                     return {...prevSearchData, clickedRow: -1, isLoading: true};
