@@ -89,8 +89,9 @@ const AppHeader = props => {
         switch(mode) {
             case Common.TaskEventConstants.TASK_UPDATE:
                 setSearchResults(prevSearchData => {
-                    const prevTasks = prevSearchData.data;
+                    let prevTasks = prevSearchData.data;
 
+                    if(!prevTasks) prevTasks = [];
                     const index = prevTasks.findIndex(task => task.taskId === taskDetails.taskId);
                     if(index >= 0) {
                         // Updating the existing task
@@ -108,7 +109,7 @@ const AppHeader = props => {
                 setSearchResults(prevSearchData => {
                     let prevTasks = prevSearchData.data;
                     
-                    if(prevTasks === null) prevTasks = [];
+                    if(!prevTasks) prevTasks = [];
                     return {...prevSearchData, clickedRow: -1, isLoading: true};
                 });
                 break;
@@ -116,7 +117,7 @@ const AppHeader = props => {
                 // Task Details will be taskId that has been deleted in this case ...
                 setSearchResults(prevSearchData => {
                     let prevTasks = prevSearchData.data;
-                    if(prevTasks === null) prevTasks = [];
+                    if(!prevTasks) prevTasks = [];
                     const filtered =  prevTasks.filter(task => task.taskId !== taskDetails);
                     prevSearchData.data = filtered;
                     return {...prevSearchData, clickedRow: -1, isLoading: true};

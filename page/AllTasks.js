@@ -23,7 +23,8 @@ const AllTasks = () => {
 
     const allTasksLoader = useLoaderData();
 
-    const { TaskChangeEvent, updateTask, deleteTask, getTask } = useContext(AppContext);
+    const { TaskChangeEvent, updateTask, deleteTask, getTask, 
+            subscribeToTaskChange, unSubscribeToTaskChange } = useContext(AppContext);
 
     const [ editorState, setEditorState ] = useState({
         isOpen: false,
@@ -36,10 +37,6 @@ const AllTasks = () => {
     const [ seletedFilterptions, setSelectedFilterOptions ] = useState(null);
 
     const [ searchParams, setSearchParams ] = useSearchParams();
-
-    useEffect(() => {
-        console.log(searchParams.toString());
-    }, []);
 
     useEffect(() => {
         handleSearchParams();
