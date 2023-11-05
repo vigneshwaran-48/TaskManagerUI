@@ -170,7 +170,7 @@ const AllTasks = () => {
         setSelectedFilterOptions(filtered);
 
         setSearchParams(prevSearchParams => {
-            prevSearchParams.entries().forEach(([key, value]) => {
+            Array.from(prevSearchParams).forEach(([key, value]) => {
                 if(!filtered.some(fil => fil.name === key)) {
                     prevSearchParams.delete(key);
                 }
