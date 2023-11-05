@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { defer, useLoaderData, useSearchParams } from 'react-router-dom'
 import { TaskAPI } from '../api/TaskAPI'
 import { motion } from 'framer-motion'
@@ -10,15 +10,21 @@ import Dropdown from '../utility/Dropdown'
 import "../css/allcomp.css";
 import { ListAPI } from '../api/ListAPI'
 
-
 export const allTasksLoader = () => {
     return defer({allTasks: TaskAPI.getAllTasks()});
 }
+
+const COMPLETED = "Completed";
+const YET2FINISH = "Yet2Finish";
+
 const AllTasks = () => {
+
+    const onloadRef = useRef({isLoadQueryParamCheckFinished: false});
 
     const allTasksLoader = useLoaderData();
 
-    const { TaskChangeEvent, updateTask, deleteTask, getTask } = useContext(AppContext);
+    const { TaskChangeEvent, updateTask, deleteTask, getTask, 
+            subscribeToTaskChange, unSubscribeToTaskChange } = useContext(AppContext);
 
     const [ editorState, setEditorState ] = useState({
         isOpen: false,
@@ -26,7 +32,7 @@ const AllTasks = () => {
         taskDetails: null
     });
 
-    const [ filterMenus, setFilterMenus ] = useState();
+    const [ filterMenus, setFilterMenus ] = useState(null);
 
     const [ seletedFilterptions, setSelectedFilterOptions ] = useState(null);
 
@@ -41,51 +47,57 @@ const AllTasks = () => {
     }, [filterMenus]);
 
     const handleSearchParams = async () => {
-        if(searchParams.size) {
-            let options = [];
-            let idCounter = 0;
 
-            let lists;
+        const response = await ListAPI.getAllListsOfUser();
+        if(response.status !== 200) {
+            Common.showErrorPopup(response.error, 2);
+            return;
+        }
+        const lists = response.lists;
+
+        if(searchParams.size) {
+
             let searchedLists = [];
             
             if(searchParams.has("list")) {
                 searchedLists = searchParams.get("list").split(",").map(listId => parseInt(listId));
             }
-            const response = await ListAPI.getAllListsOfUser();
-            if(response.status !== 200) {
-                Common.showErrorPopup(response.error, 2);
-                return;
-            }
-            lists = response.lists;
-
-            populateOptions(options, idCounter, lists);
-            setSelectedFilterOptions(options);
-
-            const listSelectOptions = lists.map(list => {
+       
+            let listSelectOptions = lists.map(list => {
                 return {
                     id: list.listId,
                     name: list.listName,
                     checked: searchedLists.includes(list.listId)
                 }
             });
-           
-            const isCompleted = searchParams.has("Completed") ? searchParams.get("Completed") === "true" : false;
-            const isYetToFinish = searchParams.has("YetToFinish") ? searchParams.get("YetToFinish") === "true" : false;
+          
+            const isCompleted = searchParams.has(COMPLETED) ? searchParams.get(COMPLETED) === "true" : false;
+            const isYetToFinish = searchParams.has(YET2FINISH) ? searchParams.get(YET2FINISH) === "true" : false;
             setFilterMenus(getFilterOptionsWithList(listSelectOptions, isCompleted, isYetToFinish));
-            console.log(getFilterOptionsWithList(listSelectOptions, isCompleted, isYetToFinish))
         }
+        else {
+            const listSelectOptions = lists.map(list => {
+                return {
+                    id: list.listId,
+                    name: list.listName,
+                    checked: false
+                }
+            });
+            setFilterMenus(getFilterOptionsWithList(listSelectOptions, false, false));
+        }
+        onloadRef.current.isLoadQueryParamCheckFinished = true;
     }
 
     const getFilterOptionsWithList = ( lists, isCompleted, isYetToFinish ) => {
         return [
             {
                 id: 1,
-                name: "Completed",
+                name: COMPLETED,
                 checked: isCompleted
             },
             {
                 id: 2,
-                name: "Yet to finish",
+                name: YET2FINISH,
                 checked: isYetToFinish
             },
             {
@@ -95,30 +107,6 @@ const AllTasks = () => {
                 subItems: lists
             }
         ]
-    }
-
-    const populateOptions = async (options, idCounter, lists) => {
-        searchParams.forEach((value, key) =>{
-            if(key === "list") {
-                const listIds = value.split(",");
-                listIds.forEach(listId => {
-                    const list = lists.find(list => list.listId === parseInt(listId));
-                    options.push({
-                        id: idCounter,
-                        name: list.listName,
-                        value: listId
-                    });
-                });
-            }
-            else {
-                options.push({
-                    id: idCounter,
-                    name: key,
-                    value
-                });
-            }
-            idCounter++;
-        });
     }
 
     const openEditor = async id => {
@@ -159,6 +147,9 @@ const AllTasks = () => {
     }
 
     const checkSeletedFilters = () => {
+        if(!onloadRef.current.isLoadQueryParamCheckFinished) {
+            return;
+        }
         const filtered = [];
 
         filterMenus && filterMenus.forEach((menu, index) => {
@@ -170,29 +161,67 @@ const AllTasks = () => {
                 // This check will be done for "lists" dropdown
                 menu.subItems.forEach(list => {
                     if(list.checked) {
-                        filtered.push({id: list.id, name: list.name});
+                        filtered.push({id: list.id, name: list.name, isList: true});
                     }
                 })
             }
         });
+           
         setSelectedFilterOptions(filtered);
+
+        setSearchParams(prevSearchParams => {
+            Array.from(prevSearchParams).forEach(([key, value]) => {
+                if(!filtered.some(fil => fil.name === key)) {
+                    prevSearchParams.delete(key);
+                }
+            });
+            filtered && filtered.forEach(fil => {
+                if(!prevSearchParams.has(fil.isList ? "list" : fil.name)) {
+                    prevSearchParams.set(fil.isList ? "list" : fil.name, fil.isList ? fil.id : true);
+                }
+                else if (fil.isList && !prevSearchParams.get("list").includes(fil.id)) {
+                    prevSearchParams.set("list", prevSearchParams.get("list") + "," + fil.id);
+                }
+            });
+            return prevSearchParams;
+        });
     }
 
     const handleFilterDropDownOption = option => {
         // TODO Need to makes these strings as constants
-        if(option.name === "Yet to finish" || option.name === "Completed") {
+        if(option.name === YET2FINISH || option.name === COMPLETED) {
             setFilterMenus(prev => {
                 prev.forEach(p => {
-                    if(p.id === option.id) {
+                    // This "|| p.checked" condition is for toggling between Yet2Finish and Completed
+                    if(p.id === option.id || p.checked) {
                         p.checked = !p.checked;
                     }
                 });
-                console.log(prev);
                 return [...prev];
             });
         }   
         else {
-            checkSeletedFilters();
+            setFilterMenus(prev => {
+                const lists = prev.find(fmenu => fmenu.name === "List");
+                if(lists) {
+                    lists.subItems = option;
+                }
+                return [...prev];
+            });
+        }
+    }
+
+    const handleRemoveFilter = filter => {
+        if(filter.isList) {
+            setFilterMenus(prev => {
+                const lists = prev.find(fmenu => fmenu.name === "List").subItems;
+                lists.forEach(list => list.id === filter.id ? list.checked = false : list.checked);
+                return [...prev];
+            });
+        }
+        else {
+            filter.checked = false;
+            handleFilterDropDownOption(filter);
         }
     }
 
@@ -203,10 +232,41 @@ const AllTasks = () => {
                 <div className="filter-name x-axis-flex hide-scrollbar">
                     <p>{ option.name }</p>
                 </div>
-                <i className="bi bi-x"></i>
+                <i onClick={() => handleRemoveFilter({...option})} className="bi bi-x"></i>
             </div>
         );
     }) : null;
+
+    // Filtering task with selected filters ...
+    const tasksFilter = tasks => {
+
+        let filtered = tasks;
+
+        if(!seletedFilterptions) {
+            return tasks;
+        }
+
+        // First filtering all tasks with "Completed" or "Yet2Finish"
+        if(seletedFilterptions.some(filter => filter.name === COMPLETED)) {
+            filtered = tasks.filter(task => task.isCompleted);
+        }
+        else if(seletedFilterptions.some(filter => filter.name === YET2FINISH)) {
+            filtered = tasks.filter(task => !task.isCompleted);
+        }
+
+        if(seletedFilterptions.some(filter => filter.isList)) {
+            const filterLists = seletedFilterptions.filter(filter => filter.isList);
+            filtered = filtered.filter(task => {
+                // If all filtered list id passes
+                return filterLists.every(filterList => {
+                    // If any list of the task matched the filter list's id
+                    return task.lists ? task.lists.some(list => list.listId === filterList.id) : false;
+                });
+            });
+        }
+        return filtered;
+    }
+
 
     return (
         <motion.div 
@@ -234,6 +294,8 @@ const AllTasks = () => {
                     notifyTaskChange={notifyTaskChange}
                     id="all-tasks-key"
                     removeTasksAddInput={true}
+                    shouldFilterTasks={true}
+                    tasksFilter={tasksFilter}
                 />
             </div>
             <TaskEditor 

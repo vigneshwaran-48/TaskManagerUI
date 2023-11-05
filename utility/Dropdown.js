@@ -48,25 +48,23 @@ const Dropdown = props => {
 
 const DropdownCheckbox = props => {
 
+    // Should maintain a state for prop "items" in the component that using this Dropdown
     const { items, isOpen, subItems, onListClick } = props;
-
-    const [ checkboxItems, setCheckboxItems ] = useState(items);
 
     const handleCheckboxChange = event => {
         const { name, checked } = event.target;
 
-        const mapped = checkboxItems.map(elem => {
+        const mapped = items.map(elem => {
             if(elem.name === name) {
                 elem.checked = checked;
             }
             return elem;
         });
 
-        setCheckboxItems(mapped);
         onListClick(mapped);
     }
 
-    const elems = checkboxItems ? checkboxItems.map(item => {
+    const elems = items ? items.map(item => {
         return (
             <li 
                 className={`drop-down-item x-axis-flex`} 
@@ -86,7 +84,7 @@ const DropdownCheckbox = props => {
                 </p>
             </li>
         )
-    }) : checkboxItems;
+    }) : items;
 
     return (
         <ul 

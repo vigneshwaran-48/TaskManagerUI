@@ -1,18 +1,17 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Searchbar from '../../utility/Searchbar';
 import { TaskAPI } from '../../api/TaskAPI';
 import { Common } from "../../utility/Common";
 import "../../css/header.css";
 import SearchResults from './SearchResults';
 import SearchOverview from './SearchOverview';
+import { AppContext } from '../../App';
 
 const AppHeader = props => {
 
-    useEffect(() => {
-        handleSearch("");
-    }, []);
-
     const { sideNavOpenAction } = props;
+
+    const { subscribeToTaskChange, unSubscribeToTaskChange } = useContext(AppContext); 
 
     const [ searchResults, setSearchResults ] = useState({
         isLoading: true,
@@ -24,6 +23,25 @@ const AppHeader = props => {
         isOpen: false,
         taskDetails: null
     });
+
+    useEffect(() => {
+        handleSearch("");
+    }, []);
+
+    useEffect(() => {
+
+        //Subscribing to the task change event
+        const listener = {
+                            listenerId: "app-search-bar",
+                            callback: taskChangeHandler
+                         }
+        subscribeToTaskChange(listener);
+
+        return (() => {
+                    //Unsubscribing to the task change event
+                    unSubscribeToTaskChange("app-search-bar");
+                });
+    }, []);
 
     const handleSearch = async text => {
         const response = await TaskAPI.getTasksWithName(text);
@@ -65,6 +83,50 @@ const AppHeader = props => {
 
     const handleOverviewClose = () => {
         setOverview(prev => ({...prev, isOpen: false}));
+    }
+
+    const taskChangeHandler = (taskDetails, mode) => {
+        switch(mode) {
+            case Common.TaskEventConstants.TASK_UPDATE:
+                setSearchResults(prevSearchData => {
+                    let prevTasks = prevSearchData.data;
+
+                    if(!prevTasks) prevTasks = [];
+                    const index = prevTasks.findIndex(task => task.taskId === taskDetails.taskId);
+                    if(index >= 0) {
+                        // Updating the existing task
+                        return prevTasks.map(task => {
+                            if(task.taskId === taskDetails.taskId) {
+                                return taskDetails;
+                            }
+                            return task;
+                        });
+                    }
+                    return {...prevSearchData, clickedRow: -1, isLoading: true};
+                });
+                break;
+            case Common.TaskEventConstants.TASK_ADD:
+                setSearchResults(prevSearchData => {
+                    let prevTasks = prevSearchData.data;
+                    
+                    if(!prevTasks) prevTasks = [];
+                    return {...prevSearchData, clickedRow: -1, isLoading: true};
+                });
+                break;
+            case Common.TaskEventConstants.TASK_DELETE:
+                // Task Details will be taskId that has been deleted in this case ...
+                setSearchResults(prevSearchData => {
+                    let prevTasks = prevSearchData.data;
+                    if(!prevTasks) prevTasks = [];
+                    const filtered =  prevTasks.filter(task => task.taskId !== taskDetails);
+                    prevSearchData.data = filtered;
+                    return {...prevSearchData, clickedRow: -1, isLoading: true};
+                });
+                break;
+            default: 
+                throw new Error("Unknown task event");
+        }
+        setOverview({isOpen: false, taskDetails: null});
     }
 
     return (

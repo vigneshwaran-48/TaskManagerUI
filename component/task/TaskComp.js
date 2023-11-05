@@ -14,7 +14,7 @@ const TaskComp = props => {
     const { predicate, shouldAwait, taskData, 
             openEditor, notifyTaskChange, id, 
             className, taskCreationDate, listsToBeAddedOnCreation,
-            removeTasksAddInput = false } = props;
+            removeTasksAddInput = false, shouldFilterTasks = false, tasksFilter } = props;
 
     const [ taskName, setTaskName ] = useState("");
     
@@ -56,7 +56,11 @@ const TaskComp = props => {
             return;
         }
 
-        const tasks = taskResponse.tasks;
+        let tasks = taskResponse.tasks;
+
+        if(shouldFilterTasks) {
+            tasks = tasksFilter(tasks);
+        }
 
         return <Tasks
                     openEditor={openEditor} 
