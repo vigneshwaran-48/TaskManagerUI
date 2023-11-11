@@ -33,6 +33,8 @@ const Tasks = props => {
 
     const taskChangeHandler = (taskDetails, mode) => {
 
+        if(!taskDetails) return;
+
         const date = taskDetails.dueDate;
         let removeFromList = false;
         if(date) {
@@ -68,8 +70,15 @@ const Tasks = props => {
                 if(removeFromList) {
                     break;
                 }
+                
                 setTasks(prevTasks => {
                     if(prevTasks == null) prevTasks = [];
+
+                    if(prevTasks && prevTasks.findIndex(task => task.taskId === taskDetails.taskId) >= 0) {
+                        console.log("Duplicate task came for an TASK_ADD event!, Maybe the websocket doing this.");
+                        return prevTasks;
+                    }
+
                     return [
                         ...prevTasks,
                         taskDetails
