@@ -1,4 +1,4 @@
-import React, { createContext, useRef, useState } from "react";
+import React, { createContext, useEffect, useRef, useState } from "react";
 import { Navigate, Route, RouterProvider, createBrowserRouter, createRoutesFromElements, useLocation } from "react-router-dom";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -13,7 +13,9 @@ import { TaskAPI } from "./api/TaskAPI";
 import { Common } from "./utility/Common";
 import Overdue, { overdueLoader } from "./page/Overdue";
 import AllTasks, { allTasksLoader } from "./page/AllTasks";
-
+import SockJS from "sockjs-client";
+import { Stomp } from "@stomp/stompjs";
+import { WSEvents } from "./utility/WSEvents";
 
 
 export const UserContext = createContext();
@@ -74,6 +76,16 @@ const App = () => {
         key: ""
     });
 
+    let stompClient;
+
+    useEffect(() => {
+
+        let sockjs = new SockJS("/task-manager");
+        stompClient = Stomp.over(sockjs);
+
+        stompClient.connect({}, onConnected);
+    }, []);
+
     const handleUserDetailsChange = props => {
         setUserDetails(prevUserDetails => {
             return {
@@ -133,7 +145,35 @@ const App = () => {
         return taskResponse.task;
     }
 
-    
+    const onConnected = (frame) => {
+        console.log("Connected to task websocket endpoint ...");
+        stompClient.subscribe("/user/queue/task", onMessage);
+    }
+
+    const onMessage = message => {
+        const wsMessage = JSON.parse(message.body);
+
+        switch(wsMessage.event) {
+            case WSEvents.CREATE:
+                notifyTasksListeners(wsMessage.task, Common.TaskEventConstants.TASK_ADD)
+                break;
+            case WSEvents.UPDATE:
+                notifyTasksListeners(wsMessage.task, Common.TaskEventConstants.TASK_UPDATE);
+                break;
+            case WSEvents.DELETE:
+                notifyTasksListeners(wsMessage.task.taskId, Common.TaskEventConstants.TASK_DELETE);
+                break;
+            default:
+                console.error("Unknown ws event comes from ws message!");
+        }
+    }
+
+    const notifyTasksListeners = (data, mode) => {
+        TaskChangeEvent.current?.forEach(listener => {
+            listener.callback(data, mode);
+        });
+    }
+
     return (
         <UserContext.Provider value={{
                     userDetails,
@@ -148,7 +188,7 @@ const App = () => {
                     getTask
                 }}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <RouterProvider router={routes} />                
+                    <RouterProvider router={routes} />   
                 </LocalizationProvider>
             </AppContext.Provider>
         </UserContext.Provider>
