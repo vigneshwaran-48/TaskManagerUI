@@ -145,6 +145,11 @@ export const Common = {
         TASK_ADD: "add",
         TASK_DELETE: "delete"
     },
+    ListEventConstants: {
+        LIST_ADD: "list-add",
+        LIST_UPDATE: "list-update",
+        LIST_DELETE: "list-delete"
+    },
     isLesserThan: (first, second) => {
         if(first < second) {
             return -1;

@@ -67,6 +67,12 @@ const App = () => {
         callback: () => {}
     }]);
 
+    //Event for notifying list change
+    const ListChangeEvent = useRef([{
+        listenerId: "",
+        callback: () => {}
+    }])
+
     const [ userDetails, setUserDetails ] = useState({
         isLoggedIn: true,
         name: "",
@@ -104,6 +110,19 @@ const App = () => {
     }
     const unSubscribeToTaskChange = listenerId => {
         const listeners = TaskChangeEvent.current;
+        listeners.splice(listeners
+                 .findIndex(listener => listener.listenerId === listenerId), 1);
+    }
+
+    const subscribeToListChange = listener => {
+        const foundListener = ListChangeEvent.current
+                              .find(l => l.listenerId === listener.listenerId);
+        if(!foundListener) {
+            ListChangeEvent.current.push(listener);
+        }
+    }
+    const unSubscribeToListChange = listenerId => {
+        const listeners = ListChangeEvent.current;
         listeners.splice(listeners
                  .findIndex(listener => listener.listenerId === listenerId), 1);
     }
@@ -146,22 +165,42 @@ const App = () => {
     }
 
     const onConnected = (frame) => {
-        console.log("Connected to task websocket endpoint ...");
-        stompClient.subscribe("/user/queue/task", onMessage);
+        console.log("Connected to websocket endpoint ...");
+        stompClient.subscribe("/user/personal/task", onTaskMessage);
+        stompClient.subscribe("/user/personal/list", onListMessage);
     }
 
-    const onMessage = message => {
+    const onTaskMessage = message => {
+        triggerWSEvent(message, true);
+    }
+
+    const onListMessage = message => {
+        triggerWSEvent(message, false);
+    }
+
+    const triggerWSEvent = (message, isTask) => {
         const wsMessage = JSON.parse(message.body);
 
         switch(wsMessage.event) {
             case WSEvents.CREATE:
-                notifyTasksListeners(wsMessage.task, Common.TaskEventConstants.TASK_ADD)
+                if(isTask) {
+                    notifyTasksListeners(wsMessage.task, Common.TaskEventConstants.TASK_ADD)
+                    break;
+                }
+                notifyListListeners(wsMessage.list, Common.ListEventConstants.LIST_ADD);
                 break;
             case WSEvents.UPDATE:
-                notifyTasksListeners(wsMessage.task, Common.TaskEventConstants.TASK_UPDATE);
+                if(isTask) {
+                    notifyTasksListeners(wsMessage.task, Common.TaskEventConstants.TASK_UPDATE);
+                    break;
+                }
+                notifyListListeners(wsMessage.list, Common.ListEventConstants.LIST_UPDATE);
                 break;
             case WSEvents.DELETE:
-                notifyTasksListeners(wsMessage.task.taskId, Common.TaskEventConstants.TASK_DELETE);
+                if(isTask) {
+                    notifyTasksListeners(wsMessage.task.taskId, Common.TaskEventConstants.TASK_DELETE);
+                }
+                notifyListListeners(wsMessage.list, Common.ListEventConstants.LIST_DELETE);
                 break;
             default:
                 console.error("Unknown ws event comes from ws message!");
@@ -170,6 +209,12 @@ const App = () => {
 
     const notifyTasksListeners = (data, mode) => {
         TaskChangeEvent.current?.forEach(listener => {
+            listener.callback(data, mode);
+        });
+    }
+
+    const notifyListListeners = (data, mode) => {
+        ListChangeEvent.current?.forEach(listener => {
             listener.callback(data, mode);
         });
     }
@@ -183,6 +228,8 @@ const App = () => {
                     TaskChangeEvent,
                     subscribeToTaskChange,
                     unSubscribeToTaskChange,
+                    subscribeToListChange,
+                    unSubscribeToListChange,
                     deleteTask,
                     updateTask,
                     getTask

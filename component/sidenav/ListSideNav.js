@@ -27,7 +27,8 @@ const ListSideNav = props => {
 
     const [ isLoading, setIsLoading ] = useState(false);
 
-    const { subscribeToTaskChange, unSubscribeToTaskChange } = useContext(AppContext);
+    const { subscribeToTaskChange, unSubscribeToTaskChange, 
+            subscribeToListChange, unSubscribeToListChange } = useContext(AppContext);
 
     const navigate = useNavigate();
 
@@ -43,15 +44,63 @@ const ListSideNav = props => {
             //Unsubscribing to the task change event
             unSubscribeToTaskChange(id);
         })
-    });
+    }, []);
+
+    useEffect(() => {
+        //Subscribing to the list change event
+        const listener = {
+            listenerId: id,
+            callback: listChangeHandler
+        }
+        subscribeToListChange(listener);
+
+        return (() => {
+            //Unsubscribing to the list change event
+            unSubscribeToListChange(id);
+        }); 
+    }, []);
+
+    useEffect(() => {
+        fetchListSideNav();
+    }, []);
 
     const taskChangeHandler = (taskDetails, mode) => {
         fetchListSideNav();
     }
 
-    useEffect(() => {
-        fetchListSideNav();
-    }, []);
+    const listChangeHandler = (listDetails, mode) => {
+        switch(mode) {
+            case Common.ListEventConstants.LIST_ADD:
+                if(list && list.length > 0 && list.findIndex(l => l.listId === listDetails.listId) >= 0) {
+                    console.log("List already present, Ignoring this add event may be due to websockets ...");
+                    break;
+                }
+                setList(prevList => {
+                    prevList.push(listDetails);
+                    return [...prevList];
+                });
+                break;
+            case Common.ListEventConstants.LIST_DELETE:
+                setList(prevList => {
+                    const filteredList = prevList.filter(l => l.listId !== listDetails.listId);
+                    return filteredList;
+                });
+                break;
+            case Common.ListEventConstants.LIST_UPDATE:
+                setList(prevList => {
+                    const mappedList = prevList.map(l => {
+                        if(l.listId == listDetails.listId) {
+                            return listDetails;
+                        }
+                        return l;
+                    });
+                    return mappedList;
+                });
+                break;
+            default:
+                console.error("Unknow ListEventConstants => " + mode);
+        }
+    }
 
     const fetchListSideNav = async () => {
         setIsLoading(true);
