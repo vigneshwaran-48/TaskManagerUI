@@ -70,15 +70,26 @@ const ListSideNav = props => {
 
     const listChangeHandler = (listDetails, mode) => {
         switch(mode) {
-            case Common.ListEventConstants.LIST_ADD:
-                if(list && list.length > 0 && list.findIndex(l => l.listId === listDetails.listId) >= 0) {
-                    console.log("List already present, Ignoring this add event may be due to websockets ...");
-                    break;
-                }
-                setList(prevList => {
-                    prevList.push(listDetails);
-                    return [...prevList];
-                });
+            case Common.ListEventConstants.LIST_ADD:  
+                /**
+                 * 
+                 * Here scheduling the add process because the prevList has already have the 
+                 * new value when it is the session that have created this list but it takes time to reflect in the state
+                 * and before the state update this ws events checks started so duplicate lists occuring when creating 
+                 * a list.
+                 * 
+                 *  */ 
+                setTimeout(() => {
+                    setList(prevList => {
+                        if(prevList && prevList.length > 0 && prevList.findIndex(l => l.listId === listDetails.listId)  >= 0) {
+                            console.log("List already present, Ignoring this add event may be due to websockets ...");
+                            return prevList;
+                        }
+                        prevList.push(listDetails);
+                        return [...prevList];
+                    });
+                }, 50);           
+                
                 break;
             case Common.ListEventConstants.LIST_DELETE:
                 setList(prevList => {
@@ -106,6 +117,8 @@ const ListSideNav = props => {
         setIsLoading(true);
         const response = await ListAPI.getAllListsOfUser();
         if(response.status === 200) {
+            console.log("Setting list array");
+            console.log(response.lists);
             setList(response.lists);
         }
         else {
