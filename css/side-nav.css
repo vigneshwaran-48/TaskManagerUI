@@ -47,6 +47,7 @@
     display: none;
 }
 .side-nav-child {
+    min-height: 52px;
     padding: 10px;
     border-radius: 10px;
     cursor: pointer;
@@ -54,7 +55,7 @@
     text-decoration: none;
     color: black;
     align-items: center;
-    }
+}
 .side-nav-child i {
     margin-right: 10px;
 }
@@ -187,6 +188,8 @@
     padding: 0px 10px;
 }
 .settings-button {
+    color: black;
+    text-decoration: none;
     padding: 10px;
     align-items: center;
     background-color: transparent;

@@ -16,6 +16,7 @@ import AllTasks, { allTasksLoader } from "./page/AllTasks";
 import SockJS from "sockjs-client";
 import { Stomp } from "@stomp/stompjs";
 import { WSEvents } from "./utility/WSEvents";
+import Settings from "./page/Settings";
 
 
 export const UserContext = createContext();
@@ -23,12 +24,15 @@ export const AppContext = createContext();
 
 const routes = createBrowserRouter(createRoutesFromElements(
     <Route path="/">
-        <Route element={<WelcomeSharedLayout />}>
-            <Route index element={<WelcomeComp />}/>
-        </Route>
+        <Route index element={(() => <Navigate to={"task"} />)()} />
         <Route path="task" element={<SharedLayout />}
         >
-            <Route index element={(() => <Navigate to={"upcoming"} />)()} />
+            {/* This index route is to change the route in the url field to upcoming, otherwise only the Upcoming component
+                will render but the url won't change.
+            */}
+            <Route index element={(() => <Navigate to={"upcoming"} />)()}  />
+
+            <Route path="dashboard" element={<h1>Dashboard</h1>} />
             <Route 
                 path="upcoming" 
                 element={<UpcomingComp />}
@@ -50,12 +54,12 @@ const routes = createBrowserRouter(createRoutesFromElements(
                 element={<Overdue />}
                 loader={overdueLoader}
             />
-            <Route path="sticky-wall" element={<h1>Sticky wall</h1>} />
             <Route 
                 path="list/:id" 
                 element={<ListBody />}
                 loader={listBodyLoader}
             />
+            <Route path="settings" element={<Settings />} />
         </Route>
     </Route>
 ))
