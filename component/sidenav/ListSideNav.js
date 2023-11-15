@@ -23,12 +23,12 @@ const ListSideNav = props => {
 
     const { closeSideNavbar, id } = props;
 
-    const [ list, setList ] = useState([]);
+    const [ list, setList ] = useState(null);
 
     const [ isLoading, setIsLoading ] = useState(false);
 
     const { subscribeToTaskChange, unSubscribeToTaskChange, 
-            subscribeToListChange, unSubscribeToListChange } = useContext(AppContext);
+            subscribeToListChange, unSubscribeToListChange, ListChangeEvent } = useContext(AppContext);
 
     const navigate = useNavigate();
 
@@ -82,7 +82,7 @@ const ListSideNav = props => {
                 break;
             case Common.ListEventConstants.LIST_DELETE:
                 setList(prevList => {
-                    const filteredList = prevList.filter(l => l.listId !== listDetails.listId);
+                    const filteredList = prevList.filter(l => l.listId !== listDetails);
                     return filteredList;
                 });
                 break;
@@ -135,6 +135,7 @@ const ListSideNav = props => {
     const addList = async (listDetails, callback) => {
         
         const response = await ListAPI.addList(listDetails);
+
         if(response.status === 201) {
             Common.showSuccessPopup(response.message, 2);
             setOpenBox(false);
@@ -145,6 +146,17 @@ const ListSideNav = props => {
             Common.showErrorPopup(response.error, 2);
         }
         callback();
+    }
+
+    const notifyListChange = async (data, mode, shouldFetch) => {
+        if(shouldFetch) {
+            data = await ListAPI.getListById(data);
+        }
+        if(!data) return;
+
+        ListChangeEvent.current.forEach(listener => {
+            listener.callback(data, mode);
+        });
     }
 
     const handleDeleteList = async id => {

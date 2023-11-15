@@ -199,8 +199,9 @@ const App = () => {
             case WSEvents.DELETE:
                 if(isTask) {
                     notifyTasksListeners(wsMessage.task.taskId, Common.TaskEventConstants.TASK_DELETE);
+                    break;
                 }
-                notifyListListeners(wsMessage.list, Common.ListEventConstants.LIST_DELETE);
+                notifyListListeners(wsMessage.list.listId, Common.ListEventConstants.LIST_DELETE);
                 break;
             default:
                 console.error("Unknown ws event comes from ws message!");
@@ -226,6 +227,7 @@ const App = () => {
                 }}>
             <AppContext.Provider value={{
                     TaskChangeEvent,
+                    ListChangeEvent,
                     subscribeToTaskChange,
                     unSubscribeToTaskChange,
                     subscribeToListChange,

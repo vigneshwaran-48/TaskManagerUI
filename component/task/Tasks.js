@@ -10,7 +10,8 @@ const Tasks = props => {
 
     const { openEditor, predicate, id, fallback, notifyTaskChange } = props;
     const [ tasks, setTasks ] = useState(null);
-    const { subscribeToTaskChange, unSubscribeToTaskChange } = useContext(AppContext);
+    const { subscribeToTaskChange, unSubscribeToTaskChange, 
+            subscribeToListChange, unSubscribeToListChange } = useContext(AppContext);
 
     useEffect(() => {
         setTasks(props.tasks);
@@ -23,11 +24,20 @@ const Tasks = props => {
                             listenerId: id,
                             callback: taskChangeHandler
                          }
+
+        const listListener = {
+            listenerId: id + "list-listener",
+            callback: listChangeHandler
+        }
+
         subscribeToTaskChange(listener);
+        subscribeToListChange(listListener);
 
         return (() => {
                     //Unsubscribing to the task change event
                     unSubscribeToTaskChange(id);
+
+                    unSubscribeToListChange(id + "list-listener");
                 })
     }, []);
 
@@ -90,6 +100,51 @@ const Tasks = props => {
                 break;
             default: 
                 throw new Error("Unknown task event");
+        }
+    }
+
+    const listChangeHandler = (listDetails, mode) => {
+
+        switch(mode) {
+            
+            case Common.ListEventConstants.LIST_UPDATE: 
+                setTasks(prevTasks => {
+                    const mappedTasks = prevTasks ? prevTasks.map(task => {
+                        // Check first the task has list
+                        if(task.lists) {
+                            // And iterating all lists of the task
+                            task.lists = task.lists.map(list => {
+                                // If the updated list is found
+                                if(list.listId === listDetails.listId) {
+                                    // Return new updated list
+                                    return listDetails;
+                                }
+                                // Otherwise return the existing one
+                                return list;
+                            });
+                        }
+                        return task;
+                    }) : prevTasks;
+                    return mappedTasks;
+                });
+                break;
+            case Common.ListEventConstants.LIST_DELETE:
+                setTasks(prevTasks => {
+                    const mappedTasks = prevTasks ? prevTasks.map(task => {
+                        // Check first the task has list
+                        console.log(task);
+                        if(task.lists) {
+                            console.log("Editing lists of task");
+                            task.lists = task.lists.filter(list => list.listId !== listDetails);
+                        }
+                        return task;
+                    }) : prevTasks;
+
+                    return mappedTasks;
+                });
+                break;
+            default:
+                // Ignoring other events
         }
     }
 
