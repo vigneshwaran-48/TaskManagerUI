@@ -17,6 +17,8 @@ import SockJS from "sockjs-client";
 import { Stomp } from "@stomp/stompjs";
 import { WSEvents } from "./utility/WSEvents";
 import Settings from "./page/Settings";
+import General from "./component/setting/General";
+import ImportExport from "./component/setting/ImportExport";
 
 
 export const UserContext = createContext();
@@ -59,7 +61,17 @@ const routes = createBrowserRouter(createRoutesFromElements(
                 element={<ListBody />}
                 loader={listBodyLoader}
             />
-            <Route path="settings" element={<Settings />} />
+            <Route path="settings" element={<Settings />}>
+                <Route 
+                    index 
+                    element={(() => <Navigate to="general" />)()} />
+                <Route 
+                    path="general" 
+                    element={<General />} />
+                <Route 
+                    path="import-export" 
+                    element={<ImportExport />} />
+            </Route>
         </Route>
     </Route>
 ))

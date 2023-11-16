@@ -210,5 +210,10 @@ export const Common = {
     },
     getThisSaturdayDate: function () {
         return this.nextDay(6).toJSON().slice(0, 10);
+    },
+
+    SettingsOptionTypes: {
+        CHECKBOX: "checkbox",
+        RADIO: "radio"
     }
 }
