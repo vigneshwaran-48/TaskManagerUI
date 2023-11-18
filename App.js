@@ -16,6 +16,9 @@ import AllTasks, { allTasksLoader } from "./page/AllTasks";
 import SockJS from "sockjs-client";
 import { Stomp } from "@stomp/stompjs";
 import { WSEvents } from "./utility/WSEvents";
+import Settings from "./page/Settings";
+import General from "./component/setting/General";
+import ImportExport from "./component/setting/ImportExport";
 
 
 export const UserContext = createContext();
@@ -23,12 +26,15 @@ export const AppContext = createContext();
 
 const routes = createBrowserRouter(createRoutesFromElements(
     <Route path="/">
-        <Route element={<WelcomeSharedLayout />}>
-            <Route index element={<WelcomeComp />}/>
-        </Route>
+        <Route index element={(() => <Navigate to={"task"} />)()} />
         <Route path="task" element={<SharedLayout />}
         >
-            <Route index element={(() => <Navigate to={"upcoming"} />)()} />
+            {/* This index route is to change the route in the url field to upcoming, otherwise only the Upcoming component
+                will render but the url won't change.
+            */}
+            <Route index element={(() => <Navigate to={"upcoming"} />)()}  />
+
+            <Route path="dashboard" element={<h1>Dashboard</h1>} />
             <Route 
                 path="upcoming" 
                 element={<UpcomingComp />}
@@ -50,12 +56,22 @@ const routes = createBrowserRouter(createRoutesFromElements(
                 element={<Overdue />}
                 loader={overdueLoader}
             />
-            <Route path="sticky-wall" element={<h1>Sticky wall</h1>} />
             <Route 
                 path="list/:id" 
                 element={<ListBody />}
                 loader={listBodyLoader}
             />
+            <Route path="settings" element={<Settings />}>
+                <Route 
+                    index 
+                    element={(() => <Navigate to="general" />)()} />
+                <Route 
+                    path="general" 
+                    element={<General />} />
+                <Route 
+                    path="import-export" 
+                    element={<ImportExport />} />
+            </Route>
         </Route>
     </Route>
 ))
@@ -66,6 +82,12 @@ const App = () => {
         listenerId: "",
         callback: () => {}
     }]);
+
+    //Event for notifying list change
+    const ListChangeEvent = useRef([{
+        listenerId: "",
+        callback: () => {}
+    }])
 
     const [ userDetails, setUserDetails ] = useState({
         isLoggedIn: true,
@@ -108,6 +130,19 @@ const App = () => {
                  .findIndex(listener => listener.listenerId === listenerId), 1);
     }
 
+    const subscribeToListChange = listener => {
+        const foundListener = ListChangeEvent.current
+                              .find(l => l.listenerId === listener.listenerId);
+        if(!foundListener) {
+            ListChangeEvent.current.push(listener);
+        }
+    }
+    const unSubscribeToListChange = listenerId => {
+        const listeners = ListChangeEvent.current;
+        listeners.splice(listeners
+                 .findIndex(listener => listener.listenerId === listenerId), 1);
+    }
+
     window.logout = () => {
         handleUserDetailsChange({isLoggedIn: false});
     }
@@ -146,22 +181,43 @@ const App = () => {
     }
 
     const onConnected = (frame) => {
-        console.log("Connected to task websocket endpoint ...");
-        stompClient.subscribe("/user/queue/task", onMessage);
+        console.log("Connected to websocket endpoint ...");
+        stompClient.subscribe("/user/personal/task", onTaskMessage);
+        stompClient.subscribe("/user/personal/list", onListMessage);
     }
 
-    const onMessage = message => {
+    const onTaskMessage = message => {
+        triggerWSEvent(message, true);
+    }
+
+    const onListMessage = message => {
+        triggerWSEvent(message, false);
+    }
+
+    const triggerWSEvent = (message, isTask) => {
         const wsMessage = JSON.parse(message.body);
 
         switch(wsMessage.event) {
             case WSEvents.CREATE:
-                notifyTasksListeners(wsMessage.task, Common.TaskEventConstants.TASK_ADD)
+                if(isTask) {
+                    notifyTasksListeners(wsMessage.task, Common.TaskEventConstants.TASK_ADD)
+                    break;
+                }
+                notifyListListeners(wsMessage.list, Common.ListEventConstants.LIST_ADD);
                 break;
             case WSEvents.UPDATE:
-                notifyTasksListeners(wsMessage.task, Common.TaskEventConstants.TASK_UPDATE);
+                if(isTask) {
+                    notifyTasksListeners(wsMessage.task, Common.TaskEventConstants.TASK_UPDATE);
+                    break;
+                }
+                notifyListListeners(wsMessage.list, Common.ListEventConstants.LIST_UPDATE);
                 break;
             case WSEvents.DELETE:
-                notifyTasksListeners(wsMessage.task.taskId, Common.TaskEventConstants.TASK_DELETE);
+                if(isTask) {
+                    notifyTasksListeners(wsMessage.task.taskId, Common.TaskEventConstants.TASK_DELETE);
+                    break;
+                }
+                notifyListListeners(wsMessage.list.listId, Common.ListEventConstants.LIST_DELETE);
                 break;
             default:
                 console.error("Unknown ws event comes from ws message!");
@@ -174,6 +230,12 @@ const App = () => {
         });
     }
 
+    const notifyListListeners = (data, mode) => {
+        ListChangeEvent.current?.forEach(listener => {
+            listener.callback(data, mode);
+        });
+    }
+
     return (
         <UserContext.Provider value={{
                     userDetails,
@@ -181,8 +243,11 @@ const App = () => {
                 }}>
             <AppContext.Provider value={{
                     TaskChangeEvent,
+                    ListChangeEvent,
                     subscribeToTaskChange,
                     unSubscribeToTaskChange,
+                    subscribeToListChange,
+                    unSubscribeToListChange,
                     deleteTask,
                     updateTask,
                     getTask

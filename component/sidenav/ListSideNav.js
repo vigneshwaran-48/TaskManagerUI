@@ -23,11 +23,12 @@ const ListSideNav = props => {
 
     const { closeSideNavbar, id } = props;
 
-    const [ list, setList ] = useState([]);
+    const [ list, setList ] = useState(null);
 
     const [ isLoading, setIsLoading ] = useState(false);
 
-    const { subscribeToTaskChange, unSubscribeToTaskChange } = useContext(AppContext);
+    const { subscribeToTaskChange, unSubscribeToTaskChange, 
+            subscribeToListChange, unSubscribeToListChange, ListChangeEvent } = useContext(AppContext);
 
     const navigate = useNavigate();
 
@@ -43,20 +44,81 @@ const ListSideNav = props => {
             //Unsubscribing to the task change event
             unSubscribeToTaskChange(id);
         })
-    });
+    }, []);
 
-    const taskChangeHandler = (taskDetails, mode) => {
-        fetchListSideNav();
-    }
+    useEffect(() => {
+        //Subscribing to the list change event
+        const listener = {
+            listenerId: id,
+            callback: listChangeHandler
+        }
+        subscribeToListChange(listener);
+
+        return (() => {
+            //Unsubscribing to the list change event
+            unSubscribeToListChange(id);
+        }); 
+    }, []);
 
     useEffect(() => {
         fetchListSideNav();
     }, []);
 
+    const taskChangeHandler = (taskDetails, mode) => {
+        fetchListSideNav();
+    }
+
+    const listChangeHandler = (listDetails, mode) => {
+        switch(mode) {
+            case Common.ListEventConstants.LIST_ADD:  
+                /**
+                 * 
+                 * Here scheduling the add process because the prevList has already have the 
+                 * new value when it is the session that have created this list but it takes time to reflect in the state
+                 * and before the state update this ws events checks started so duplicate lists occuring when creating 
+                 * a list.
+                 * 
+                 *  */ 
+                setTimeout(() => {
+                    setList(prevList => {
+                        if(prevList && prevList.length > 0 && prevList.findIndex(l => l.listId === listDetails.listId)  >= 0) {
+                            console.log("List already present, Ignoring this add event may be due to websockets ...");
+                            return prevList;
+                        }
+                        prevList.push(listDetails);
+                        return [...prevList];
+                    });
+                }, 50);           
+                
+                break;
+            case Common.ListEventConstants.LIST_DELETE:
+                setList(prevList => {
+                    const filteredList = prevList.filter(l => l.listId !== listDetails);
+                    return filteredList;
+                });
+                break;
+            case Common.ListEventConstants.LIST_UPDATE:
+                setList(prevList => {
+                    const mappedList = prevList.map(l => {
+                        if(l.listId == listDetails.listId) {
+                            return listDetails;
+                        }
+                        return l;
+                    });
+                    return mappedList;
+                });
+                break;
+            default:
+                console.error("Unknow ListEventConstants => " + mode);
+        }
+    }
+
     const fetchListSideNav = async () => {
         setIsLoading(true);
         const response = await ListAPI.getAllListsOfUser();
         if(response.status === 200) {
+            console.log("Setting list array");
+            console.log(response.lists);
             setList(response.lists);
         }
         else {
@@ -86,6 +148,7 @@ const ListSideNav = props => {
     const addList = async (listDetails, callback) => {
         
         const response = await ListAPI.addList(listDetails);
+
         if(response.status === 201) {
             Common.showSuccessPopup(response.message, 2);
             setOpenBox(false);
@@ -96,6 +159,17 @@ const ListSideNav = props => {
             Common.showErrorPopup(response.error, 2);
         }
         callback();
+    }
+
+    const notifyListChange = async (data, mode, shouldFetch) => {
+        if(shouldFetch) {
+            data = await ListAPI.getListById(data);
+        }
+        if(!data) return;
+
+        ListChangeEvent.current.forEach(listener => {
+            listener.callback(data, mode);
+        });
     }
 
     const handleDeleteList = async id => {

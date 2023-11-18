@@ -5,6 +5,7 @@ import ListSideNav from "./ListSideNav";
 import { UserContext } from "../../App";
 import { AppAPI } from "../../api/AppAPI";
 import { Common } from "../../utility/Common";
+import { Link } from "react-router-dom";
 
 const SideNavbar = props => {
 
@@ -34,10 +35,10 @@ const SideNavbar = props => {
             <hr />
         </div>
         <div className="side-nav-bottom y-axis-flex">
-            <div className="common-button settings-button x-axis-flex">
+            <Link to="./settings" className="common-button settings-button x-axis-flex">
                 <i className="fa fa-solid fa-gear"></i>
                 <p>Settings</p>
-            </div>
+            </Link>
             <hr />
             <button 
                 onClick={logoutAction}

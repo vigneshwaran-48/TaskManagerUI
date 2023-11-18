@@ -1,0 +1,73 @@
+
+.settings-navigation-bar {
+    min-width: 200px;
+    max-width: 200px;
+    width: 20%;
+    height: 100%;
+    overflow: scroll;
+    padding: 10px;
+    border-right: 1px solid #ebeaea;
+}
+
+.settings-navigation-bar > a {
+    text-decoration: none;
+    color: black;
+    padding: 10px;
+    margin: 5px 0px;
+    border-radius: 7px;
+    flex-shrink: 0;
+    transition: 0.5s;
+}
+
+.settings-navigation-bar > a:hover {
+    background-color: #ebeaea;
+}
+.active-settings-navbar {
+    background-color: #ebeaea;
+    font-weight: 700;
+}
+
+
+.settings-page {
+    width: 100%;
+    height: 100%;
+}
+.general-settings-page {
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+    overflow-y: scroll;
+}
+.general-settings-section {
+    width: 100%;
+    margin: 15px 0px;
+}
+
+.settins-checkbox-option, .settins-radio-option {
+    align-items: center;
+    padding: 10px 0px;
+}
+.settins-checkbox-option > input, .settins-radio-option > input {
+    margin-right: 5px;
+}
+
+.settings-section-name {
+    font-weight: 700;
+    font-size: 20px;
+    margin-bottom: 5px;
+}
+
+@media screen and (max-width: 650px) {
+    
+    .settings-comp {
+        flex-direction: column;
+    }
+    .settings-navigation-bar {
+        flex-direction: row;
+        height: auto;
+        max-width: none;
+        width: 100%;
+        border: none;
+        border-bottom: 1px solid #ebeaea;
+    }
+}

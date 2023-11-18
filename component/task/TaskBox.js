@@ -88,6 +88,32 @@ const TaskBox = props => {
     )
 }
 
+const listPredicate = (prevLists, currentLists) => {
+    if((!prevLists && currentLists) || (prevLists && !currentLists)) {
+        return false;
+    }
+    else {
+        if(prevLists.length != currentLists.length) {
+            return false;
+        }
+        else {
+            prevLists.forEach(list => {
+                const matchedElem = currentLists.find(currentList => currentList.listId === list.listId);
+                if(!matchedElem) {
+                    return false;
+                }
+                else if(matchedElem.listName !== list.listName) {
+                    return false;
+                }
+                else if(matchedElem.listColor !== list.listColor) {
+                    return false;
+                }
+            });
+            return true;
+        }
+    }
+}
+
 const isEqual = (prevTask, currTask) => {
     const prevTaskDetails = prevTask.taskDetails;
     const currTaskDetails = currTask.taskDetails;
@@ -111,10 +137,7 @@ const isEqual = (prevTask, currTask) => {
         return false;
     }
     else {
-        /**
-        * Need to check for lists also
-        */
-        return true;
+        return listPredicate(prevTaskDetails.lists, currTaskDetails.lists);
     }
 }
 
