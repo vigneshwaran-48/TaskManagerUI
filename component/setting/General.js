@@ -1,28 +1,42 @@
 import React, { useState } from 'react'
 import { Common } from '../../utility/Common';
 import SettingOption from './SettingOption';
+import Section from './Section';
 
 const General = () => {
     
     const [ generalSettings, setGeneralSettings ] = useState([
         {
-            sectionId: 1,
-            sectionName: "View",
-            settingOptions: [
+            id: 1,
+            name: "View",
+            options: [
                 {
-                    optionId: 2,
-                    optionName: "showCompletedTasksInListView",
+                    id: 12,
+                    name: "showCompletedTasksInListView",
                     description: "Show Completed Task in List View",
-                    optionType: Common.SettingsOptionTypes.CHECKBOX
-                },
+                    type: Common.SettingsOptionTypes.CHECKBOX,
+                    value: false
+                }
+            ]
+        },
+        {
+            id: 2,
+            name: "Theme",
+            options: [
                 {
-                    optionId: 3,
-                    optionName: "theme",
+                    id: 14,
+                    name: "theme",
                     description: "Theme",
-                    optionType: Common.SettingsOptionTypes.RADIO,
-                    optionElems: [
+                    type: Common.SettingsOptionTypes.RADIO,
+                    value: "light",
+                    options: [
                         {
-                            description: "Test"
+                            description: "Light",
+                            value: "light"
+                        },
+                        {
+                            description: "Dark",
+                            value: "dark"
                         }
                     ]
                 }
@@ -30,20 +44,38 @@ const General = () => {
         }
     ]);
 
+    const onOptionsChange = eventData => {
+
+        setGeneralSettings(prevSettingsState => {
+            return prevSettingsState.map(section => {
+                if(section.id === eventData.sectionId) {
+                    const index = section.options.findIndex(option => option.id === eventData.option.id);
+                    if(index >= 0) {
+                        section.options[index].value = eventData.option.value;
+                    }
+                    else {
+                        console.error("The option that came from event is not in the section that's in state");
+                    }
+                }
+                return section;
+            });
+        });
+    }
+
+    const sectionElems = generalSettings ? generalSettings.map(setting => {
+        return <Section 
+                    id={setting.id} 
+                    name={setting.name} 
+                    options={setting.options}
+                    onChange={onOptionsChange}
+                />
+    }) : null;
+
     
 
     return (
         <div className="general-settings-page hide-scrollbar y-axis-flex">
-
-            <section className="general-settings-section view-settings-section y-axis">
-                <SettingOption 
-                    id={2} 
-                    name="showCompletedTasksInListView"
-                    description="Show Completed Task in List View"
-                    type={Common.SettingsOptionTypes.CHECKBOX}
-                    // onChange={}
-                />
-            </section>
+            { sectionElems }
         </div>
     )
 }

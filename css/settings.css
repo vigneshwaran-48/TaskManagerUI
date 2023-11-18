@@ -40,15 +40,21 @@
 }
 .general-settings-section {
     width: 100%;
-    margin: 5px 0px;
+    margin: 15px 0px;
 }
 
-.settins-checkbox-option {
+.settins-checkbox-option, .settins-radio-option {
     align-items: center;
     padding: 10px 0px;
 }
-.settins-checkbox-option > input {
+.settins-checkbox-option > input, .settins-radio-option > input {
     margin-right: 5px;
+}
+
+.settings-section-name {
+    font-weight: 700;
+    font-size: 20px;
+    margin-bottom: 5px;
 }
 
 @media screen and (max-width: 650px) {
