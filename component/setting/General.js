@@ -41,6 +41,19 @@ const General = () => {
                     ]
                 }
             ]
+        },
+        {
+            id: 3,
+            name: "Reminder",
+            options: [
+                {
+                    id: 18,
+                    name: "remindAboutOverdueTasks",
+                    description: "Remind me about overdue tasks",
+                    type: Common.SettingsOptionTypes.CHECKBOX,
+                    value: false
+                }
+            ]
         }
     ]);
 
