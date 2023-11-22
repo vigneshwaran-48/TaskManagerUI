@@ -14,7 +14,7 @@ const SettingOption = props => {
                     type="checkbox" 
                     id={`settings-option-${id}`} 
                     name={name} 
-                    value={value}
+                    checked={value}
                     onChange={event => onChange({event, id, name, value: event.target.checked})}
                 />
                 <label for={`settings-option-${id}`}>{ description }</label>
