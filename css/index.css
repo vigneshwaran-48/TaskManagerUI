@@ -162,6 +162,23 @@ body, html {
     display: none;
 }
 
+.light-theme.todo {
+    background-color: white;
+    color: black;
+}
+.light-theme.side-navbar {
+    background-color: #f4f5f5;
+    color: black;
+}
+
+.dark-theme.todo {
+    background-color: #000000;
+    color: white;
+}
+.dark-theme.side-navbar {
+    background-color: #323232;
+    color: white;
+}
 
 @media screen and (max-width: 1020px) { 
     .popup {

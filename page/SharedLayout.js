@@ -8,6 +8,7 @@ import { Common } from "../utility/Common";
 import { ListAPI } from "../api/ListAPI";
 import MainBody from "./MainBody";
 import AppHeader from "../component/header/AppHeader";
+import { useSelector } from "react-redux";
 
 const capitalize = str => {
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -31,6 +32,8 @@ export const SectionContext = createContext();
 const SharedLayout = () => {
 
     const [ section, setSection ] = useState("");
+
+    const theme = useSelector(state => state.settings.find(section => section.name === Common.SettingsSectionName.THEME));
     
     const sideNavOpenAction = () => {
         document.querySelector(".side-navbar")
@@ -81,7 +84,9 @@ const SharedLayout = () => {
             section,
             setSection
         }}>
-            <div className="todo x-axis-flex">
+            <div 
+                className={`todo x-axis-flex ${theme.options[0].value === Common.Theme.LIGHT ? "light-theme" : "dark-theme"}`}
+            >
                 <div className="popup error-popup x-axis-flex">
                     <i className="bi bi-x-circle-fill"></i>
                     <div className="popup-message">

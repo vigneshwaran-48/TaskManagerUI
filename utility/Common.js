@@ -215,5 +215,15 @@ export const Common = {
     SettingsOptionTypes: {
         CHECKBOX: "checkbox",
         RADIO: "radio"
+    },
+
+    SettingsSectionName: {
+        THEME: "Theme",
+        VIEW: "View"
+    },
+
+    Theme: {
+        LIGHT: "light",
+        DARK: "dark"
     }
 }

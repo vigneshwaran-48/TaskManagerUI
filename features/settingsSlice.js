@@ -4,7 +4,7 @@ import { Common } from "../utility/Common";
 const initialState = [
     {
         id: 1,
-        name: "View",
+        name: Common.SettingsSectionName.VIEW,
         options: [
             {
                 id: 12,
@@ -16,8 +16,11 @@ const initialState = [
         ]
     },
     {
+        // If confused about this data structure, This is because when we have multiple options in
+        // a single Section in that time this nested of options will work. If you have doubt 
+        // think about it again before changinh this.
         id: 2,
-        name: "Theme",
+        name: Common.SettingsSectionName.THEME,
         options: [
             {
                 id: 14,
@@ -59,7 +62,7 @@ export const settingsSlice = createSlice({
     reducers: {
         updateSettings: (state, action) => {
             const { payload } = action;
-            const changed = false;
+            let changed = false;
 
             state = state.map(section => {
                 const index = section.options.findIndex(option => option.id === payload.option.id);

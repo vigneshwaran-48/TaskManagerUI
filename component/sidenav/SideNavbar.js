@@ -6,11 +6,14 @@ import { UserContext } from "../../App";
 import { AppAPI } from "../../api/AppAPI";
 import { Common } from "../../utility/Common";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const SideNavbar = props => {
 
     const { closeSideNavbar } = props;
     const { changeUserDetails } = useContext(UserContext);
+
+    const theme = useSelector(state => state.settings.find(section => section.name === Common.SettingsSectionName.THEME));
 
     const logoutAction = async () => {
         const response = await AppAPI.logout();
@@ -20,7 +23,9 @@ const SideNavbar = props => {
     }
 
     return (
-        <div className="side-navbar y-axis-flex">
+        <div 
+            className={`side-navbar y-axis-flex ${theme.options[0].value === Common.Theme.LIGHT ? "light-theme" : "dark-theme"}`}
+        >
         <div className="side-nav-top x-axis-flex">
             <h2>Menu</h2>
             <i 
