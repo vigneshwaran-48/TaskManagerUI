@@ -7,16 +7,21 @@ import { Common } from "../../utility/Common";
 import Loading from "../common/Loading";
 import { AppContext } from "../../App";
 import Nav from "./Nav";
+import { useSelector } from "react-redux";
 
 const TaskSideNav = props => {
-
-    const unActiveNav = "side-nav-child x-axis-flex";
-    const activeNav = "side-nav-child active-side-nav x-axis-flex";
 
     const [taskSideNavSections, setTaskSideNavSections] = useState(null);
     const [ isLoading, setIsLoading ] = useState(false);
     const { subscribeToTaskChange, unSubscribeToTaskChange } = useContext(AppContext);
     const { id, closeSideNavbar } = props;
+
+    const theme = useSelector(state => state.settings.find(section => section.name === Common.SettingsSectionName.THEME));
+
+    const unActiveNav = `side-nav-child x-axis-flex 
+                        ${theme.options[0].value === Common.Theme.LIGHT ? "light-theme" : "dark-theme"}`;
+    const activeNav = `side-nav-child active-side-nav x-axis-flex 
+                        ${theme.options[0].value === Common.Theme.LIGHT ? "light-theme" : "dark-theme"}`;
 
     useEffect(() => {
         //Subscribing to the task change event

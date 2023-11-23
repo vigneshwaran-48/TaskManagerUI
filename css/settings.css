@@ -9,7 +9,7 @@
     border-right: 1px solid #ebeaea;
 }
 
-.settings-navigation-bar > a {
+.settings-navbar {
     text-decoration: none;
     color: black;
     padding: 10px;
@@ -19,7 +19,7 @@
     transition: 0.5s;
 }
 
-.settings-navigation-bar > a:hover {
+.settings-navbar:hover {
     background-color: #ebeaea;
 }
 .active-settings-navbar {

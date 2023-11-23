@@ -6,12 +6,15 @@ import "../../css/header.css";
 import SearchResults from './SearchResults';
 import SearchOverview from './SearchOverview';
 import { AppContext } from '../../App';
+import { useSelector } from 'react-redux';
 
 const AppHeader = props => {
 
     const { sideNavOpenAction } = props;
 
     const { subscribeToTaskChange, unSubscribeToTaskChange } = useContext(AppContext); 
+
+    const theme = useSelector(state => state.settings.find(section => section.name === Common.SettingsSectionName.THEME));
 
     const [ searchResults, setSearchResults ] = useState({
         isLoading: true,
@@ -139,7 +142,7 @@ const AppHeader = props => {
                 className="search-container y-axis-flex"
                 tabIndex={0}
             >
-                <Searchbar onSearch={handleSearch} />
+                <Searchbar onSearch={handleSearch} theme={theme.options[0].value} />
                 <div className="search-results-and-overview x-axis-flex">
                     <SearchResults 
                         searchResults={searchResults.data} 

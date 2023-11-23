@@ -8,14 +8,12 @@ import Loading from "../common/Loading";
 import Nav from "./Nav";
 import { ListAPI } from "../../api/ListAPI";
 import { AppContext } from "../../App";
+import { useSelector } from "react-redux";
 
 const PERSONALID = "6";
 const WORKID = "7";
 
 const ListSideNav = props => {
-
-    const activeSideNav = "side-nav-child active-side-nav x-axis-flex";
-    const unActiveSideNav = "side-nav-child x-axis-flex"
 
     const { setSection } = useContext(SectionContext);
 
@@ -30,7 +28,14 @@ const ListSideNav = props => {
     const { subscribeToTaskChange, unSubscribeToTaskChange, 
             subscribeToListChange, unSubscribeToListChange, ListChangeEvent } = useContext(AppContext);
 
+    const theme = useSelector(state => state.settings.find(section => section.name === Common.SettingsSectionName.THEME));
+
     const navigate = useNavigate();
+
+    const unActiveSideNav = `side-nav-child x-axis-flex 
+                        ${theme.options[0].value === Common.Theme.LIGHT ? "light-theme" : "dark-theme"}`;
+    const activeSideNav = `side-nav-child active-side-nav x-axis-flex 
+                        ${theme.options[0].value === Common.Theme.LIGHT ? "light-theme" : "dark-theme"}`;
 
     useEffect(() => {
         //Subscribing to the task change event

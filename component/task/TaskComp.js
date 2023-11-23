@@ -6,6 +6,7 @@ import Tasks from "./Tasks";
 import Loading from "../common/Loading";
 import { Await } from "react-router";
 import { UserContext } from "../../App";
+import { useSelector } from "react-redux";
 
 const TaskComp = props => {
 
@@ -19,6 +20,8 @@ const TaskComp = props => {
     const [ taskName, setTaskName ] = useState("");
     
     const userContext = useContext(UserContext);
+
+    const theme = useSelector(state => state.settings.find(section => section.name === Common.SettingsSectionName.THEME));
 
     const addTask = async task => {
         task.userId = userContext.userDetails.userId;
@@ -79,7 +82,10 @@ const TaskComp = props => {
         <div className={`today-comp-left hide-scrollbar y-axis-flex ${className || ""}`}>
             {
                 !removeTasksAddInput && (
-                    <div className="add-task-input-wrapper x-axis-flex">
+                    <div 
+                        className={`add-task-input-wrapper x-axis-flex 
+                            ${theme.options[0].value === Common.Theme.LIGHT ? "light-theme" : "dark-theme"}`}
+                    >
                         <i className="fa fa-solid fa-plus"></i>
                         <input      
                             type="text" 

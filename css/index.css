@@ -161,7 +161,17 @@ body, html {
 .hide-scrollbar::-webkit-scrollbar {
     display: none;
 }
+.styled-scrollbar::-webkit-scrollbar {
+    width: 10px;
+}
+.styled-scrollbar::-webkit-scrollbar-thumb {
+    border-radius: 7px;
+}
 
+/* Themes */
+
+
+/* Light theme */
 .light-theme.todo {
     background-color: white;
     color: black;
@@ -170,14 +180,67 @@ body, html {
     background-color: #f4f5f5;
     color: black;
 }
+.light-theme.active-settings-navbar {
+    background-color: #ebeaea;
+}
 
+/* Dark theme */
 .dark-theme.todo {
-    background-color: #000000;
+    background-color: #242628;
     color: white;
 }
 .dark-theme.side-navbar {
-    background-color: #323232;
+    background-color: #18191B;
     color: white;
+}
+.dark-theme.task-box {
+    background-color: #18191B;
+    color: white;
+    border-color: #242628;
+}
+.dark-theme.side-nav-child {
+    color: white;
+}
+.dark-theme.active-side-nav, .dark-theme.side-nav-child:hover {
+    background-color: #242628;
+}
+.dark-theme.count-box > p {
+    background-color: #242628;
+}
+.dark-theme.active-side-nav .count-box p, .dark-theme.side-nav-child:hover .count-box p {
+    background-color: #18191B;
+}
+.dark-theme.active-settings-navbar {
+    background-color: #18191B;
+    color: white;
+}
+.dark-theme.settings-navbar:hover {
+    background-color: #18191B;
+    color: white;
+}
+.dark-theme.settings-navbar {
+    color: white;
+}
+.dark-theme.add-task-input-wrapper, .dark-theme.search-bar {
+    background-color: #18191B;
+    color: white;
+    border-color: #242628;
+}
+.dark-theme.add-task-input-wrapper input, .dark-theme.search-bar > input {
+    background-color: #18191B;
+    color: white;
+}
+.dark-theme.task-box .task-editor-open-button:hover {
+    background-color: #242628;
+}
+
+.dark-theme.task-editor {
+    background-color: #18191B;
+    color: white;
+}
+.dark-theme.task-editor > .editing-section > input, .dark-theme.task-editor > .editing-section > textarea {
+    color: white;
+    border-color: #EEEDED;
 }
 
 @media screen and (max-width: 1020px) { 
