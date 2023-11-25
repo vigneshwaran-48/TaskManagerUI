@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
+import { Common } from './Common';
 
 const Searchbar = props => {
 
-    const { onSearch, onEnter } = props;
+    const { onSearch, onEnter, theme = Common.Theme.LIGHT } = props;
 
     const [ searchText, setSearchText ] = useState("");
 
@@ -13,7 +14,8 @@ const Searchbar = props => {
     }
 
     return (
-        <div className="search-bar x-axis-flex" tabIndex={0}>
+        <div 
+            className={`search-bar x-axis-flex ${theme === Common.Theme.LIGHT ? "light-theme" : "dark-theme"}`} tabIndex={0}>
             <i className="bi bi-search"></i>
             <input 
                 name="search-text" 

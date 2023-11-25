@@ -1,4 +1,6 @@
 import React, { memo, useState } from "react";
+import { useSelector } from "react-redux";
+import { Common } from "../../utility/Common";
 
 const getListElem = lists => {
     if(!lists || lists.length < 1) {
@@ -23,6 +25,9 @@ const getListElem = lists => {
 const TaskBox = props => {
     const [ expanded, setExpanded ] = useState(false);
     let { taskDetails } = props;
+
+    const theme = useSelector(state => state.settings.find(section => section.name === Common.SettingsSectionName.THEME));
+
     const taxBoxStyle = {
         height: expanded ? "40px" : "0px"
     }
@@ -43,7 +48,7 @@ const TaskBox = props => {
 
     return (
         <div 
-            className="task-box y-axis-flex"
+            className={`task-box y-axis-flex ${theme.options[0].value === Common.Theme.LIGHT ? "light-theme" : "dark-theme"}`}
             onClick={toggleBottomSection}
         >
             <div className="task-box-top x-axis-flex">

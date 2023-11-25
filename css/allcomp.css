@@ -38,6 +38,7 @@
 .selected-filter > i {
     border-radius: 50%;
     background-color: white;
+    color: black;
     cursor: pointer;
     margin-left: 5px;
 }

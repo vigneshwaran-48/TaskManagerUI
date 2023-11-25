@@ -46,8 +46,8 @@ const sendRequestWithCsrf = async (url, method, includeBody, body) => {
 export const TaskAPI = {
 
     
-    getAllTasks: async () => {
-        const url = ServerAPIManager.ServerURL + ServerAPIManager.getAppRoutes().task.all;
+    getAllTasks: async sortBy => {
+        const url = ServerAPIManager.ServerURL + ServerAPIManager.getAppRoutes().task.all + "?sortBy=" + sortBy;
         const response = await fetch(url, {
                                     headers: {
                                         "Content-Type": "application/json"

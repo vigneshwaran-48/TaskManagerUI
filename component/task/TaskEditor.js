@@ -6,12 +6,15 @@ import dayjs from "dayjs";
 import { motion } from "framer-motion";
 import { Common } from "../../utility/Common";
 import { ListAPI } from "../../api/ListAPI";
+import { useSelector } from "react-redux";
 
 const TaskEditor = props => {
 
     const { updateTask, taskId, closeEditorStatus, isOpen, task, deleteTask } = props;
     const [ taskDetails, setTaskDetails ] = useState(task);
     const [ lists, setLists ] = useState([]);
+
+    const theme = useSelector(state => state.settings.find(section => section.name === Common.SettingsSectionName.THEME));
 
     useEffect(() => {
         setTaskDetails(task);
@@ -130,7 +133,8 @@ const TaskEditor = props => {
    
     return (
         <motion.div 
-            className={`task-editor hide-scrollbar y-axis-flex ${isOpen && "show-task-editor"}`}
+            className={`task-editor hide-scrollbar y-axis-flex ${isOpen && "show-task-editor"}
+                    ${theme.options[0].value === Common.Theme.LIGHT ? "light-theme" : "dark-theme"}`}
         >
             <span 
                 style={{
@@ -153,6 +157,7 @@ const TaskEditor = props => {
                     placeholder="Title"
                 />
                 <textarea
+                    className="styled-scrollbar"
                     name="description"
                     value={ taskDetails.description || "" }
                     onChange={ handleChange }
