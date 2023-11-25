@@ -219,7 +219,9 @@ export const Common = {
 
     SettingsSectionName: {
         THEME: "Theme",
-        VIEW: "View"
+        VIEW: "View",
+        SORT: "Sort",
+        REMINDER: "Reminder"
     },
 
     Theme: {

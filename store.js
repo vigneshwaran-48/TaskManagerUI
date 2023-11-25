@@ -1,11 +1,16 @@
 import { configureStore } from "@reduxjs/toolkit";
 import settingsReducer from "./features/settingsSlice";
+import { settingsInitialState } from "./features/settingsData";
 
 
 const loadLocalStorageData = () => {
     try {
         const data = localStorage.getItem("task.settings");
-        return JSON.parse(data);
+        if(data) {
+            return JSON.parse(data);
+        }
+        localStorage.setItem("task.settings", JSON.stringify({settings: settingsInitialState}));
+        return {settings: settingsInitialState};
     }
     catch(e) {
         console.error(e);

@@ -12,7 +12,10 @@ import { ListAPI } from '../api/ListAPI'
 import { useSelector } from 'react-redux'
 
 export const allTasksLoader = () => {
-    return defer({allTasks: TaskAPI.getAllTasks()});
+    const settings = JSON.parse(localStorage.getItem("task.settings")).settings;
+    
+    const sortBy = settings.find(setting => setting.name === Common.SettingsSectionName.SORT).options[0].value;
+    return defer({allTasks: TaskAPI.getAllTasks(sortBy)});
 }
 
 const COMPLETED = "Completed";

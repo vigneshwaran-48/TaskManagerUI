@@ -2,8 +2,6 @@ import React, { createContext, useEffect, useRef, useState } from "react";
 import { Navigate, Route, RouterProvider, createBrowserRouter, createRoutesFromElements, useLocation } from "react-router-dom";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import WelcomeComp from "./component/public-comp/WelcomeComp";
-import WelcomeSharedLayout from "./page/WelomeSharedLayout";
 import SharedLayout from "./page/SharedLayout";
 import TodayComp, { todayCompLoader, todayCompShouldRevalidate } from "./page/TodayComp";
 import ListBody, { listBodyLoader } from "./page/ListBody";
