@@ -19,6 +19,7 @@ import { WSEvents } from "./utility/WSEvents";
 import Settings from "./page/Settings";
 import General from "./component/setting/General";
 import ImportExport from "./component/setting/ImportExport";
+import { store } from "./store";
 
 
 export const UserContext = createContext();

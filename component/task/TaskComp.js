@@ -23,6 +23,8 @@ const TaskComp = props => {
 
     const theme = useSelector(state => state.settings.find(section => section.name === Common.SettingsSectionName.THEME));
 
+    const showCompletedTasks = useSelector()
+
     const addTask = async task => {
         task.userId = userContext.userDetails.userId;
         task.dueDate = taskCreationDate;

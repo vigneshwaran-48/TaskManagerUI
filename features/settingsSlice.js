@@ -18,7 +18,7 @@ const initialState = [
     {
         // If confused about this data structure, This is because when we have multiple options in
         // a single Section in that time this nested of options will work. If you have doubt 
-        // think about it again before changinh this.
+        // think about it again before changing this.
         id: 2,
         name: Common.SettingsSectionName.THEME,
         options: [
