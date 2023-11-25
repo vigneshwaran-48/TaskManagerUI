@@ -1,14 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { Common } from './Common';
 
 const Dropdown = props => {
 
-    const { items, isOpen, subItems, onListClick, isCheckboxDropdown } = props;
+    const { items, isOpen, theme, subItems, onListClick, isCheckboxDropdown } = props;
 
     if(isCheckboxDropdown) {
         return <DropdownCheckbox 
                     items={items} 
                     isOpen={isOpen}
                     onListClick={onListClick}
+                    theme={theme}
                     subItems={subItems} />
     }
 
@@ -31,6 +33,7 @@ const Dropdown = props => {
                     subItems={true} 
                     onListClick={onListClick}
                     isCheckboxDropdown={item.isCheckboxDropdown}
+                    theme={theme}
                 />
             </li>
         );
@@ -39,7 +42,7 @@ const Dropdown = props => {
     return (
         <ul 
             className={`multi-drop-down hide-scrollbar ${subItems ? "sub-drop-down" : ""} 
-            ${isOpen ? "show-drop-down" : ""}`}
+            ${isOpen ? "show-drop-down" : ""} ${theme === Common.Theme.LIGHT ? "light-theme" : "dark-theme"}`}
         >
             { itemsElems }
         </ul>
@@ -49,7 +52,7 @@ const Dropdown = props => {
 const DropdownCheckbox = props => {
 
     // Should maintain a state for prop "items" in the component that using this Dropdown
-    const { items, isOpen, subItems, onListClick } = props;
+    const { items, isOpen, theme, subItems, onListClick } = props;
 
     const handleCheckboxChange = event => {
         const { name, checked } = event.target;
@@ -89,7 +92,7 @@ const DropdownCheckbox = props => {
     return (
         <ul 
             className={`multi-drop-down hide-scrollbar ${subItems ? "sub-drop-down" : ""}
-             ${isOpen ? "show-drop-down" : ""}`}
+             ${isOpen ? "show-drop-down" : ""} ${theme === Common.Theme.LIGHT ? "light-theme" : "dark-theme"}`}
         >
             { elems }
         </ul>

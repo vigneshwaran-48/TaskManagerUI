@@ -143,7 +143,10 @@ const AppHeader = props => {
                 tabIndex={0}
             >
                 <Searchbar onSearch={handleSearch} theme={theme.options[0].value} />
-                <div className="search-results-and-overview x-axis-flex">
+                <div 
+                    className={`search-results-and-overview x-axis-flex 
+                        ${theme.options[0].value === Common.Theme.LIGHT ? "light-theme" : "dark-theme"}`}
+                >
                     <SearchResults 
                         searchResults={searchResults.data} 
                         isLoading={searchResults.isLoading}

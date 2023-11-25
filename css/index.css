@@ -234,13 +234,25 @@ body, html {
     background-color: #242628;
 }
 
-.dark-theme.task-editor {
+.dark-theme.task-editor, .dark-theme.search-results-and-overview, .dark-theme.search-results-and-overview > .search-result-overview, .dark-theme.multi-drop-down {
     background-color: #18191B;
     color: white;
 }
 .dark-theme.task-editor > .editing-section > input, .dark-theme.task-editor > .editing-section > textarea {
     color: white;
     border-color: #EEEDED;
+}
+.dark-theme.task-box .task-box-sub-count {
+    background-color: #242628;
+}
+.dark-theme.task-box .task-box-list {
+    background-color: #242628;
+}
+.dark-theme.search-results-and-overview .search-result:hover, .dark-theme.search-results-and-overview .active-search-result, .dark-theme.multi-drop-down .drop-down-item:hover  {
+    background-color: #242628;
+}
+.search-container:focus-within > .dark-theme.search-results-and-overview {
+    box-shadow: 1px 1px 7px white;
 }
 
 @media screen and (max-width: 1020px) { 

@@ -271,13 +271,13 @@
 .task-box-small-container {
     align-items: center;
     padding: 5px;
-    border-radius: 7px;
     flex-shrink: 0;
 }
 .task-box-list {
     justify-content: flex-start;
     margin-right: 5px;
     background-color: rgb(235,234,234);
+    border-radius: 7px;
 }
 .task-box-list > div {
     margin-right: 2px;

@@ -9,6 +9,7 @@ import { Common } from '../utility/Common'
 import Dropdown from '../utility/Dropdown'
 import "../css/allcomp.css";
 import { ListAPI } from '../api/ListAPI'
+import { useSelector } from 'react-redux'
 
 export const allTasksLoader = () => {
     return defer({allTasks: TaskAPI.getAllTasks()});
@@ -37,6 +38,8 @@ const AllTasks = () => {
     const [ seletedFilterptions, setSelectedFilterOptions ] = useState(null);
 
     const [ searchParams, setSearchParams ] = useSearchParams();
+
+    const theme = useSelector(state => state.settings.find(section => section.name === Common.SettingsSectionName.THEME));
 
     useEffect(() => {
         handleSearchParams();
@@ -280,7 +283,11 @@ const AllTasks = () => {
                     <div className="task-filter-options-container y-axis-flex" tabIndex={0}>
                         <i 
                             className="fa fa-solid fa-filter"></i>
-                        <Dropdown items={filterMenus} onListClick={handleFilterDropDownOption} />
+                        <Dropdown 
+                            items={filterMenus} 
+                            theme={theme.options[0].value} 
+                            onListClick={handleFilterDropDownOption}
+                        />
                     </div>
                     <div className="selected-filter-options hide-scrollbar x-axis-flex">
                         { seletedFilterptionsElems }
