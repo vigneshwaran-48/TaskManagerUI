@@ -10,7 +10,11 @@ import { motion } from "framer-motion";
 
 export const listBodyLoader = ({ params, request }) => {
 
-    return {listResponse: TaskAPI.getTasksOfList(params.id)};
+    const settings = JSON.parse(localStorage.getItem("task.settings")).settings;
+    
+    const sortBy = settings.find(setting => setting.name === Common.SettingsSectionName.SORT).options[0].value;
+
+    return {listResponse: TaskAPI.getTasksOfList(params.id, sortBy)};
 }
 const ListBody = () => {
 

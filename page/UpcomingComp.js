@@ -8,10 +8,15 @@ import TaskEditor from "../component/task/TaskEditor";
 import { AppContext } from "../App";
 
 export const upcomingTasksLoader = () => {
+
+    const settings = JSON.parse(localStorage.getItem("task.settings")).settings;
+    
+    const sortBy = settings.find(setting => setting.name === Common.SettingsSectionName.SORT).options[0].value;
+
     return defer({
-        upcomingTasksResponse: TaskAPI.getTasksByDate(Common.getTomorrowDate()),
-        todayTasksResponse: TaskAPI.getAllTodayTasks(),
-        thisWeekTasksResponse: TaskAPI.getThisWeekTasks()
+        upcomingTasksResponse: TaskAPI.getTasksByDate(Common.getTomorrowDate(), sortBy),
+        todayTasksResponse: TaskAPI.getAllTodayTasks(sortBy),
+        thisWeekTasksResponse: TaskAPI.getThisWeekTasks(sortBy)
     });
 }
 const UpcomingComp = () => {

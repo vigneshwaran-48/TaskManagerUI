@@ -11,7 +11,11 @@ import { AppContext, UserContext } from "../App";
 
 export const todayCompLoader = ({ request, params }) => {
 
-    return defer({tasksResponse: TaskAPI.getAllTodayTasks()});
+    const settings = JSON.parse(localStorage.getItem("task.settings")).settings;
+    
+    const sortBy = settings.find(setting => setting.name === Common.SettingsSectionName.SORT).options[0].value;
+
+    return defer({tasksResponse: TaskAPI.getAllTodayTasks(sortBy)});
 }
 
 export const todayCompShouldRevalidate = ({ currentUrl }) => {
