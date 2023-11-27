@@ -1,13 +1,20 @@
-import React from 'react'
+import React, { useContext, useEffect } from 'react'
 import { motion } from 'framer-motion';
 import { Common } from '../utility/Common';
 import "../css/settings.css";
 import { NavLink, Outlet } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { SectionContext } from './SharedLayout';
 
 const Settings = () => {
 
+    const { setSection } = useContext(SectionContext);
+
     const theme = useSelector(state => state.settings.find(section => section.name === Common.SettingsSectionName.THEME));
+
+    useEffect(() => {
+        setSection("Settings");
+    }, []);
 
     const ACTIVE_CLASSNAME = `settings-navbar active-settings-navbar 
         ${theme.options[0].value === Common.Theme.LIGHT ? "light-theme" : "dark-theme"}`;

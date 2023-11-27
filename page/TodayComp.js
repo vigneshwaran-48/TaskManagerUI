@@ -26,7 +26,6 @@ const TodayComp = () => {
 
     const { TaskChangeEvent, updateTask, deleteTask, getTask } = useContext(AppContext);
     const tasksLoaderData = useLoaderData();
-    const predicateDate = new Date().toJSON().slice(0, 10);
 
     const [ editorState, setEditorState ] = useState({
         isOpen: false,
