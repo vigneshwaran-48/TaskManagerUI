@@ -254,6 +254,11 @@ body, html {
 .search-container:focus-within > .dark-theme.search-results-and-overview {
     box-shadow: 1px 1px 7px white;
 }
+.dark-theme.dashboard > .dashboard-box {
+    background-color: #18191B;
+    color: white;
+    border: 1px solid #18191B;
+}
 
 @media screen and (max-width: 1020px) { 
     .popup {
