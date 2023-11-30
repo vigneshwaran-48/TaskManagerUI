@@ -12,9 +12,9 @@ const Dashboard = () => {
     return (
         <div className={`dashboard hide-scrollbar x-axis-flex ${theme === Common.Theme.LIGHT ? "light-theme" : "dark-theme"}`}>
             <TotalTaskStats />
+            {/* <TotalTaskStats />
             <TotalTaskStats />
-            <TotalTaskStats />
-            <TotalTaskStats />
+            <TotalTaskStats /> */}
         </div>
     )
 }

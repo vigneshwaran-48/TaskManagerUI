@@ -16,3 +16,56 @@
     margin: 5px 5px;
     border: 1px solid rgb(235,234,234);
 }
+
+.total-task-stats {
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+.total-tasks-wheel {
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    background-color: green;
+}
+.wheel-stats-info-container {
+    padding: 0px;
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    padding: 10px;
+}
+.wheel-stats-info-container > li {
+    list-style-type: none;
+    font-size: 12px;
+    align-items: center;
+}
+.wheel-stats-info-container > li > span {
+    width: 10px;
+    height: 10px;
+    background-color: black;
+    margin-right: 5px;
+}
+.wheel-stats-info-container > li > .green {
+    background-color: green;
+}
+.wheel-stats-info-container > li > .red {
+    background-color: red;
+}
+.wheel-stats-info-container > li > .orange {
+    background-color: orange;
+}
+
+@media screen and (max-width: 500px) {
+    .total-tasks-wheel {
+        width: 200px;
+        height: 200px;
+    }
+}
+
+@media screen and (max-width: 340px) {
+    .total-tasks-wheel {
+        width: 170px;
+        height: 170px;
+    }
+}
