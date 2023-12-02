@@ -33,9 +33,6 @@ const Dashboard = () => {
                     {render}
                 </Await>
             </Suspense>
-            {/* <TotalTaskStats />
-            <TotalTaskStats />
-            <TotalTaskStats /> */}
         </div>
     )
 }
