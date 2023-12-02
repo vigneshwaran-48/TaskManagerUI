@@ -18,7 +18,7 @@ import Settings from "./page/Settings";
 import General from "./component/setting/General";
 import ImportExport from "./component/setting/ImportExport";
 import { store } from "./store";
-import Dashboard from "./page/Dashboard";
+import Dashboard, { dashboardLoader } from "./page/Dashboard";
 
 
 export const UserContext = createContext();
@@ -34,7 +34,11 @@ const routes = createBrowserRouter(createRoutesFromElements(
             */}
             <Route index element={(() => <Navigate to={"upcoming"} />)()}  />
 
-            <Route path="dashboard" element={<Dashboard />} />
+            <Route 
+                path="dashboard" 
+                element={<Dashboard />}
+                loader={dashboardLoader}
+            />
             <Route 
                 path="upcoming" 
                 element={<UpcomingComp />}

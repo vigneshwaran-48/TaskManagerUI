@@ -1,10 +1,8 @@
 import React from 'react'
 
-const TotalTaskStats = () => {
+const TotalTaskStats = props => {
 
-    const completedTasks = 40;
-    const overdue = 50;
-    const pending = 10;
+    const { taskCompleted, tasksPending, tasksOverdue } = props.data;
 
     return (
         <div className="dashboard-box total-task-stats x-axis-flex">
@@ -12,11 +10,11 @@ const TotalTaskStats = () => {
                 className="total-tasks-wheel"
                 style={{
                     backgroundImage: `conic-gradient(green 0%, 
-                                            green ${completedTasks}%, 
-                                            red ${completedTasks}%, 
-                                            red ${completedTasks + overdue}%, 
-                                            orange ${completedTasks + overdue}%, 
-                                            orange ${completedTasks + overdue + pending}%)`
+                                            green ${taskCompleted}%, 
+                                            red ${taskCompleted}%, 
+                                            red ${taskCompleted + tasksOverdue}%, 
+                                            orange ${taskCompleted + tasksOverdue}%, 
+                                            orange ${taskCompleted + tasksOverdue + tasksPending}%)`
                 }}
             ></div>
             <ul className="wheel-stats-info-container">
