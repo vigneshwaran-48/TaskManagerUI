@@ -23,6 +23,7 @@ const Section = props => {
 
     const optionsElems = options ? options.map(option => 
         <SettingOption 
+            key={option.id}
             id={option.id} 
             name={option.name} 
             description={option.description}

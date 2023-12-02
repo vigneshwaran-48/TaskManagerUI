@@ -15,6 +15,12 @@ let appRoutes = {
     },
     list: {
         base: "/api/v1/list"
+    },
+    stats: {
+        task: "/api/v1/stats/task"
+    },
+    settings: {
+        export: "/api/v1/data/export"
     }
 };
 

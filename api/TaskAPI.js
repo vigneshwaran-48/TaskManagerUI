@@ -55,8 +55,9 @@ export const TaskAPI = {
                                 });
         return await response.json();
     },
-    getAllTodayTasks: async () => {
-        const url = ServerAPIManager.ServerURL + ServerAPIManager.getAppRoutes().task.today;
+    getAllTodayTasks: async sortBy => {
+        const url = ServerAPIManager.ServerURL + ServerAPIManager.getAppRoutes().task.today + `?sortBy=${sortBy}`;
+
         const response = await fetch(url, {
                                     headers: {
                                         "Content-Type": "application/json"
@@ -110,8 +111,9 @@ export const TaskAPI = {
                                 });
         return await response.json();
     },
-    getThisWeekTasks: async () => {
-        const url = ServerAPIManager.ServerURL + ServerAPIManager.getAppRoutes().task.thisWeek;
+    getThisWeekTasks: async sortBy => {
+        const url = ServerAPIManager.ServerURL + ServerAPIManager.getAppRoutes().task.thisWeek + `?sortBy=${sortBy}`;
+
         const response = await fetch(url, {
             headers: {
                 "Content-Type": "application/json"
@@ -119,9 +121,10 @@ export const TaskAPI = {
         });
         return await response.json();
     },
-    getTasksByDate: async dueDate => {
+    getTasksByDate: async (dueDate, sortBy) => {
         const urlParams = new URLSearchParams();
         urlParams.set("dueDate", dueDate);
+        urlParams.set("sortBy", sortBy);
 
         const url = ServerAPIManager.ServerURL + ServerAPIManager.getAppRoutes().task.base + "?" + urlParams.toString();
         
@@ -132,8 +135,9 @@ export const TaskAPI = {
                                 });
         return await response.json();
     },
-    getTasksOfList: async listId => {
-        const url = ServerAPIManager.ServerURL + ServerAPIManager.getAppRoutes().task.base + "/list/" + listId;
+    getTasksOfList: async (listId, sortBy) => {
+        const url = ServerAPIManager.ServerURL + ServerAPIManager.getAppRoutes().task.base + "/list/" + listId 
+                    + `?sortBy=${sortBy}`;
         const response = await fetch(url, {
             headers: {
                 "Content-Type": "application/json"

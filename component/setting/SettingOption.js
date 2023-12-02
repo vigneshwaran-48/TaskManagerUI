@@ -17,7 +17,7 @@ const SettingOption = props => {
                     checked={value}
                     onChange={event => onChange({event, id, name, value: event.target.checked})}
                 />
-                <label for={`settings-option-${id}`}>{ description }</label>
+                <label htmlFor={`settings-option-${id}`}>{ description }</label>
             </div>
         )
     }
@@ -26,7 +26,7 @@ const SettingOption = props => {
         const radioOptions = options.map(option => {
             idCounter++;
             return (
-                <div className="settins-radio-option x-axis-flex">
+                <div key={idCounter} className="settins-radio-option x-axis-flex">
                     <input 
                         type="radio" 
                         name={name} 
@@ -35,7 +35,7 @@ const SettingOption = props => {
                         onChange={event => onChange({event, id, name, value: option.value})}
                         checked={value === option.value}
                     />
-                    <label for={`settings-option-${id}-${idCounter}`} >{option.description}</label>
+                    <label htmlFor={`settings-option-${id}-${idCounter}`} >{option.description}</label>
                 </div>
             )
         });

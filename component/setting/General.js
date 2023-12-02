@@ -18,6 +18,7 @@ const General = () => {
 
     const sectionElems = sections ? sections.map(setting => {
         return <Section 
+                    key={setting.id}
                     id={setting.id} 
                     name={setting.name} 
                     options={setting.options}

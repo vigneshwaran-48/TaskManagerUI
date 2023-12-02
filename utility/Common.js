@@ -227,5 +227,34 @@ export const Common = {
     Theme: {
         LIGHT: "light",
         DARK: "dark"
+    },
+    SortOptions: {
+        NAME: 1,
+        CREATED_TIME: 2,
+        RECENTLY_CREATED: 3
+    },
+    getTasksComparator: function(sortOption) {
+        switch(sortOption) {
+            case this.SortOptions.NAME:
+                return (taskA, taskB) => {
+                    if(taskA.taskName < taskB.taskName) return -1;
+                    else if (taskA.taskName === taskB.taskName) return 0;
+                    else return 1;
+                }
+            case this.SortOptions.CREATED_TIME:
+                return (taskA, taskB) => {
+                    if(taskA.createdTime < taskB.createdTime) return -1;
+                    else if (taskA.createdTime === taskB.createdTime) return 0;
+                    else return 1;
+                }
+            case this.SortOptions.RECENTLY_CREATED:
+                return (taskA, taskB) => {
+                    if(taskA.createdTime < taskB.createdTime) return 1;
+                    else if (taskA.createdTime === taskB.createdTime) return 0;
+                    else return -1;
+                }
+            default:
+                console.error("Unknow sort task option => " + sortOption);
+        }
     }
 }

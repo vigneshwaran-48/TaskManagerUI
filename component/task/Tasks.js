@@ -2,8 +2,8 @@ import { useContext, useEffect, useMemo, useState } from "react";
 import { TaskAPI } from "../../api/TaskAPI";
 import TaskBox from "./TaskBox";
 import { Common } from "../../utility/Common";
-import NothingToShow from "../../utility/NothingToShow";
 import { AppContext } from "../../App";
+import { useSelector } from "react-redux";
 
 
 const Tasks = props => {
@@ -12,6 +12,9 @@ const Tasks = props => {
     const [ tasks, setTasks ] = useState(null);
     const { subscribeToTaskChange, unSubscribeToTaskChange, 
             subscribeToListChange, unSubscribeToListChange } = useContext(AppContext);
+
+    const sortBy = useSelector(state => 
+        state.settings.find(section => section.name === Common.SettingsSectionName.SORT).options[0].value)
 
     useEffect(() => {
         setTasks(props.tasks);
@@ -66,13 +69,13 @@ const Tasks = props => {
                                 return taskDetails;
                             }
                             return task;
-                        });
+                        }).sort(Common.getTasksComparator(sortBy));
                     }
                     /**
                      *  Adding the new task, This might happen in Upcoming Task page
                      *  Where if we update today task date to tommorrow or vice versa
                      * */ 
-                    return [...prevTasks, taskDetails];
+                    return [...prevTasks, taskDetails].sort(Common.getTasksComparator(sortBy));
                 });
                 break;
             case Common.TaskEventConstants.TASK_ADD:
@@ -86,13 +89,13 @@ const Tasks = props => {
 
                     if(prevTasks && prevTasks.findIndex(task => task.taskId === taskDetails.taskId) >= 0) {
                         console.log("Duplicate task came for an TASK_ADD event!, Maybe the websocket doing this.");
-                        return prevTasks;
+                        return prevTasks.sort(Common.getTasksComparator(sortBy));
                     }
 
                     return [
                         ...prevTasks,
                         taskDetails
-                    ]
+                    ].sort(Common.getTasksComparator(sortBy));
                 });
                 break;
             case Common.TaskEventConstants.TASK_DELETE:
@@ -101,6 +104,7 @@ const Tasks = props => {
             default: 
                 throw new Error("Unknown task event");
         }
+        setTasks(prevTasks => [...prevTasks.sort(Common.getTasksComparator(sortBy))]);
     }
 
     const listChangeHandler = (listDetails, mode) => {
@@ -152,6 +156,7 @@ const Tasks = props => {
         setTasks(prevTasks => {
             if(prevTasks == null) prevTasks = [];
             const filtered =  prevTasks.filter(task => task.taskId !== id);
+            filtered.sort(Common.getTasksComparator(sortBy));
             return filtered;
         });
     }

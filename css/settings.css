@@ -57,6 +57,10 @@
     margin-bottom: 5px;
 }
 
+.export-button {
+    /* background-color: ; */
+}
+
 @media screen and (max-width: 650px) {
     
     .settings-comp {
