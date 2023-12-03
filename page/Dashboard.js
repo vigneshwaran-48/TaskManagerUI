@@ -20,7 +20,7 @@ const Dashboard = () => {
 
     const render = totalTaskStats => {
         if(totalTaskStats.status !== 200) {
-            Common.showErrorPopup(totalTaskStats.error, 2000);
+            Common.showErrorPopup(totalTaskStats.error, 2);
             return;
         }
         return <TotalTaskStats data={totalTaskStats.data} />;

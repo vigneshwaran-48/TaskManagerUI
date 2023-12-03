@@ -20,7 +20,8 @@ let appRoutes = {
         task: "/api/v1/stats/task"
     },
     settings: {
-        export: "/api/v1/data/export"
+        export: "/api/v1/data/export",
+        import: "/api/v1/data/import"
     }
 };
 
