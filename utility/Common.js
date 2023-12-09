@@ -270,8 +270,9 @@ export const Common = {
     },
     getDateFromServerTime: dateTime => {
         const date = new Date(dateTime);
+        let month = (date.getMonth() + 1);
         const day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
-        const month = date.getMonth() < 10 ? "0" + date.getMonth() : date.getMonth();
+        month = month < 10 ? "0" + month : month;
         const year = date.getFullYear();
         return year + "-" + month + "-" + day;
     }

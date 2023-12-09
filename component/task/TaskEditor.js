@@ -80,7 +80,7 @@ const TaskEditor = props => {
     }
     const handleDateChange = newValue => {
         const dateStr = Common.checkAndGiveDoubleDigit(newValue.$y + "") + "-" + 
-                        Common.checkAndGiveDoubleDigit(newValue.$M + "") + "-" +
+                        Common.checkAndGiveDoubleDigit((newValue.$M + 1) + "") + "-" +
                         Common.checkAndGiveDoubleDigit(newValue.$D + "");
         setTaskDetails(prevTaskDetails => {
             return {
@@ -177,7 +177,7 @@ const TaskEditor = props => {
                     <p>Due Date</p>
                     <DatePicker 
                         label="DD/MM/YYYY" 
-                        value={dayjs(taskDetails.dueDate)} 
+                        value={dayjs(new Date(taskDetails.dueDate))} 
                         onChange={handleDateChange} 
                         views={["day", "month", "year"]}
                         disablePast 
