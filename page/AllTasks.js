@@ -159,7 +159,7 @@ const AllTasks = () => {
         }
         const filtered = [];
 
-        filterMenus && filterMenus.forEach((menu, index) => {
+        filterMenus && filterMenus.forEach(menu => {
             if(menu.checked) {
                 // This check will be done for "Completed" and "Yet To Finish"
                 filtered.push({id: menu.id, name: menu.name});

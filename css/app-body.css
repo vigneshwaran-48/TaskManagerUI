@@ -244,7 +244,6 @@
     height: calc(100% - 30px);
 }
 .task-box-wrapper{
-    height: (100% - 100px);
     overflow: scroll;
 }
 
@@ -329,6 +328,30 @@
     width: 100%;
     height: 100%;
 }
+
+.tasks-group-container {
+    width: 100%;
+    margin: 10px 0px;
+}
+.tasks-group-container > p {
+    font-size: 20px;
+    font-weight: 500;
+}
+.tasks-group-side-line {
+    position: absolute;
+    height: 100%;
+    border: 1px solid grey;
+    margin-left: 20px;
+}
+.tasks-group {
+    position: relative;
+    margin-left: 20px;
+}
+.tasks-group > .task-box {
+    position: relative;
+    background-color: white;
+}
+
 @media screen and (max-width: 895px) {
     .app-body {
         width: 100%;

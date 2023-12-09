@@ -218,10 +218,12 @@ export const Common = {
     },
 
     SettingsSectionName: {
-        THEME: "Theme",
         VIEW: "View",
+        THEME: "Theme",
+        GROUP_BY: "Group By",
         SORT: "Sort",
-        REMINDER: "Reminder"
+        REMINDER: "Reminder",
+        SORT_GROUP_BY: "Sort Group By"
     },
 
     Theme: {
@@ -232,6 +234,10 @@ export const Common = {
         NAME: 1,
         CREATED_TIME: 2,
         RECENTLY_CREATED: 3
+    },
+    GroupSortOptions: {
+        ASCENDING: "ascending",
+        DESCENDING: "descending"
     },
     getTasksComparator: function(sortOption) {
         switch(sortOption) {
@@ -256,5 +262,17 @@ export const Common = {
             default:
                 console.error("Unknow sort task option => " + sortOption);
         }
+    },
+    getDateTimeFromServerTime: dateTime => {
+        const date = new Date(dateTime);
+        const splittedDateTime = date.toString().split("GMT")
+        return splittedDateTime[0];
+    },
+    getDateFromServerTime: dateTime => {
+        const date = new Date(dateTime);
+        const day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+        const month = date.getMonth() < 10 ? "0" + date.getMonth() : date.getMonth();
+        const year = date.getFullYear();
+        return year + "-" + month + "-" + day;
     }
 }

@@ -1,11 +1,7 @@
+import { Common } from "../../utility/Common";
 import NothingToShow from "../../utility/NothingToShow";
 import React from "react";
 
-const getDateTime = dateTime => {
-    const date = new Date(dateTime);
-    const splittedDateTime = date.toString().split("GMT")
-    return splittedDateTime[0];
-}
 const SearchOverview = props => {
 
     const { taskDetails, isOpen, closeOverview } = props;
@@ -31,7 +27,7 @@ const SearchOverview = props => {
                     </div>
                     <div className="overview-single-data-container x-axis-flex">
                         <p className="overview-single-data-label">Created Time: </p>
-                        <p>{ getDateTime(taskDetails.createdTime) }</p>
+                        <p>{ Common.getDateTimeFromServerTime(taskDetails.createdTime) }</p>
                     </div>
                 </div>
                ) 
