@@ -36,5 +36,5 @@ export const ServerAPIManager = {
         // }
         return appRoutes;
     },
-    ServerURL: ""
+    ServerURL: "http://localhost:8484"
 }
