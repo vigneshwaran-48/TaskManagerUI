@@ -85,6 +85,23 @@
 }
 
 
+.error-comp {
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    text-align: center;
+}
+.error-comp > img {
+    max-width: 400px;
+    width: 90%;
+}
+.refresh-button {
+    background-color: rgb(96,98,105);
+    color: white;
+}
+
+
 @media screen and (max-width: 500px) {
     .multi-drop-down {
         width: 90%;

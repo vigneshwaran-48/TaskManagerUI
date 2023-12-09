@@ -19,13 +19,14 @@ import General from "./component/setting/General";
 import ImportExport from "./component/setting/ImportExport";
 import { store } from "./store";
 import Dashboard, { dashboardLoader } from "./page/Dashboard";
+import ErrorComp from "./utility/ErrorComp";
 
 
 export const UserContext = createContext();
 export const AppContext = createContext();
 
 const routes = createBrowserRouter(createRoutesFromElements(
-    <Route path="/">
+    <Route path="/" errorElement={<ErrorComp />}>
         <Route index element={(() => <Navigate to={"task"} />)()} />
         <Route path="task" element={<SharedLayout />}
         >
