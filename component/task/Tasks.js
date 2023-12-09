@@ -4,6 +4,7 @@ import TaskBox from "./TaskBox";
 import { Common } from "../../utility/Common";
 import { AppContext } from "../../App";
 import { useSelector } from "react-redux";
+import { SectionContext } from "../../page/SharedLayout";
 
 
 const Tasks = props => {
@@ -12,6 +13,8 @@ const Tasks = props => {
     const [ tasks, setTasks ] = useState(null);
     const { subscribeToTaskChange, unSubscribeToTaskChange, 
             subscribeToListChange, unSubscribeToListChange } = useContext(AppContext);
+
+    const { section } = useContext(SectionContext);
 
     const sortBy = useSelector(state => 
         state.settings.find(section => section.name === Common.SettingsSectionName.SORT).options[0].value)
@@ -187,7 +190,7 @@ const Tasks = props => {
     const taskElements = useMemo(() => {
         const groupVsTasks = {};
         
-        if(shouldGroupTask) {
+        if(shouldGroupTask && section !== "Upcoming") {
             if(tasks != null && tasks.length > 0) {
                 tasks.forEach(task => {
                     const date = Common.getDateFromServerTime(task[groupTasksBy]);
