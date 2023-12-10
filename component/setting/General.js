@@ -9,10 +9,7 @@ const General = () => {
 
     const dispatch = useDispatch();
 
-    console.log(sections);
-
     const onOptionsChange = eventData => {
-
         dispatch(updateSettings(eventData));
     }
 

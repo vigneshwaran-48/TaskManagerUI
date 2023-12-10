@@ -1,3 +1,4 @@
+import { Common } from "../../utility/Common";
 import NothingToShow from "../../utility/NothingToShow";
 import React from "react";
 
@@ -23,6 +24,10 @@ const SearchOverview = props => {
                     <div className="overview-single-data-container x-axis-flex">
                         <p className="overview-single-data-label">Due date: </p>
                         <p>{ taskDetails.dueDate }</p>
+                    </div>
+                    <div className="overview-single-data-container x-axis-flex">
+                        <p className="overview-single-data-label">Created Time: </p>
+                        <p>{ Common.getDateTimeFromServerTime(taskDetails.createdTime) }</p>
                     </div>
                 </div>
                ) 

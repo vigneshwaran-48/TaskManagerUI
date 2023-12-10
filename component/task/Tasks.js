@@ -4,6 +4,7 @@ import TaskBox from "./TaskBox";
 import { Common } from "../../utility/Common";
 import { AppContext } from "../../App";
 import { useSelector } from "react-redux";
+import { SectionContext } from "../../page/SharedLayout";
 
 
 const Tasks = props => {
@@ -13,8 +14,21 @@ const Tasks = props => {
     const { subscribeToTaskChange, unSubscribeToTaskChange, 
             subscribeToListChange, unSubscribeToListChange } = useContext(AppContext);
 
+    const { section } = useContext(SectionContext);
+
     const sortBy = useSelector(state => 
         state.settings.find(section => section.name === Common.SettingsSectionName.SORT).options[0].value)
+
+    const shouldGroupTask = useSelector(state => 
+        state.settings.find(section => 
+            section.name === Common.SettingsSectionName.VIEW).options.find(option => 
+                option.name === "groupTasks").value);
+    
+    const groupTasksBy = useSelector(state => 
+        state.settings.find(section => section.name === Common.SettingsSectionName.GROUP_BY).options[0].value);
+
+    const sortGroupBy = useSelector(state => 
+        state.settings.find(section => section.name === Common.SettingsSectionName.SORT_GROUP_BY).options[0].value);
 
     useEffect(() => {
         setTasks(props.tasks);
@@ -174,7 +188,62 @@ const Tasks = props => {
     //in input this all componenets starts re render. But now it wont re-render until 
     //the tasks changes.
     const taskElements = useMemo(() => {
-        return tasks != null && tasks.length > 0 ? tasks.map(task => {
+        const groupVsTasks = {};
+        
+        if(shouldGroupTask && section !== "Upcoming") {
+            if(tasks != null && tasks.length > 0) {
+                tasks.forEach(task => {
+                    const date = Common.getDateFromServerTime(task[groupTasksBy]);
+                    let tasksInGroup = groupVsTasks[date];
+                    if(!tasksInGroup) {
+                        groupVsTasks[date] = [];
+                        tasksInGroup = groupVsTasks[date];
+                    }
+                    tasksInGroup.push(<TaskBox 
+                        key={task.taskId} 
+                        taskDetails={task}
+                        onTaskComplete={onTaskComplete} 
+                        openEditor={ openEditor }
+                    />)
+                });
+                const groupTasks = [];
+                const keys = Object.keys(groupVsTasks);
+                keys.sort((a, b) => {
+                    const dateA = new Date(a);
+                    const dateB = new Date(b);
+                    if(dateA < dateB) {
+                        return -1;
+                    }
+                    else if(dateA > dateB) {
+                        return 1;
+                    }
+                    return 0;
+                });
+
+                if(sortGroupBy === Common.GroupSortOptions.DESCENDING) {
+                    // Sorting in descending order
+                    keys.reverse();
+                }
+
+                keys.forEach(key => {
+                    groupVsTasks[key].sort(Common.getTasksComparator(sortBy));
+                    groupTasks.push(
+                        <TasksGroup 
+                            key={key}
+                            groupName={key} 
+                            tasksElems={groupVsTasks[key]}
+                        />)
+                });
+                
+                return groupTasks;
+            }
+            else {
+                return fallback;
+            }
+        }
+        else {
+            return tasks != null && tasks.length > 0 ? tasks.map(task => {
+                
                 return (
                     <TaskBox 
                         key={task.taskId} 
@@ -184,8 +253,9 @@ const Tasks = props => {
                     />
                 );
             }): fallback
+        }
+        
     }, [tasks]);
-
 
     return (
         <div className="task-box-wrapper hide-scrollbar y-axis-flex">
@@ -193,5 +263,20 @@ const Tasks = props => {
         </div>
     );
 };
+
+const TasksGroup = props => {
+
+    const { groupName, tasksElems } = props;
+
+    return (
+        <div className="tasks-group-container">
+            <p>{ groupName }</p>
+            <div className="tasks-group">
+                <div className="tasks-group-side-line"></div>
+                {tasksElems}
+            </div>
+        </div>
+    )
+}
 
 export default Tasks;

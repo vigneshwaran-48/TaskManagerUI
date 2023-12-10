@@ -6,11 +6,57 @@ export const settingsInitialState = [
         name: Common.SettingsSectionName.VIEW,
         options: [
             {
-                id: 12,
-                name: "showCompletedTasksInListView",
-                description: "Show Completed Task in List View",
+                id: 1,
+                name: "groupTasks",
+                description: "Group Tasks",
                 type: Common.SettingsOptionTypes.CHECKBOX,
                 value: false
+            }
+        ]
+    },
+    {
+        id: 2,
+        name: Common.SettingsSectionName.GROUP_BY,
+        options: [
+            {
+                id: 12,
+                name: "groupTasksBy",
+                description: "Group Tasks By",
+                type: Common.SettingsOptionTypes.RADIO,
+                value: "createdTime",
+                options: [
+                    {
+                        description: "Created Time",
+                        value: "createdTime"
+                    },
+                    {
+                        description: "Due Date",
+                        value: "dueDate"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        id: 3,
+        name: Common.SettingsSectionName.SORT_GROUP_BY,
+        options: [
+            {
+                id: 98,
+                name: "sortGroupTasksBy",
+                description: "Sort Group Taks By",
+                value: Common.GroupSortOptions.ASCENDING,
+                type: Common.SettingsOptionTypes.RADIO,
+                options: [
+                    {
+                        description: "Ascending",
+                        value: Common.GroupSortOptions.ASCENDING
+                    },
+                    {
+                        description: "Descending",
+                        value: Common.GroupSortOptions.DESCENDING
+                    }
+                ]
             }
         ]
     },
@@ -18,7 +64,7 @@ export const settingsInitialState = [
         // If confused about this data structure, This is because when we have multiple options in
         // a single Section in that time this nested of options will work. If you have doubt 
         // think about it again before changing this.
-        id: 2,
+        id: 4,
         name: Common.SettingsSectionName.THEME,
         options: [
             {
@@ -41,11 +87,11 @@ export const settingsInitialState = [
         ]
     },
     {
-        id: 3,
+        id: 5,
         name: Common.SettingsSectionName.SORT,
         options: [
             {
-                id: 1,
+                id: 89,
                 name: "sortTasksBy",
                 description: "Sort Tasks by",
                 value: 1,
@@ -64,19 +110,6 @@ export const settingsInitialState = [
                         value: 3
                     }
                 ]
-            }
-        ]
-    },
-    {
-        id: 4,
-        name: Common.SettingsSectionName.REMINDER,
-        options: [
-            {
-                id: 18,
-                name: "remindAboutOverdueTasks",
-                description: "Remind me about overdue tasks",
-                type: Common.SettingsOptionTypes.CHECKBOX,
-                value: false
             }
         ]
     }

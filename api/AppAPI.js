@@ -28,5 +28,16 @@ export const AppAPI = {
                                     redirect: "follow"
                                 });
         return response;
+    },
+    importData: async formData => {
+        const csrfToken = Cookies.get("XSRF-TOKEN");
+        const response = await fetch(ServerAPIManager.ServerURL + ServerAPIManager.getAppRoutes().settings.import, {
+                                    method: "POST",
+                                    headers: {
+                                        "X-XSRF-TOKEN": csrfToken
+                                    },
+                                    body: formData
+                                });
+        return await response.json();
     }
 }

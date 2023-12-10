@@ -193,7 +193,10 @@ body, html {
     background-color: #18191B;
     color: white;
 }
-.dark-theme.task-box {
+.dark-theme.side-navbar input {
+    color: white;
+}
+.dark-theme.task-box {  
     background-color: #18191B;
     color: white;
     border-color: #242628;
