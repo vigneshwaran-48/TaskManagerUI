@@ -7,9 +7,6 @@ const Section = props => {
 
     const handleOptionsChange = props => {
 
-        console.log(props.event);
-        console.log(`Option ${props.name} with id ${props.id} changed`);
-
         onChange({
             sectionId: id,
             sectionName: name,

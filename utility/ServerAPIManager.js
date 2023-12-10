@@ -20,6 +20,7 @@ let appRoutes = {
         task: "/api/v1/stats/task"
     },
     settings: {
+        all: "/api/v1/settings",
         export: "/api/v1/data/export",
         import: "/api/v1/data/import"
     }
@@ -36,5 +37,5 @@ export const ServerAPIManager = {
         // }
         return appRoutes;
     },
-    ServerURL: ""
+    ServerURL: "http://localhost:8484"
 }

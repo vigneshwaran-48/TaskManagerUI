@@ -2,7 +2,7 @@ import React, { createContext, useEffect, useRef, useState } from "react";
 import { Navigate, Route, RouterProvider, createBrowserRouter, createRoutesFromElements, useLocation } from "react-router-dom";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import SharedLayout from "./page/SharedLayout";
+import SharedLayout, { appLoader } from "./page/SharedLayout";
 import TodayComp, { todayCompLoader, todayCompShouldRevalidate } from "./page/TodayComp";
 import ListBody, { listBodyLoader } from "./page/ListBody";
 import "./css/index.css";
@@ -26,9 +26,15 @@ export const UserContext = createContext();
 export const AppContext = createContext();
 
 const routes = createBrowserRouter(createRoutesFromElements(
-    <Route path="/" errorElement={<ErrorComp />}>
+    <Route 
+        path="/" 
+        errorElement={<ErrorComp />}
+    >
         <Route index element={(() => <Navigate to={"task"} />)()} />
-        <Route path="task" element={<SharedLayout />}
+        <Route 
+            path="task" 
+            element={<SharedLayout />}
+            loader={appLoader}
         >
             {/* This index route is to change the route in the url field to upcoming, otherwise only the Upcoming component
                 will render but the url won't change.

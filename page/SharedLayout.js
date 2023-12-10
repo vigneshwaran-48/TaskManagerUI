@@ -1,14 +1,17 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { Suspense, createContext, useEffect, useRef, useState } from "react";
 import SideNavbar from "../component/sidenav/SideNavbar";
 import "../css/side-nav.css";
 import "../css/app-body.css";
-import { useLocation } from "react-router";  
+import { useLocation, defer, useLoaderData, Await } from "react-router";  
 import 'font-awesome/css/font-awesome.min.css';
 import { Common } from "../utility/Common";
 import { ListAPI } from "../api/ListAPI";
 import MainBody from "./MainBody";
 import AppHeader from "../component/header/AppHeader";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { AppAPI } from "../api/AppAPI";
+import Loading from "../component/common/Loading";
+import { updateSettingsByOption, updateShouldGroupTasks } from "../features/settingsSlice";
 
 const capitalize = str => {
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -29,11 +32,23 @@ const formatHeading = str => {
 
 export const SectionContext = createContext();
 
+export const appLoader = async () => {
+    return defer({
+        settings: AppAPI.getSettings()
+    });
+}
+
 const SharedLayout = () => {
+
+    const appLoadedRef = useRef(false);
 
     const [ section, setSection ] = useState("");
 
     const theme = useSelector(state => state.settings.find(section => section.name === Common.SettingsSectionName.THEME));
+
+    const appLoaderData = useLoaderData();
+
+    const dispatch = useDispatch();
     
     const sideNavOpenAction = () => {
         document.querySelector(".side-navbar")
@@ -79,11 +94,36 @@ const SharedLayout = () => {
         }
     }
 
-    return (
-        <SectionContext.Provider value={{
-            section,
-            setSection
-        }}>
+    const render = settingsResponse => {
+
+        if(!appLoadedRef.current) {
+            if(settingsResponse.status !== 200) {
+                console.error("Error while getting settings data");
+                console.error(settingsResponse.error);
+            }
+    
+            dispatch(updateShouldGroupTasks({value: settingsResponse.data.shouldGroupTasks}));
+            dispatch(updateSettingsByOption({
+                sectionName: Common.SettingsSectionName.GROUP_BY,
+                value: settingsResponse.data.groupBy
+            }));
+            dispatch(updateSettingsByOption({
+                sectionName: Common.SettingsSectionName.THEME,
+                value: settingsResponse.data.theme
+            }));
+            dispatch(updateSettingsByOption({
+                sectionName: Common.SettingsSectionName.SORT,
+                value: settingsResponse.data.sortBy
+            }));
+            dispatch(updateSettingsByOption({
+                sectionName: Common.SettingsSectionName.SORT_GROUP_BY,
+                value: settingsResponse.data.sortGroupBy
+            }));
+
+            appLoadedRef.current = true;
+        }
+
+        return (
             <div 
                 className={`todo x-axis-flex ${theme.options[0].value === Common.Theme.LIGHT ? "light-theme" : "dark-theme"}`}
             >
@@ -115,6 +155,19 @@ const SharedLayout = () => {
                     <MainBody />
                 </div>
             </div>
+        )
+    }
+
+    return (
+        <SectionContext.Provider value={{
+            section,
+            setSection
+        }}>
+        <Suspense fallback={<Loading />}>
+            <Await resolve={appLoaderData.settings}>
+                { render }
+            </Await>
+        </Suspense>
         </SectionContext.Provider>
     )
 }

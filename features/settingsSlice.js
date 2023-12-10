@@ -1,5 +1,6 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, current } from "@reduxjs/toolkit";
 import { settingsInitialState } from "./settingsData";
+import { Common } from "../utility/Common";
 
 export const settingsSlice = createSlice({
     name: "settings",
@@ -19,9 +20,34 @@ export const settingsSlice = createSlice({
             if(!changed) {
                 console.error("The option that came from event is not in the section that's in state");
             }
+        },
+        updateShouldGroupTasks: (state, action) => {
+            const { payload } = action;
+
+            state = state.map(section => {
+                if(section.name === Common.SettingsSectionName.VIEW) {
+                    section.options = section.options.map(option => {
+                        if(option.name === "shouldGroupTasks") {
+                            option.value = payload.value
+                        }
+                        return option;
+                    });
+                }
+                return section;
+            });
+        },
+        updateSettingsByOption: (state, action) => {
+            const { payload } = action;
+
+            state = state.map(section => {
+                if(section.name === payload.sectionName) {
+                    section.options[0].value = payload.value;
+                }
+                return section;
+            });
         }
     }
 });
 
-export const { updateSettings } = settingsSlice.actions;
+export const { updateSettings, updateShouldGroupTasks, updateSettingsByOption } = settingsSlice.actions;
 export default settingsSlice.reducer;

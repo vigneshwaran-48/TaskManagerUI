@@ -216,16 +216,13 @@ export const Common = {
         CHECKBOX: "checkbox",
         RADIO: "radio"
     },
-
     SettingsSectionName: {
         VIEW: "View",
         THEME: "Theme",
         GROUP_BY: "Group By",
         SORT: "Sort",
-        REMINDER: "Reminder",
         SORT_GROUP_BY: "Sort Group By"
     },
-
     Theme: {
         LIGHT: "light",
         DARK: "dark"
