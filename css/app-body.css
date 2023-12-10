@@ -153,7 +153,7 @@
 }
 .editing-section > textarea {
     resize: none;
-    height: 100px;
+    height: 200px;
 }
 .editing-section > h2 {
     width: fit-content;
