@@ -118,7 +118,7 @@ const Tasks = props => {
             default: 
                 throw new Error("Unknown task event");
         }
-        setTasks(prevTasks => [...prevTasks.sort(Common.getTasksComparator(sortBy))]);
+        setTasks(prevTasks => prevTasks ? [...prevTasks.sort(Common.getTasksComparator(sortBy))] : prevTasks);
     }
 
     const listChangeHandler = (listDetails, mode) => {
