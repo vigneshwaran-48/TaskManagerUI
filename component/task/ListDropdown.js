@@ -6,7 +6,7 @@ const ListDropdown = props => {
     
     const handleOptionClick = event => {
         const { optionId } = event.currentTarget.dataset;
-        onChange(options.find(option => option.id === parseInt(optionId)));
+        onChange(options.find(option => option.id === optionId));
     }
     const optionElems = options.map(option => {
         return (
