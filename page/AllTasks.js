@@ -66,7 +66,7 @@ const AllTasks = () => {
             let searchedLists = [];
             
             if(searchParams.has("list")) {
-                searchedLists = searchParams.get("list").split(",").map(listId => parseInt(listId));
+                searchedLists = searchParams.get("list").split(",");
             }
        
             let listSelectOptions = lists.map(list => {

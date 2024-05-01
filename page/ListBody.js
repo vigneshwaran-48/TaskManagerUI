@@ -81,7 +81,7 @@ const ListBody = () => {
     const taskPredicate = (date, taskDetails) => {
 
         if(taskDetails?.lists && taskDetails.lists.length > 0) {
-            const result = taskDetails.lists.some(list => list.listId === parseInt(getDynamicId()));
+            const result = taskDetails.lists.some(list => list.listId === getDynamicId());
             return !result;
         }
 
@@ -102,7 +102,7 @@ const ListBody = () => {
                 openEditor={openEditor}
                 notifyTaskChange={notifyTaskChange}
                 id={`list-tasks-key-${params.id}`}
-                listsToBeAddedOnCreation={[ parseInt(getDynamicId()) ]}
+                listsToBeAddedOnCreation={[ getDynamicId() ]}
             />
             <TaskEditor 
                 closeEditorStatus={closeEditor} 
