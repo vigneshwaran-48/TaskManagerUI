@@ -22,7 +22,7 @@ const Tasks = props => {
     const shouldGroupTask = useSelector(state => 
         state.settings.find(section => 
             section.name === Common.SettingsSectionName.VIEW).options.find(option => 
-                option.name === "groupTasks").value);
+                option.name === "shouldGroupTasks").value);
     
     const groupTasksBy = useSelector(state => 
         state.settings.find(section => section.name === Common.SettingsSectionName.GROUP_BY).options[0].value);
@@ -118,7 +118,7 @@ const Tasks = props => {
             default: 
                 throw new Error("Unknown task event");
         }
-        setTasks(prevTasks => [...prevTasks.sort(Common.getTasksComparator(sortBy))]);
+        setTasks(prevTasks => prevTasks ? [...prevTasks.sort(Common.getTasksComparator(sortBy))] : prevTasks);
     }
 
     const listChangeHandler = (listDetails, mode) => {

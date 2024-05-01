@@ -39,5 +39,25 @@ export const AppAPI = {
                                     body: formData
                                 });
         return await response.json();
+    },
+    getSettings: async () => {
+        const url = ServerAPIManager.ServerURL + ServerAPIManager.getAppRoutes().settings.all;
+        const response = await fetch(url);
+
+        return await response.json();
+    },
+    updateSettings: async (option, value) => {
+        const csrfToken = Cookies.get("XSRF-TOKEN");
+
+        let url = ServerAPIManager.ServerURL + ServerAPIManager.getAppRoutes().settings.all;
+        url += `?settingsOption=${option}&value=${value}`;
+
+        const response = await fetch(url, {
+                                    method: "PATCH",
+                                    headers: {
+                                        "X-XSRF-TOKEN": csrfToken
+                                    }
+                                });
+        return await response.json();
     }
 }

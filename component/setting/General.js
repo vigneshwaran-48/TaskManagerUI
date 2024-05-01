@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import Section from './Section';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateSettings } from '../../features/settingsSlice';
+import { AppAPI } from '../../api/AppAPI';
+import { Common } from '../../utility/Common';
 
 const General = () => {
     
@@ -9,7 +11,14 @@ const General = () => {
 
     const dispatch = useDispatch();
 
-    const onOptionsChange = eventData => {
+    const onOptionsChange = async eventData => {
+        console.log(eventData);
+        const response = await AppAPI.updateSettings(eventData.option.name, eventData.option.value);
+        if(response.status !== 200) {
+            Common.showErrorPopup(response.error, 2);
+            return;
+        }
+        
         dispatch(updateSettings(eventData));
     }
 

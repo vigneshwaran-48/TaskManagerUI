@@ -7,7 +7,7 @@ export const settingsInitialState = [
         options: [
             {
                 id: 1,
-                name: "groupTasks",
+                name: "shouldGroupTasks",
                 description: "Group Tasks",
                 type: Common.SettingsOptionTypes.CHECKBOX,
                 value: false
@@ -43,7 +43,7 @@ export const settingsInitialState = [
         options: [
             {
                 id: 98,
-                name: "sortGroupTasksBy",
+                name: "sortGroupBy",
                 description: "Sort Group Taks By",
                 value: Common.GroupSortOptions.ASCENDING,
                 type: Common.SettingsOptionTypes.RADIO,
@@ -92,7 +92,7 @@ export const settingsInitialState = [
         options: [
             {
                 id: 89,
-                name: "sortTasksBy",
+                name: "sortBy",
                 description: "Sort Tasks by",
                 value: 1,
                 type: Common.SettingsOptionTypes.RADIO,
